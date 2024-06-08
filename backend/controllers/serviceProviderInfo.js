@@ -132,6 +132,7 @@ const deleteProviderInfoById=(req,res)=>{
 }
     
 
+
     module.exports={
         getAllProvidersInfo,
         createNewProviderInfo,

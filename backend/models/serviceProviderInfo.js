@@ -6,7 +6,7 @@ const serviceProviderInfoSchema =new mongoose.Schema({
     description:{type:String,required:true},
     rate:{type:Number,min:0,max:5},
     image:{type:String},
-    specialty:{type:String},
+    // specialty:{type:String},
     experience:{type:Number,required:true},
     availability:{type:String,required:true},
     reviews:{type:mongoose.Schema.Types.ObjectId,ref:"Review"},

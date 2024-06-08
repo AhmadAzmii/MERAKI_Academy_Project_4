@@ -8,8 +8,10 @@ require("./middleware/authentication")
 app.use(cors());
 app.use(express.json());
 
+const usersRouter=require("./routes/users")
 const categoryRouter=require("./routes/serviceCategory")
 
+app.use("/users",usersRouter)
 app.use("/serviceCategory",categoryRouter)
 
 app.use("*", (req, res) => res.status(404).json("NO content at this path"));

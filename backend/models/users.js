@@ -7,12 +7,12 @@ const usersSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   
-  phoneNumber:{type:Number,required:true},
+  phoneNumber:{type:String,required:true},
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
   image: { type: String },
   userName: { type: String, required: true },
   age: { type: Number,min:18,max:66,required:true },
-  speciality :{type:mongoose.Schema.Types.ObjectId,ref:"Service",required:true}
+  specialist :{type:mongoose.Schema.Types.ObjectId,ref:"Service",required:true}
 });
 
 usersSchema.pre("save", async function () {

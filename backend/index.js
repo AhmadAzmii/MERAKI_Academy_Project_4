@@ -8,9 +8,11 @@ require("./middleware/authentication")
 app.use(cors());
 app.use(express.json());
 
+const roleRouter=require("./routes/role")
 const usersRouter=require("./routes/users")
 const categoryRouter=require("./routes/serviceCategory")
 
+app.use("/role",roleRouter)
 app.use("/users",usersRouter)
 app.use("/serviceCategory",categoryRouter)
 

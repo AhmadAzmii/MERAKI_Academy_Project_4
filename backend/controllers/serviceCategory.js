@@ -87,7 +87,7 @@ const updateCategoryById=(req,res)=>{
         res.status(200).json({
             success: true,
             message: "category updated",
-            category: result
+            category: updatedCategory
           })
     }
     else{

@@ -6,10 +6,10 @@ const serviceProviderInfoSchema =new mongoose.Schema({
     description:{type:String,required:true},
     rate:{type:Number,min:0,max:5},
     image:{type:String},
-    // specialty:{type:String},
+    specialist :{type:mongoose.Schema.Types.ObjectId,ref:"Service",required:true},
     experience:{type:Number,required:true},
     availability:{type:String,required:true},
-    reviews:{type:mongoose.Schema.Types.ObjectId,ref:"Review"},
+    // reviews:{type:mongoose.Schema.Types.ObjectId,ref:"Review"},
     createdAt:{type:Date,default:Date.now},
     updatedAt:{type:Date,default:Date.now}
 })
@@ -19,4 +19,4 @@ serviceProviderInfoSchema.pre('save', function(next) {
     next();
   });
 
-  module.exports=mongoose.Model("ServiceProviderInfo",serviceProviderInfoSchema)
+  module.exports=mongoose.model("ServiceProviderInfo",serviceProviderInfoSchema)

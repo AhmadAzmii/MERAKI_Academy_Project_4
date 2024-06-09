@@ -1,14 +1,14 @@
-const express=require("express")
+const express = require("express")
 
-const {createRole,getAllRoles,getRoleById,updateRoleById,deleteRoleById}=require("../controllers/role")
+const { createRole, getAllRoles, getRoleById, updateRoleById, deleteRoleById } = require("../controllers/role")
 
-const roleRouter=express.Router()
+const roleRouter = express.Router()
 
 
-roleRouter.post("/",createRole)
-roleRouter.get("/",getAllRoles)
-roleRouter.get("/:id",getRoleById)
-roleRouter.put("/:id",updateRoleById)
-roleRouter.delete("/:id",deleteRoleById)
+roleRouter.post("/", createRole)
+roleRouter.get("/", getAllRoles)
+roleRouter.get("/:id", getRoleById)
+roleRouter.put("/:id", updateRoleById)
+roleRouter.delete("/:id", deleteRoleById)
 
-module.exports=roleRouter
+module.exports = roleRouter

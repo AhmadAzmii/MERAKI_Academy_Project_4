@@ -6,13 +6,13 @@ const usersSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  
-  phoneNumber:{type:String,required:true,unique:true},
+
+  phoneNumber: { type: String, required: true, unique: true },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
   image: { type: String },
   userName: { type: String, required: true },
-  age: { type: Number,min:18,max:66,required:true },
-  specialist :{type:mongoose.Schema.Types.ObjectId,ref:"Service"}
+  age: { type: Number, min: 18, max: 66, required: true },
+  specialist: { type: mongoose.Schema.Types.ObjectId, ref: "Service" }
 });
 
 usersSchema.pre("save", async function () {

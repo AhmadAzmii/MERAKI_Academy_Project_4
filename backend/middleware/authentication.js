@@ -1,29 +1,27 @@
-const jwt= require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
-const authentication = (req,res,next)=>{
-    const authHeader = req.headers.authorization;
-    console.log(authHeader);
+
+const authentication = (req, res, next) => {
     try {
-        if (!authHeader) {
+        if (!req.headers.authorization) {
             return res.status(403).json({
                 success: false,
-        message: `Forbidden`,
-            })
-            
-            
+                message: `Forbidden`,
+            });
         }
-        const token =req.headers.authorization.split("").pop();
-        jwt.verify(token,process.env.secret,(err,result)=>{
+        const token = req.headers.authorization.split(" ").pop();
+
+        jwt.verify(token, process.env.SECRET, (err, result) => {
             if (err) {
                 res.status(403).json({
                     success: false,
                     message: `The token is invalid or expired`,
-                })
+                });
             } else {
                 req.token = result;
-        next();
+                next();
             }
-        })
+        });
     } catch (err) {
         res.status(500).json({
             success: false,
@@ -31,5 +29,6 @@ const authentication = (req,res,next)=>{
             err: err.message,
         });
     }
-}
+};
+
 module.exports = authentication;

@@ -3,9 +3,9 @@ const mongoose=require("mongoose")
 const serviceSchema = new mongoose.Schema({
     serviceProvider:{type:mongoose.Schema.Types.ObjectId,ref:"Users",required:true},
     customer:{type:mongoose.Schema.Types.ObjectId,ref:"Users", required: true},
-    serviceInfo:{type:mongoose.Schema.Types.ObjectId,ref:"Users", required: true},
+    serviceInfo:{type:mongoose.Schema.Types.ObjectId,ref:"ServiceProviderInfo", required: true},
     status:{type:String, enum:['Pending', 'In Progress', 'Completed', 'Cancelled'], default: 'Pending' },
-    scheduledDate:{type:Date,required:true},
+    scheduledDate:{type:Date,required:true,default:Date.now},
     completedDate:{type:Date},
     rating: { type: Number, min: 0, max: 5 }
 })

@@ -12,7 +12,7 @@ const usersSchema = new mongoose.Schema({
   image: { type: String },
   userName: { type: String, required: true },
   age: { type: Number,min:18,max:66,required:true },
-  specialist :{type:mongoose.Schema.Types.ObjectId,ref:"Service",required:true}
+  specialist :{type:mongoose.Schema.Types.ObjectId,ref:"Service"}
 });
 
 usersSchema.pre("save", async function () {

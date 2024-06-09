@@ -3,41 +3,49 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const register = async (req,res)=>{
-    const {firstName,lastName,email,phoneNumber,password,image,role,userName,age,specialist}=req.body
- console.log(phoneNumber);
-   const usersDb=new usersModel({
+const {firstName,lastName,email,phoneNumber,password,image,role,userName,age,specialist}=req.body
+
+const usersDb=new usersModel({
     firstName,lastName,email,phoneNumber,password,image,role,userName,age,specialist
-   })
-   usersDb
-   .save()
-   .then((result)=>{
-    res.status(201).json({
-        success: true,
-        message: `Account Created Successfully`,
-        
+})
+usersDb.save()
+    .then((result) => {
+    usersModel.findById(result._id)
+        .populate('role','role-_id')
+        .then((populatedResult) => {
+        res.status(201).json({
+            success: true,
+            message: `Account Created Successfully`,
+            user: populatedResult
+        });
+        })
+        .catch((err) => {
+        res.status(500).json({
+            success: false,
+            message: `Error populating role`,
+            err: err.message
+        });
         });
     })
-    .catch((err)=>{
-    
-    if(err.keyPattern.phoneNumber){
+    .catch((err) => {
+    if (err.keyPattern && err.keyPattern.phoneNumber) {
         return res.status(409).json({
-            success: false,
-            message: `The phoneNumber already exists`,
-          });
-    }
-    else  {
-        
-         res.status(409).json({
-            success: false,
-            message: `The email already exists`,
-          });
-    }
-    res.status(500).json({
+        success: false,
+        message: `The phoneNumber already exists`,
+        });
+    } else if (err.keyPattern && err.keyPattern.email) {
+        return res.status(409).json({
+        success: false,
+        message: `The email already exists`,
+        });
+    } else {
+        res.status(500).json({
         success: false,
         message: `Server Error`,
         err: err.message,
-      });
-   })
+        });
+    }
+    });
 }
 
 

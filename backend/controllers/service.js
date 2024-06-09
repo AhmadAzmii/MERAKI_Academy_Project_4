@@ -1,17 +1,17 @@
-const providerInfoModel=require("../models/serviceProviderInfo")
+const serviceModel=require("../models/service")
 
-const createNewProviderInfo=(req,res)=>{
-    const {title,author,description,rate,image,specialist,experience,availability,createdAt,updatedAt} =req.body
+const createNewService=(req,res)=>{
+    const {serviceProvider,customer,serviceInfo,status,scheduledDate,completedDate,rating}=req.body
 
-    const providerDb= new providerInfoModel({
-        title,author,description,rate,image,specialist,experience,availability,createdAt,updatedAt
+    const serviceDb= new serviceModel({
+        serviceProvider,customer,serviceInfo,status,scheduledDate,completedDate,rating
     })
-    providerDb
+    serviceDb
     .save()
     .then((result)=>{
         res.status(201).json({
             success: true,
-            message: `service provider information created`,
+            message: `service created`,
         })
         })
         .catch((err)=>{
@@ -21,23 +21,26 @@ const createNewProviderInfo=(req,res)=>{
             err: err.message,
             })
         })
-    }
+}
 
-const getAllProvidersInfo=(req,res)=>{
-    providerInfoModel
+const getALLServices=(req,res)=>{
+    serviceModel
     .find()
+    .populate("serviceProvider")
+    .populate("customer")
+    .populate("serviceInfo")
     .then((result)=>{
         if (result.length){
             res.status(200).json({
                 success: true,
-                message: `All the service providers information`,
-                providersInfo:result
+                message: `All the services`,
+                services:result
             })
         }else{
             res.status(200).json({
                 success: false,
-                message: `No service providers Yet`,
-              });
+                message: `No services Yet`,
+            });
         }
         })
         .catch((err)=>{
@@ -47,22 +50,23 @@ const getAllProvidersInfo=(req,res)=>{
                 
             })
         })
-    }
+}
 
-const getProviderInfoById=(req,res)=>{
-    const {id}=req.params
-    providerInfoModel
+const getServiceById=(req,res)=>{
+    const id=req.params.id
+    serviceModel
     .findById(id)
-    .then((result)=>{
+
+.then((result)=>{
     if(!result){
         res.status(404).json({
             success: false,
-            message: `The provider information with id => ${id} not found`,
+            message: `The service with id => ${id} not found`,
         });
     }else{
         res.status(200).json({
             success: true,
-            message: `The provider information ${id} `,
+            message: `The service ${id} `,
             category: result,
         });
     }
@@ -72,53 +76,53 @@ const getProviderInfoById=(req,res)=>{
             success: false,
             message: `Server Error`,
             err: err.message,
-          }); 
+        }); 
     })
 }
 
-const updateProviderInfoById=(req,res)=>{
+const updateServiceById=(req,res)=>{
     const {id}=req.params
-    const updatedProviderInfo=req.body
-    providerInfoModel
-    .findOneAndUpdate({_id:id},updatedProviderInfo)
+    const updatedService=req.body
+    serviceModel
+    .findOneAndUpdate({_id:id},updatedService)
     .then((result)=>{
         if(result){
             res.status(200).json({
                 success: true,
-                message: "service providers updated",
-                providerInfo: updatedProviderInfo
-              })
+                message: "service updated",
+                service: updatedService
+            })
         }
         else{
             res.status(404).json({
-              success: false,
-              message: `The provider information with id => ${id} not found`,
+            success: false,
+            message: `The service with id => ${id} not found`,
             });
-          }
+        }
         })
         .catch((err)=>{
             res.status(500).json({
                 success: false,
                 message: "Server Error",
                 err: err.message
-              })
+            })
         })
-    }
+}
 
-const deleteProviderInfoById=(req,res)=>{
-    const {id}=req.params
-    providerInfoModel
-    .findOneAndDelete({_id:id})
+const deleteServiceById=(req,res)=>{
+    const id=req.params.id
+    serviceModel
+    .findOneAndDelete(id)
     .then((result)=>{
         if (!result) {
             return res.status(404).json({
             success: false,
-            message: `The provider information with id => ${id} not found`,
+            message: `The service with id => ${id} not found`,
             });
         }else{
             res.status(200).json({
                 success: true,
-                message: `provider information deleted`,
+                message: `service deleted`,
             });
         }
     })
@@ -130,13 +134,12 @@ const deleteProviderInfoById=(req,res)=>{
         })
     })
 }
-    
 
 
-    module.exports={
-        getAllProvidersInfo,
-        createNewProviderInfo,
-        getProviderInfoById,
-        updateProviderInfoById,
-        deleteProviderInfoById
-    }
+module.exports={
+    createNewService,
+    getALLServices,
+    getServiceById,
+    updateServiceById,
+    deleteServiceById
+}

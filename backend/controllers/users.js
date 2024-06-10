@@ -44,6 +44,7 @@ const register = async (req, res) => {
                     message: `Server Error`,
                     err: err.message,
                 });
+                console.log(err);
             }
         });
 }

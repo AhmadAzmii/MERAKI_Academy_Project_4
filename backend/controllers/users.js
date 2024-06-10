@@ -3,10 +3,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
-    const { firstName, lastName, email, phoneNumber, password, image, role, userName, age, specialist } = req.body
-
+    
+    const { firstName, lastName, email, phoneNumber, password, image, isSpecialist, userName, age,  } = req.body
+    const role = isSpecialist ? '66659b79ca3cdb2fe0e92bc9' : '6664b711c97330a23805e283';
     const usersDb = new usersModel({
-        firstName, lastName, email, phoneNumber, password, image, role, userName, age, specialist
+        firstName, lastName, email, phoneNumber, password, image, role, userName, age, 
     })
     usersDb.save()
         .then((result) => {

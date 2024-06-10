@@ -1,11 +1,26 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { UserContext } from '../../App'
+import { useNavigate, Link } from 'react-router-dom'
 
 const Navbar = () => {
-  return (
-    <div className='Navbar'>
-     Navbar Component
-    </div>
-  )
-};
+    const { isLoggedIn, setIsLoggedIn, setToken,isAdmin } = useContext(UserContext)
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        setIsLoggedIn(false)
+        setToken("")
+        localStorage.clear()
+        navigate('/login')
+    }
+
+    return (
+        <div className='navbar'>
+            {!isLoggedIn && <Link to='/login'>Login</Link>}
+            {!isLoggedIn && <Link to='/register'>Register</Link>}
+            {isLoggedIn &&!isAdmin && <Link to='/dashboard'>Dashboard</Link>}
+            {isLoggedIn && <button onClick={handleLogout}>Logout</button>}
+        </div>
+    )
+}
 
 export default Navbar

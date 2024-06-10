@@ -1,14 +1,33 @@
-import React from 'react'
-import "./App.css";
-import Register from './components/User Components/Register';
+import React, { createContext, useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import "./App.css"
+import Register from './components/User Components/Register'
 import "./components/User Components/Register.css"
+import Login from './components/User Components/Login'
+import UserDashboard from './components/Dashboard/UserDashboard'
+import Navbar from './components/User Components/Navbar'
+import AdminDashboard from './components/Dashboard/AdminDashboard'
+export const UserContext = createContext()
+
 const App = () => {
-  return (
-   <div className="App">
-      <h1>Hello World!</h1>
-      <Register/>
-    </div>
-  )
+    const [token, setToken] = useState(localStorage.getItem('token') || "")
+    const [isLoggedIn, setIsLoggedIn] = useState(!!token)
+    const [isAdmin, setIsAdmin] = useState(false)
+    return (
+        <div className="App">
+            <header className="App-header">
+                <UserContext.Provider value={{ setToken, token, isLoggedIn, setIsLoggedIn,isAdmin, setIsAdmin }}>
+                    <Navbar />
+                    <Routes>
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/register' element={<Register />} />
+                        <Route path='/dashboard' element={<UserDashboard />} />
+                        <Route path='/admin-dashboard' element={<AdminDashboard/>} />
+                    </Routes>
+                </UserContext.Provider>
+            </header>
+        </div>
+    )
 }
 
 export default App

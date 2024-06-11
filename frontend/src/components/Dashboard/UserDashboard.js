@@ -1,13 +1,14 @@
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Correct import statement
+import {jwtDecode} from 'jwt-decode'; 
 import React, { useEffect, useState } from 'react';
-import './UserDashboard.css'; // Ensure you have this CSS file
+import './UserDashboard.css'; 
 
 const UserDashboard = () => {
   const token = localStorage.getItem("token");
   
   const [providerInfo, setProviderInfo] = useState([]);
   const [userId, setUserId] = useState('');
+  
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState(0);
 
@@ -18,7 +19,7 @@ const UserDashboard = () => {
       setUserId(userId);
       getAllProvidersInfo();
     }
-  }, [token]);
+  }, []);
 
   const getAllProvidersInfo = () => {
     const headers = {
@@ -26,6 +27,7 @@ const UserDashboard = () => {
     };
     axios.get("http://localhost:5000/providerInfo/", { headers })
       .then((result) => {
+        console.log(result.data);
         setProviderInfo(result.data.providersInfo);
       })
       .catch((err) => {
@@ -61,16 +63,18 @@ const UserDashboard = () => {
   return (
     <div className='UserDashboard'>
       <h2>UserDashboard Component</h2>
-      {providerInfo.length > 0 ? providerInfo.map((post) => (
+      {providerInfo?.map((post) => (
         <div key={post._id} className="provider-info">
           <h3>{post.title}</h3>
           <p>{post.description}</p>
-          {post.reviews.map((review, i) => (
-            <div key={i}>
+          {post.reviews.map((review, i) => {
+            console.log(review);
+           return ( <div key={i}>
               <h4>review:{review.review}</h4>
               <p>Rating: {review.rating}</p>
-            </div>
-          ))}
+            </div> )
+           
+})}
           <input
             className="review-input"
             type="text"
@@ -89,9 +93,7 @@ const UserDashboard = () => {
           />
           <button className="add-review" onClick={() => handleReview(post._id)}>Add review</button>
         </div>
-      )) : (
-        <p>No providers available.</p>
-      )}
+      )) }
     </div>
   );
 };

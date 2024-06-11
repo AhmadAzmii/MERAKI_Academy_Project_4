@@ -18,11 +18,15 @@ function Login() {
             const result = await axios.post("http://localhost:5000/users/login", { email, password });
             setToken(result.data.token);
             localStorage.setItem('token', result.data.token);
+           
+           
             setIsLoggedIn(true);
 
            
             const decodedToken = jwtDecode(result.data.token);
+            console.log(decodedToken);
             const role = decodedToken.role.role;
+            localStorage.setItem("specialist",decodedToken.specialist._id)
             console.log("Role from token:", role);
             setSpecialist(role);
 

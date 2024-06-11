@@ -1,10 +1,10 @@
 const providerInfoModel = require("../models/serviceProviderInfo")
 
 const createNewProviderInfo = (req, res) => {
-    const { title, author, description, rate, image, specialist, experience, availability, createdAt, updatedAt } = req.body
-
+    const { title, description, rate, image, specialist, experience, availability, createdAt, updatedAt } = req.body
+const userId = req.token.userId
     const providerDb = new providerInfoModel({
-        title, author, description, rate, image, specialist, experience, availability, createdAt, updatedAt
+        title, author:userId, description, rate, image, specialist, experience, availability, createdAt, updatedAt
     })
     providerDb
         .save()
@@ -21,12 +21,14 @@ const createNewProviderInfo = (req, res) => {
                 message: `Server Error`,
                 err: err.message,
             })
+            console.log(err);
         })
 }
 
 const getAllProvidersInfo = (req, res) => {
     providerInfoModel
         .find()
+        .populate("reviews")    
         .then((result) => {
             if (result.length) {
                 res.status(200).json({

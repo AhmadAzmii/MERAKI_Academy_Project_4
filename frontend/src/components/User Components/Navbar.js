@@ -3,7 +3,7 @@ import { UserContext } from '../../App'
 import { useNavigate, Link } from 'react-router-dom'
 
 const Navbar = () => {
-    const { isLoggedIn, setIsLoggedIn, setToken,isAdmin } = useContext(UserContext)
+    const { isLoggedIn, setIsLoggedIn, setToken,isAdmin ,isProvider } = useContext(UserContext)
     const navigate = useNavigate()
 
     const handleLogout = () => {
@@ -17,7 +17,7 @@ const Navbar = () => {
         <div className='navbar'>
             {!isLoggedIn && <Link to='/login'>Login</Link>}
             {!isLoggedIn && <Link to='/register'>Register</Link>}
-            {isLoggedIn &&!isAdmin && <Link to='/dashboard'>Dashboard</Link>}
+            {isLoggedIn &&!isAdmin && !isProvider && <Link to='/dashboard'>Dashboard</Link>}
             {isLoggedIn && <button onClick={handleLogout}>Logout</button>}
         </div>
     )

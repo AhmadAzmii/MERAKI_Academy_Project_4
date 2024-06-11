@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import './Register.css'; // Import the CSS file
+import './Register.css'; 
 
 const Register = () => {
     const [firstName, setFirstName] = useState("");
@@ -51,9 +51,9 @@ const Register = () => {
                 phoneNumber,
                 image: image,
                 userName,
-                specialist,
+                specialist, 
                 age,
-                isSpecialist,
+                specialist: isSpecialist ? specialist : null
             };
 
             try {

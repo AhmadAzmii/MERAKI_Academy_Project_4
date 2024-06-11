@@ -1,0 +1,18 @@
+.UserDashboard {
+    padding: 20px;
+  }
+  
+  .provider-info {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .provider-info h3 {
+    margin: 0;
+  }
+  
+  .provider-info p {
+    margin: 5px 0 0 0;
+  }
+  

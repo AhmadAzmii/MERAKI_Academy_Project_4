@@ -9,10 +9,11 @@ const serviceProviderInfoSchema = new mongoose.Schema({
     specialist: { type: mongoose.Schema.Types.ObjectId, ref: "Service", required: true },
     experience: { type: Number, required: true },
     availability: { type: String, required: true },
-    reviews: { type: mongoose.Schema.Types.ObjectId, ref: "Review" },
+    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
-})
+});
+
 
 serviceProviderInfoSchema.pre('save', function (next) {
     this.updatedAt = Date.now();

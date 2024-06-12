@@ -1,18 +1,56 @@
-.UserDashboard {
-    padding: 20px;
-  }
-  
-  .provider-info {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .provider-info h3 {
-    margin: 0;
-  }
-  
-  .provider-info p {
-    margin: 5px 0 0 0;
-  }
-  
+.user-dashboard {
+  margin: 20px;
+}
+
+.provider-info {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.provider-info h2,
+.provider-info h3 {
+  margin: 5px 0;
+}
+
+.provider-info p {
+  margin: 10px 0;
+}
+
+.review-input,
+.rating-input,
+.add-review,
+button {
+  display: block;
+  margin-top: 10px;
+}
+
+.review-input,
+.rating-input {
+  padding: 5px;
+  width: 100%;
+}
+
+.add-review {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.add-review:hover {
+  background-color: #45a049;
+}
+
+button {
+  background-color: #008CBA;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #007B9A;
+}

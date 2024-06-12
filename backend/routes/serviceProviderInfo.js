@@ -1,6 +1,6 @@
 const express = require("express")
 
-const { createNewProviderInfo, getAllProvidersInfo, getProviderInfoById, updateProviderInfoById, deleteProviderInfoById } = require("../controllers/serviceProviderInfo")
+const { createNewProviderInfo, getAllProvidersInfo, getProviderInfoById, updateProviderInfoById, deleteProviderInfoById ,getProviderInfoByAuthorId} = require("../controllers/serviceProviderInfo")
 
 const { createNewReview } = require("../controllers/review")
 
@@ -9,6 +9,7 @@ const authorization = require("../middleware/authorization")
 const providerInfoRouter = express.Router()
 
 
+providerInfoRouter.get("/author/:authorId", getProviderInfoByAuthorId);
 
 providerInfoRouter.post("/", authentication, authorization("CREATE_POSTS"), createNewProviderInfo)
 providerInfoRouter.get("/", getAllProvidersInfo)

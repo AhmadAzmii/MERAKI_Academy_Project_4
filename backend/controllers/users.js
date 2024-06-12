@@ -60,7 +60,7 @@ const login = (req, res) => {
     usersModel
         .findOne({ email })
         .populate("role", "-_id -__v")
-        .populate("specialist"  )
+        .populate("specialist")
         .then(async (result) => {
             if (!result) {
                 return res.status(403).json({

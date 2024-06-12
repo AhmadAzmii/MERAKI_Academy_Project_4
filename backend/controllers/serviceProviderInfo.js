@@ -28,7 +28,9 @@ const userId = req.token.userId
 const getAllProvidersInfo = (req, res) => {
     providerInfoModel
         .find()
-        .populate("reviews")    
+        .populate("author","userName")
+        .populate("reviews") 
+        
         .then((result) => {
             if (result.length) {
                 res.status(200).json({
@@ -133,6 +135,35 @@ const deleteProviderInfoById = (req, res) => {
             })
         })
 }
+const getProviderInfoByAuthorId = (req, res) => {
+    const { authorId } = req.params;
+    console.log(`Author ID: ${authorId}`);
+    providerInfoModel
+        .find({ author: authorId })
+        .populate("author", "userName")
+        .populate("reviews")
+        .then((result) => {
+            if (result.length) {
+                res.status(200).json({
+                    success: true,
+                    message: `Service provider information for author ${authorId}`,
+                    providersInfo: result
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `No service provider information found for author ${authorId}`,
+                });
+            }
+        })
+        .catch((err) => {
+            res.status(500).json({
+                success: false,
+                message: `Server Error`,
+                err: err.message,
+            });
+        });
+};
 
 
 
@@ -141,5 +172,6 @@ module.exports = {
     createNewProviderInfo,
     getProviderInfoById,
     updateProviderInfoById,
-    deleteProviderInfoById
+    deleteProviderInfoById,
+    getProviderInfoByAuthorId
 }

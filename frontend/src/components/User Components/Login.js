@@ -26,11 +26,15 @@ function Login() {
             const decodedToken = jwtDecode(result.data.token);
             console.log(decodedToken);
             const role = decodedToken.role.role;
-            localStorage.setItem("specialist",decodedToken.specialist._id)
+            const specialistId = decodedToken.specialist?._id;
+            // localStorage.setItem("specialist",decodedToken.specialist._id)
             console.log("Role from token:", role);
             setSpecialist(role);
 
             if (role === "serviceProvider") {
+                if (specialistId) {
+                    localStorage.setItem("specialist", specialistId); 
+                }
                 setIsAdmin(false);
                 navigate('/Provider-Dashboard');
             } else if (role === "Admin") {

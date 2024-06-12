@@ -6,7 +6,7 @@ const serviceProviderInfoSchema = new mongoose.Schema({
     description: { type: String, required: true },
     rate: { type: Number, min: 0, max: 5 },
     image: { type: String },
-    specialist: { type: mongoose.Schema.Types.ObjectId, ref: "Service", required: true },
+    specialist: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCategory", required: true },
     experience: { type: String, required: true },
     availability: { type: String, required: true },
     reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],

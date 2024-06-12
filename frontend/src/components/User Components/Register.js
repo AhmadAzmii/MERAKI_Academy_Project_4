@@ -51,9 +51,8 @@ const Register = () => {
                 phoneNumber,
                 image: image,
                 userName,
-                specialist, 
                 age,
-                specialist: isSpecialist ? specialist : null
+                specialist: isSpecialist ? specialist : null,
             };
 
             try {

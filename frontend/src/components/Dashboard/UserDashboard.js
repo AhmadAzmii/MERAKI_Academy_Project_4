@@ -71,6 +71,7 @@ const UserDashboard = () => {
       {providerInfo?.map((post) => (
         <div key={post._id} className="provider-info">
           <h2>{post.author.userName}</h2>
+          <h2>{post.specialist.name}</h2>
           <h3>{post.title}</h3>
           <p>{post.description}</p>
           {post.reviews.map((review, i) => {

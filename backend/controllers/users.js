@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
     let role = '6664b711c97330a23805e283'; 
-    const { firstName, lastName, email, phoneNumber, password, image, isSpecialist, userName, age, specialist } = req.body
-    if (isSpecialist) {
+    const { firstName, lastName, email, phoneNumber, password, image, userName, age, specialist } = req.body
+    if (specialist) {
         role = '66659b79ca3cdb2fe0e92bc9';
     }
     const usersDb = new usersModel({

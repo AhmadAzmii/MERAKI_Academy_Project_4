@@ -30,7 +30,7 @@ const getAllProvidersInfo = (req, res) => {
         .find()
         .populate("author","userName")
         .populate("reviews") 
-        
+        .populate("specialist")
         .then((result) => {
             if (result.length) {
                 res.status(200).json({
@@ -142,6 +142,7 @@ const getProviderInfoByAuthorId = (req, res) => {
         .find({ author: authorId })
         .populate("author", "userName")
         .populate("reviews")
+        .populate("specialist")
         .then((result) => {
             if (result.length) {
                 res.status(200).json({

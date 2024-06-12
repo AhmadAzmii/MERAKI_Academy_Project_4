@@ -73,11 +73,11 @@ const ProviderDashboard = () => {
       title: newTitle
     }, { headers })
       .then((result) => {
-        if (result.status === 202 && result.data.success) {
+       
           setProviderInfo(providerInfo.map((post) =>
             post._id === postId ? { ...post, title: newTitle, description: newDescription, availability: newAvailability, experience: newExperience } : post
           ));
-        }
+        
       })
       .catch((err) => {
         console.error(err);
@@ -119,13 +119,15 @@ const ProviderDashboard = () => {
       <MDBBtn onClick={handleAddProviderInfo}>Create New Provider Information</MDBBtn>
 
       <h2 className="mt-5">Provider Information</h2>
-
+ {console.log(providerInfo)}
       {providerInfo?.map((info) => {
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userId;
         return (
           <MDBCard key={info._id} className="mt-3">
             <MDBCardBody>
+              <MDBCardText>{info.author.userName}</MDBCardText>
+              <MDBCardText>{info.specialist.name}</MDBCardText>
               <MDBCardTitle>{info.title}</MDBCardTitle>
               <MDBCardText>{info.description}</MDBCardText>
               <MDBCardText>Experience: {info.experience}</MDBCardText>

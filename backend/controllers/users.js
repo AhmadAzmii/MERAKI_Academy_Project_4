@@ -108,5 +108,34 @@ const login = (req, res) => {
 
 }
 
+const getAllUsers=(req,res)=>{
+    usersModel
+    .find()
+    .populate("role")
+    .populate("specialist")
+    .then((result)=>{
+        if(result.length){
+            res.status(200).json({
+                success: true,
+                message: `All USERS`,
+                Users: result
+            })
+        }
+        else {
+            res.status(200).json({
+                success: false,
+                message: `No Users Yet`,
+            });
+        }
+    })
+    .catch((err) => {
+        res.status(500).json({
+            success: false,
+            message: `Server Error`,
 
-module.exports = { register, login }
+        })
+    })
+}
+
+
+module.exports = { register, login ,getAllUsers}

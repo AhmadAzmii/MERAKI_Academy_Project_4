@@ -24,10 +24,10 @@ const UserDashboard = () => {
   }, []);
 
   const getAllProvidersInfo = () => {
-    const headers = {
-      Authorization: `Bearer ${token}`
-    };
-    axios.get("http://localhost:5000/providerInfo/", { headers })
+    // const headers = {
+    //   Authorization: `Bearer ${token}`
+    // };
+    axios.get("http://localhost:5000/providerInfo/")
       .then((result) => {
 
         setProviderInfo(result.data.providersInfo);

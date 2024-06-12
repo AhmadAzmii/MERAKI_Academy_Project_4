@@ -17,8 +17,8 @@ const Navbar = () => {
         <div className='navbar'>
             {!isLoggedIn && <Link to='/login'>Login</Link>}
             {!isLoggedIn && <Link to='/register'>Register</Link>}
-            {isLoggedIn &&!isAdmin && !isProvider && <Link to='/dashboard'>Dashboard</Link>}
-            {isLoggedIn && !isAdmin&& isProvider && <Link to='/Provider-Dashboard'>Provider Dashboard</Link>}
+            {isLoggedIn && isProvider && <Link to='/dashboard'>Dashboard</Link>}
+            {isLoggedIn && isProvider && <Link to='/Provider-Dashboard'>Provider Dashboard</Link>}
             {isLoggedIn && <button onClick={handleLogout}>Logout</button>}
         </div>
     )

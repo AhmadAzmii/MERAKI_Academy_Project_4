@@ -5,19 +5,20 @@ import "./Navbar.css"
 import { jwtDecode } from 'jwt-decode'
 
 const Navbar = () => {
-    const token=localStorage.getItem("token")
-    const { isLoggedIn, setIsLoggedIn, setToken,isAdmin ,isProvider } = useContext(UserContext)
+    // const token=localStorage.getItem("token")
+    const { isLoggedIn, setIsLoggedIn, setToken,isAdmin ,isProvider,token } = useContext(UserContext)
     const [userName, setUserName] = useState("")
     const navigate = useNavigate()
     
     useEffect(()=>{
+        console.log(token)
         if(token){
             const decodedToken=jwtDecode(token)
             const userName=decodedToken.user
             setUserName(userName)
             
         }
-    },[])
+    },[token])
     const handleLogout = () => {
         setIsLoggedIn(false)
         setToken("")

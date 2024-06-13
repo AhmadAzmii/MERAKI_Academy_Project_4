@@ -1,112 +1,89 @@
-/* ProviderDashboard.css */
-
 .ProviderDashboard {
-    padding: 20px;
-  }
-  
-  .ProviderDashboard h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .ProviderDashboard p {
-    font-size: 16px;
-  }
-  
-  .ProviderDashboard .card {
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease-in-out;
-  }
-  
-  .ProviderDashboard .card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-  
-  .ProviderDashboard .card-body {
-    padding: 20px;
-  }
-  
-  .ProviderDashboard .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .ProviderDashboard .form-label {
-    font-weight: 500;
-  }
-  
-  .ProviderDashboard .btn {
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .ProviderDashboard .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: #fff;
-  }
-  
-  .ProviderDashboard .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-  }
-  
-  .ProviderDashboard .btn-danger {
-    background-color: #dc3545;
-    border-color: #dc3545;
-    color: #fff;
-  }
-  
-  .ProviderDashboard .btn-danger:hover {
-    background-color: #c82333;
-    border-color: #c82333;
-  }
-  
-  /* Styling for Post Information */
-  .ProviderDashboard .post-info {
-    margin-top: 20px;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    background-color: #f8f9fa;
-  }
-  
-  .ProviderDashboard .post-info h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-  
-  .ProviderDashboard .post-info p {
-    font-size: 16px;
-    margin-bottom: 5px;
-  }
-  
-  .ProviderDashboard .post-info .card-text {
-    font-size: 14px;
-    color: #6c757d;
-  }
-  
-  .ProviderDashboard .post-info .update-section {
-    margin-top: 10px;
-  }
-  
-  .ProviderDashboard .post-info .update-section input {
-    margin-bottom: 5px;
-  }
-  
-  .ProviderDashboard .post-info .update-btn {
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-weight: 500;
-    background-color: #28a745;
-    border-color: #28a745;
-    color: #fff;
-  }
-  
-  .ProviderDashboard .post-info .update-btn:hover {
-    background-color: #218838;
-    border-color: #218838;
-  }
-  
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.ProviderDashboard h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.ProviderDashboard .mb-3 {
+  margin-bottom: 15px;
+}
+
+.ProviderDashboard .text-danger {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.ProviderDashboard .card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.ProviderDashboard .card-body {
+  padding: 20px;
+}
+
+.ProviderDashboard .card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.ProviderDashboard .card-text {
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.ProviderDashboard .update-form {
+  margin-top: 15px;
+}
+
+.ProviderDashboard .form-group {
+  margin-bottom: 15px;
+}
+
+.ProviderDashboard .form-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.ProviderDashboard .form-group input[type="text"],
+.ProviderDashboard .form-group textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.ProviderDashboard .btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.ProviderDashboard .btn:hover {
+  background-color: #0056b3;
+}
+
+.ProviderDashboard .btn-danger {
+  background-color: #dc3545;
+}
+
+.ProviderDashboard .btn-danger:hover {
+  background-color: #c82333;
+}

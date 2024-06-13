@@ -1,7 +1,7 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import './Register.css'; 
-
+import React, { useState, useEffect, createContext } from 'react';
+import './Register.css';
+export const UserInfoContext=createContext()
 const Register = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -38,10 +38,27 @@ const Register = () => {
     };
 
     const handleSubmit = async () => {
-        const reader = new FileReader();
-        reader.readAsDataURL(image);
-        reader.onloadend = async () => {
-            const image = reader.result;
+        const formData = new FormData();
+
+        formData.append('firstName', firstName);
+        formData.append('lastName', lastName);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('userName', userName);
+        formData.append('age', age);
+        formData.append('specialist', isSpecialist ? specialist : '');
+        formData.append('image', image);
+
+        try {
+            const response = await fetch("https://api.cloudinary.com/v1_1/breellz/image/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            const imageUrl = data.url;
 
             const userData = {
                 firstName,
@@ -49,25 +66,22 @@ const Register = () => {
                 email,
                 password,
                 phoneNumber,
-                image: image,
                 userName,
                 age,
+                image: imageUrl,
                 specialist: isSpecialist ? specialist : null,
             };
 
-            try {
-                const response = await axios.post("http://localhost:5000/users/register", userData);
-                setMessage(response.data.message);
-            } catch (error) {
-                setMessage(error.response?.data?.message || "Registration failed");
-            }
-        };
-        reader.onerror = () => {
-            setMessage("Failed to read the image file");
-        };
+            const registerResponse = await axios.post("http://localhost:5000/users/register", userData);
+            setMessage(registerResponse.data.message);
+        } catch (error) {
+            setMessage(error.response?.data?.message || "Registration failed");
+        }
     };
 
     return (
+        <UserInfoContext.Provider value={{image, setImage,
+            userName, setUserName}}>
         <div className="register-container">
             <h3>Registration</h3>
             <div>
@@ -125,6 +139,7 @@ const Register = () => {
             </div>
             {message && <p>{message}</p>}
         </div>
+        </UserInfoContext.Provider>
     );
 };
 

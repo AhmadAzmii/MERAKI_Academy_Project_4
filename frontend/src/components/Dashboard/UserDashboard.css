@@ -1,56 +1,58 @@
-.user-dashboard {
-  margin: 20px;
+.UserDashboard {
+  padding: 20px;
 }
 
 .provider-info {
-  border: 1px solid #ddd;
+  background-color: #f8f9fa; /* Light gray background */
+  border: 1px solid #ced4da; /* Light gray border */
+  border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
 }
 
-.provider-info h2,
+.provider-info h2 {
+  margin-bottom: 5px;
+}
+
 .provider-info h3 {
-  margin: 5px 0;
+  color: #007bff; /* Blue for title */
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
 
 .provider-info p {
-  margin: 10px 0;
+  margin-bottom: 15px;
 }
 
-.review-input,
-.rating-input,
-.add-review,
-button {
-  display: block;
-  margin-top: 10px;
-}
-
-.review-input,
-.rating-input {
-  padding: 5px;
-  width: 100%;
-}
-
-.add-review {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
+.provider-info .review-input,
+.provider-info .rating-input {
+  width: calc(50% - 10px); /* Adjust input width */
   padding: 10px;
-  cursor: pointer;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ced4da; /* Gray border */
+  border-radius: 4px;
 }
 
-.add-review:hover {
-  background-color: #45a049;
-}
-
-button {
-  background-color: #008CBA;
-  color: white;
+.provider-info .add-review {
+  background-color: #007bff; /* Blue button */
+  color: #fff;
   border: none;
-  padding: 10px;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #007B9A;
+.provider-info .add-review:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+.provider-info .review {
+  margin-bottom: 10px;
+}
+
+.provider-info .rating {
+  color: #ffc107; /* Yellow for rating */
+  font-weight: bold;
 }

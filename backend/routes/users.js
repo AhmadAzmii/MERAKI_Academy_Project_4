@@ -6,5 +6,5 @@ const usersRouter = express.Router()
 
 usersRouter.post("/register", register)
 usersRouter.post("/login", login)
-usersRouter.get("/",getAllUsers)
+usersRouter.get("/",getAllUsers)    
 module.exports = usersRouter

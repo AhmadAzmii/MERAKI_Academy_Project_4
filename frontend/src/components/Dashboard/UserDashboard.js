@@ -8,11 +8,28 @@ const UserDashboard = () => {
 
   const [providerInfo, setProviderInfo] = useState([]);
   const [userId, setUserId] = useState('');
-  const [isUpdated, setIsUpdated] = useState(false)
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState(0);
 
-  
+  const [categories, setCategories] = useState([]);
+  const [selectedSpecialist, setSelectedSpecialist] = useState('');
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/serviceCategory/");
+        if (response.data.success) {
+          setCategories(response.data.categories);
+        } else {
+          console.error("No categories found");
+        }
+      } catch (error) {
+        console.error("Error fetching service categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -24,12 +41,8 @@ const UserDashboard = () => {
   }, []);
 
   const getAllProvidersInfo = () => {
-    // const headers = {
-    //   Authorization: `Bearer ${token}`
-    // };
     axios.get("http://localhost:5000/providerInfo/")
       .then((result) => {
-
         setProviderInfo(result.data.providersInfo);
       })
       .catch((err) => {
@@ -47,14 +60,9 @@ const UserDashboard = () => {
     )
       .then((result) => {
         if (result.status === 201 && result.data.success) {
-          // console.log("New review added:", result.data.review); 
           setProviderInfo(providerInfo.map((post) =>
             postId === post._id ? { ...post, reviews: [...post.reviews, result.data.review] } : post
-
           ));
-          console.log("Provider info after adding review:", providerInfo);
-          
-     
         }
         setNewReview("");
         setRating(0);
@@ -64,41 +72,54 @@ const UserDashboard = () => {
       });
   };
 
+  const handleSpecialistChange = (e) => {
+    setSelectedSpecialist(e.target.value);
+  };
+
+  const filteredProviderInfo = selectedSpecialist
+    ? providerInfo.filter(post => post.specialist.name === selectedSpecialist)
+    : providerInfo;
+
   return (
     <div className='UserDashboard'>
       <h2>UserDashboard Component</h2>
-      {console.log(providerInfo)}
-      {providerInfo?.map((post) => (
+      <div>
+        <select onChange={handleSpecialistChange}>
+          <option value="">Select a specialist</option>
+          {providerInfo.map(post => (
+            <option key={post._id} value={post.specialist.name}>{post.specialist.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {filteredProviderInfo.map((post) => (
         <div key={post._id} className="provider-info">
           <h2>{post.author.userName}</h2>
           <h2>{post.specialist.name}</h2>
           <h3>{post.title}</h3>
           <p>{post.description}</p>
-          {post.reviews.map((review, i) => {
-            // console.log(review);
-            return (<div key={i}>
-              <h4>review:{review.review}</h4>
+          {post.reviews.map((review, i) => (
+            <div key={i}>
+              <h4>Review: {review.review}</h4>
               <p>Rating: {review.rating}</p>
-            </div>)
-
-          })}
+            </div>
+          ))}
           <input
             className="review-input"
             type="text"
-            placeholder="review..."
-            
+            placeholder="Review..."
+            value={newReview}
             onChange={(e) => setNewReview(e.target.value)}
           />
           <input
             className="rating-input"
             type="number"
-            placeholder="rating..."
-           
+            placeholder="Rating..."
+            value={rating}
             onChange={(e) => setRating(e.target.value)}
             min="0"
             max="5"
           />
-       
           <button className="add-review" onClick={() => handleReview(post._id)}>Add review</button>
         </div>
       ))}

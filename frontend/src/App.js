@@ -4,12 +4,13 @@ import "./App.css"
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Register from './components/User Components/Register'
 import './components/User Components/Register.css'
-import "./components/User Components/Register.css"
+
 import Login from './components/User Components/Login'
 import UserDashboard from './components/Dashboard/UserDashboard'
 import Navbar from './components/User Components/Navbar'
 import AdminDashboard from './components/Dashboard/AdminDashboard'
 import ProviderDashboard from './components/Dashboard/ProviderDashboard'
+import "./components/User Components/Login.css"
 export const UserContext = createContext()
 
 const App = () => {

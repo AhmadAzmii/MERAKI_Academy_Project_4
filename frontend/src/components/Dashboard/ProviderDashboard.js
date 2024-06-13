@@ -94,6 +94,7 @@ const ProviderDashboard = () => {
 
   return (
     <div className='ProviderDashboard'>
+      <div className='Provider-Info'>
       <h2 className="mb-4">Add Info</h2>
       <div className="form-group mb-3">
         <label>Title</label>
@@ -113,7 +114,7 @@ const ProviderDashboard = () => {
       </div>
       {message && <p className="text-danger">{message}</p>}
       <button className="btn" onClick={handleAddProviderInfo}>Create New Provider Information</button>
-
+      </div>
       <h2 className="mt-5">Provider Information</h2>
       {providerInfo?.map((info) => {
         const decodedToken = jwtDecode(token);

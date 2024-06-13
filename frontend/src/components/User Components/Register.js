@@ -17,6 +17,8 @@ const Register = () => {
     const [isSpecialist, setIsSpecialist] = useState(false);
     const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
+    const [confirmPassword, setConfirmPassword] = useState("")
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -39,6 +41,13 @@ const Register = () => {
     };
 
     const handleSubmit = async () => {
+        if(password !== confirmPassword){
+            setMessage("Passwords do not match");
+            setTimeout(() => setMessage(""), 3000);
+        }
+
+
+
         const formData = new FormData();
 
         formData.append('firstName', firstName);
@@ -76,7 +85,7 @@ const Register = () => {
             const registerResponse = await axios.post("http://localhost:5000/users/register", userData);
             setMessage(registerResponse.data.message);
         } catch (error) {
-            setMessage(error.response?.data?.message || "Registration failed");
+          console.log(error);
         }
     };
 
@@ -129,6 +138,10 @@ const Register = () => {
             <div>
                 <label>Password</label>
                 <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+            <div>
+                <label>Confirm Password</label>
+                <input type='password' value={confirmPassword} onChange={(e)=> setConfirmPassword(e.target.value)}/>
             </div>
             <div>
                 <label>Image</label>

@@ -90,7 +90,7 @@
     text-decoration: none;
 }
 
-button {
+.login-button {
     background: #007bff;
     border: none;
     border-radius: 5px;

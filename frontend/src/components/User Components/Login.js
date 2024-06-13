@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react';
 import { UserContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
-import './Login.css';
 
 function Login() {
     const { setToken, setIsLoggedIn, setIsAdmin } = useContext(UserContext);
@@ -65,6 +64,7 @@ function Login() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
+                            
                         </div>
                         <div className="form-group">
                             <input
@@ -77,7 +77,7 @@ function Login() {
                         <div className="forgot-password">
                             <a href="#!">Forgot password?</a>
                         </div>
-                        <button type="button" onClick={handleLogin}>Login</button>
+                        <button className='login-button' type="button" onClick={handleLogin}>Login</button>
                         <p className="register-link">
                             Don't have an account? <a onClick={() => navigate('/register')}>Register</a>
                         </p>

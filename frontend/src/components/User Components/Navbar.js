@@ -28,8 +28,7 @@ const Navbar = () => {
     return (
         <div className='navbar'>
             {console.log(userName)}
-            {!isLoggedIn && <Link to='/login'>Login</Link>}
-            {!isLoggedIn && <Link to='/register'>Register</Link>}
+            
             {isLoggedIn && isProvider && <Link to='/dashboard'>Dashboard</Link> }
             {isLoggedIn && isProvider && <Link to='/Provider-Dashboard'>Provider Dashboard</Link>}
             {isLoggedIn && <div> <div><h2>{userName}</h2></div> <div> <button onClick={handleLogout}>Logout</button></div></div>}

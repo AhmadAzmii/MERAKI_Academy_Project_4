@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect, createContext } from 'react';
 import './Register.css';
+import { useNavigate } from 'react-router-dom';
 export const UserInfoContext=createContext()
 const Register = () => {
     const [firstName, setFirstName] = useState("");
@@ -15,7 +16,7 @@ const Register = () => {
     const [message, setMessage] = useState("");
     const [isSpecialist, setIsSpecialist] = useState(false);
     const [categories, setCategories] = useState([]);
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -137,6 +138,10 @@ const Register = () => {
             <div>
                 <button onClick={handleSubmit}>Register</button>
             </div>
+            <h3>Already have an account? <a href="#!"
+                                    className="link-danger" onClick={() => {
+                                        navigate('/login')
+                                    }}>Login</a></h3>
             {message && <p>{message}</p>}
         </div>
         </UserInfoContext.Provider>

@@ -75,22 +75,23 @@ const UserDashboard = () => {
   const handleSpecialistChange = (e) => {
     setSelectedSpecialist(e.target.value);
   };
+  let filteredProviderInfo = providerInfo;
 
-  const filteredProviderInfo = selectedSpecialist
-    ? providerInfo.filter(post => post.specialist.name === selectedSpecialist)
-    : providerInfo;
+  if (selectedSpecialist) {
+    filteredProviderInfo = providerInfo.filter(post => post.specialist.name === selectedSpecialist);
+  }
 
   return (
     <div className='UserDashboard'>
       <h2>UserDashboard Component</h2>
-      <div>
-        <select onChange={handleSpecialistChange}>
-          <option value="">Select a specialist</option>
-          {providerInfo.map(post => (
-            <option key={post._id} value={post.specialist.name}>{post.specialist.name}</option>
-          ))}
-        </select>
-      </div>
+      <div class="select-container">
+  <select class="custom-select" onChange={handleSpecialistChange}>
+    <option value="">All Posts</option>
+    {providerInfo.map(post => (
+      <option key={post._id} value={post.specialist.name}>{post.specialist.name}</option>
+    ))}
+  </select>
+</div>
 
       {filteredProviderInfo.map((post) => (
         <div key={post._id} className="provider-info">

@@ -1,6 +1,9 @@
 const usersModel = require("../models/users")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require('google-auth-library');
+
+const client = new OAuth2Client("562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com");
 
 const register = async (req, res) => {
     let role = '6664b711c97330a23805e283'; 
@@ -137,5 +140,36 @@ const getAllUsers=(req,res)=>{
     })
 }
 
+const googleLogin= async (req, res) => {
+    const { token } = req.body;
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com"
+        });
+        const payload = ticket.getPayload();
+        const email =payload.email.toLowerCase()
 
-module.exports = { register, login ,getAllUsers}
+         console.log(payload);
+         const jwtPayload= { 
+            user:payload.given_name+""+payload.family_name,
+            firstName:payload.given_name,
+            lastName:payload.family_name,
+            userId: payload.sub, 
+            email: payload.email,role:role="6664b711c97330a23805e283" ,
+            specialist:specialist=null}
+        const appToken = jwt.sign(jwtPayload
+           ,
+            process.env.SECRET,
+            { expiresIn: '1h' }
+        );
+        // console.log(appToken);
+
+        res.status(200).json({ token: appToken });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Failed to authenticate Google token' });
+    }
+};
+
+module.exports = { register, login ,getAllUsers,googleLogin}

@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect, createContext } from 'react';
 import './Register.css';
 import { useNavigate } from 'react-router-dom';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+
 export const UserInfoContext=createContext()
 const Register = () => {
     const [firstName, setFirstName] = useState("");
@@ -42,67 +42,49 @@ const Register = () => {
     };
 
     const handleSubmit = async () => {
+
         if(password !== confirmPassword){
             setMessage("Passwords do not match");
             setTimeout(() => setMessage(""), 3000);
         }
-        const formData = new FormData();
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onloadend = async () => {
+            const image = reader.result;
 
-        // formData.append('firstName', firstName);
-        // formData.append('lastName', lastName);
-        // formData.append('email', email);
-        // formData.append('password', password);
-        // formData.append('phoneNumber', phoneNumber);
-        // formData.append('userName', userName);
-        // formData.append('age', age);
-        // formData.append('specialist', isSpecialist ? specialist : '');
-        formData.append('image', image);
-        formData.append("upload_preset", "tutorial")
-        formData.append("cloud_name","breellz")
-        try {
-            const response = await fetch("https://api.cloudinary.com/v1_1/breellz/image/upload", {
-                method: "POST",
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            const imageUrl = data.url;
-           console.log(imageUrl);
             const userData = {
                 firstName,
                 lastName,
                 email,
                 password,
                 phoneNumber,
+                image: image,
                 userName,
+              
                 age,
-                image: imageUrl,
-                specialist: isSpecialist ? specialist : null,
+                specialist: isSpecialist ? specialist : null
             };
-        }catch(err){
-            console.log(err);
-        }}
-            // const registerResponse = await axios.post("http://localhost:5000/users/register", userData);
-            // setMessage(registerResponse.data.message);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    // };
 
+            try {
+                const response = await axios.post("http://localhost:5000/users/register", userData);
+                setMessage(response.data.message);
+                setTimeout(() => setMessage(""), 3000);
+            } catch (error) {
+                setMessage(error.response?.data?.message || "Registration failed");
+                setTimeout(() => setMessage(""), 3000);
+            }
+        };
+        reader.onerror = () => {
+            setMessage("Failed to read the image file");
+            setTimeout(() => setMessage(""), 3000);
+        };
+    };
     return (
    
         <UserInfoContext.Provider value={{image, setImage,
             userName, setUserName}}>
                
-                <GoogleLogin
-                  onSuccess={credentialResponse => {
-                    console.log(credentialResponse);
-                  }}
-                  onError={() => {
-                    console.log('Login Failed');
-                  }}
-                  />
+             
                
         <div className="register-container">
             <h3>Registration</h3>

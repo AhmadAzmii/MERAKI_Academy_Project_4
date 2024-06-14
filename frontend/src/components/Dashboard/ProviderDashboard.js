@@ -11,7 +11,7 @@ const ProviderDashboard = () => {
   const [message, setMessage] = useState("");
   const [experience, setExperience] = useState("");
   const [availability, setAvailability] = useState("");
-  const [userName, setUserName] = useState("");
+  // const [userName, setUserName] = useState("");
   const [providerInfo, setProviderInfo] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
 
@@ -19,7 +19,7 @@ const ProviderDashboard = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-      setUserName(decodedToken.userName);
+     
 
       axios.get(`http://localhost:5000/providerInfo/author/${userId}`, {
         headers: {
@@ -43,7 +43,7 @@ const ProviderDashboard = () => {
     axios.post("http://localhost:5000/providerInfo/", { title, description, availability, experience, specialist }, { headers })
       .then((result) => {
         setMessage(result.data.message);
-
+        setTimeout(() => setMessage(""), 3000);
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userId;
         axios.get(`http://localhost:5000/providerInfo/author/${userId}`, { headers })
@@ -53,10 +53,12 @@ const ProviderDashboard = () => {
           .catch((err) => {
             console.error(err);
             setMessage(err.response?.data?.message || "Error fetching provider information");
+            setTimeout(() => setMessage(""), 3000);
           });
       })
       .catch((err) => {
         setMessage(err.response?.data?.message || "Error adding provider information");
+        setTimeout(() => setMessage(""), 3000);
       });
   }
 

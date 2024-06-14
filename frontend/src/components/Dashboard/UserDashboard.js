@@ -11,25 +11,25 @@ const UserDashboard = () => {
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState(0);
 
-  const [categories, setCategories] = useState([]);
+  // const [categories, setCategories] = useState([]);
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/serviceCategory/");
-        if (response.data.success) {
-          setCategories(response.data.categories);
-        } else {
-          console.error("No categories found");
-        }
-      } catch (error) {
-        console.error("Error fetching service categories:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:5000/serviceCategory/");
+  //       if (response.data.success) {
+  //         setCategories(response.data.categories);
+  //       } else {
+  //         console.error("No categories found");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching service categories:", error);
+  //     }
+  //   };
 
-    fetchCategories();
-  }, []);
+  //   fetchCategories();
+  // }, []);
 
   useEffect(() => {
     if (token) {
@@ -38,7 +38,7 @@ const UserDashboard = () => {
       setUserId(userId);
       getAllProvidersInfo();
     }
-  }, []);
+  }, [token]);
 
   const getAllProvidersInfo = () => {
     axios.get("http://localhost:5000/providerInfo/")
@@ -83,7 +83,7 @@ const UserDashboard = () => {
 
   return (
     <div className='UserDashboard'>
-      <h2>UserDashboard Component</h2>
+      <h2>UserDashboard </h2>
       <div class="select-container">
   <select class="custom-select" onChange={handleSpecialistChange}>
     <option value="">All Posts</option>

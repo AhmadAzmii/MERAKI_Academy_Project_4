@@ -1,21 +1,15 @@
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const token = localStorage.getItem("token");
   const [users, setUsers] = useState([]);
-  const [userId, setUserId] = useState('');
-
   useEffect(() => {
     if (token) {
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken.userId;
-      setUserId(userId);
       getAllUsers();
     }
-  }, []);
+  }, [token]);
 
   const getAllUsers = () => {
     axios.get("http://localhost:5000/users/")

@@ -3,10 +3,11 @@ import { UserContext } from '../../App'
 import { useNavigate, Link } from 'react-router-dom'
 import "./Navbar.css"
 import { jwtDecode } from 'jwt-decode'
-
+import { GoogleLogout } from 'react-google-login'
+const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 const Navbar = () => {
     // const token=localStorage.getItem("token")
-    const { isLoggedIn, setIsLoggedIn, setToken,isAdmin ,isProvider,token } = useContext(UserContext)
+    const { isLoggedIn, setIsLoggedIn, setToken ,isProvider,token ,isLoggedInWithGoogle,  } = useContext(UserContext)
     const [userName, setUserName] = useState("")
     const navigate = useNavigate()
     
@@ -25,14 +26,22 @@ const Navbar = () => {
         localStorage.clear()
         navigate('/login')
     }
-
+//    const onSuccess =()=>{
+//     console.log();
+//    }
     return (
         <div className='navbar'>
             {console.log(userName)}
             
             {isLoggedIn && isProvider && <Link to='/dashboard'>Dashboard</Link> }
             {isLoggedIn && isProvider && <Link to='/Provider-Dashboard'>Provider Dashboard</Link>}
-            {isLoggedIn && <div> <div><h2>{userName}</h2></div> <div> <button onClick={handleLogout}>Logout</button></div></div>}
+            {isLoggedIn && !isLoggedInWithGoogle &&<div> <div><h2>{userName}</h2></div> <div> <button onClick={handleLogout}>Logout</button></div></div>}
+           {isLoggedIn && isLoggedInWithGoogle && <div> <div><h2>{userName}</h2></div>  <GoogleLogout
+            clientId={clientId}
+            buttonText={"Logout"}
+            onLogoutSuccess={handleLogout}
+            />
+            </div>}
         </div>
     )
 }

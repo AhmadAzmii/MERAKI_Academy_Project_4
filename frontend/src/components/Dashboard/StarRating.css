@@ -1,0 +1,17 @@
+/* StarRating.css */
+.star-rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .star {
+    font-size: 2rem;
+    cursor: pointer;
+    color: #d3d3d3; /* Default star color */
+  }
+  
+  .star.filled {
+    color: #ffd700; /* Filled star color */
+  }
+      

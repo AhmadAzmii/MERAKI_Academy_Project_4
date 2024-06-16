@@ -1,6 +1,17 @@
 import axios from 'axios';
 import React, { useState, useEffect, createContext } from 'react';
 import './Register.css';
+import {
+    MDBContainer,
+    MDBRow,
+    MDBCol,
+    MDBCard,
+    MDBCardBody,
+    MDBInput,
+    MDBCheckbox,
+    MDBBtn,
+    MDBFile
+  } from 'mdb-react-ui-kit';
 import { useNavigate } from 'react-router-dom';
 
 export const UserInfoContext=createContext()
@@ -80,80 +91,138 @@ const Register = () => {
         };
     };
     return (
-   
-        <UserInfoContext.Provider value={{image, setImage,
-            userName, setUserName}}>
-               
-             
-               
-        <div className="register-container">
-            <h3>Registration</h3>
-            <div>
-                <label>First Name</label>
-                <input type='text' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            </div>
-            <div>
-                <label>Last Name</label>
-                <input type='text' value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            </div>
-            <div>
-                <label>Age</label>
-                <input type='number' value={age} onChange={(e) => setAge(e.target.value)} />
-            </div>
-            <div>
-                <label>Phone Number</label>
-                <input type='text' value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-            </div>
-            <div>
-                <label>User Name</label>
-                <input type='text' value={userName} onChange={(e) => setUserName(e.target.value)} />
-            </div>
-            <div>
-                <label>
-                    <input type='checkbox' checked={isSpecialist} onChange={(e) => setIsSpecialist(e.target.checked)} />
-                    Are you a specialist?
-                </label>
-            </div>
-            {isSpecialist && (
-                <div>
-                    <label>Specialty</label>
-                    <select value={specialist} onChange={(e) => setSpecialist(e.target.value)}>
-                        <option value="">Select a specialty</option>
-                        {categories.map((category) => (
+        <UserInfoContext.Provider value={{ image, setImage, userName, setUserName }}>
+          <MDBContainer className="d-flex align-items-center justify-content-center min-vh-100">
+            <MDBCard style={{ maxWidth: '900px', width: '100%', backgroundColor: '#e3f2fd' }}>
+              <MDBCardBody>
+                <h3 className="text-center mb-4">Registration</h3>
+                <MDBRow>
+                  <MDBCol md="6">
+                    <div className="mb-3">
+                      <label htmlFor="firstName" className="form-label">First Name</label>
+                      <MDBInput
+                        id="firstName"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="lastName" className="form-label">Last Name</label>
+                      <MDBInput
+                        id="lastName"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="age" className="form-label">Age</label>
+                      <MDBInput
+                        id="age"
+                        type="number"
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="phoneNumber" className="form-label">Phone Number</label>
+                      <MDBInput
+                        id="phoneNumber"
+                        type="text"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="userName" className="form-label">User Name</label>
+                      <MDBInput
+                        id="userName"
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <MDBCheckbox
+                        name="isSpecialist"
+                        id="isSpecialist"
+                        label="Are you a specialist?"
+                        checked={isSpecialist}
+                        onChange={(e) => setIsSpecialist(e.target.checked)}
+                      />
+                    </div>
+                    {isSpecialist && (
+                      <div className="mb-3">
+                        <label htmlFor="specialist" className="form-label">Specialty</label>
+                        <select
+                          id="specialist"
+                          className="form-select"
+                          value={specialist}
+                          onChange={(e) => setSpecialist(e.target.value)}
+                        >
+                          <option value="">Select a specialty</option>
+                          {categories.map((category) => (
                             <option key={category._id} value={category._id}>{category.name}</option>
-                        ))}
-                    </select>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </MDBCol>
+                  <MDBCol md="6">
+                    <div className="mb-3">
+                      <label htmlFor="email" className="form-label">Email</label>
+                      <MDBInput
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="password" className="form-label">Password</label>
+                      <MDBInput
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                      <MDBInput
+                        id="confirmPassword"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="image" className="form-label">Image</label>
+                      <MDBFile
+                        id="image"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                  </MDBCol>
+                </MDBRow>
+                <MDBBtn className="w-100 mb-3" onClick={handleSubmit}>
+                  Register
+                </MDBBtn>
+                <div className="text-center">
+                <p className="text-center mt-3">
+                    Already have an account? <a href="#!" className="text-decoration-none"onClick={() => navigate('/login')}>
+                      Login
+                    </a>
+                  </p>
                 </div>
-            )}
-            <div>
-                <label>Email</label>
-                <input type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div>
-                <label>Password</label>
-                <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
-            </div>
-            <div>
-                <label>Confirm Password</label>
-                <input type='password' value={confirmPassword} onChange={(e)=> setConfirmPassword(e.target.value)}/>
-            </div>
-            <div>
-                <label>Image</label>
-                <input type='file' onChange={handleFileChange} />
-            </div>
-            
-            <div>
-                <button onClick={handleSubmit}>Register</button>
-            </div>
-            <h3>Already have an account? <a href="#!"
-                                    className="link-danger" onClick={() => {
-                                        navigate('/login')
-                                    }}>Login</a></h3>
-            {message && <p>{message}</p>}
-        </div>
+                {message && <p className="text-center text-danger mt-3">{message}</p>}
+              </MDBCardBody>
+            </MDBCard>
+          </MDBContainer>
         </UserInfoContext.Provider>
-      
-    );
+      );
+
 };
 
 export default Register;

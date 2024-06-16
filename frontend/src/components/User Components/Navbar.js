@@ -9,6 +9,7 @@ const Navbar = () => {
     // const token=localStorage.getItem("token")
     const { isLoggedIn, setIsLoggedIn, setToken ,isProvider,token ,isLoggedInWithGoogle,  } = useContext(UserContext)
     const [userName, setUserName] = useState("")
+    const [image, setImage] = useState("")
     const navigate = useNavigate()
     
     useEffect(()=>{
@@ -17,7 +18,8 @@ const Navbar = () => {
             const decodedToken=jwtDecode(token)
             const userName=decodedToken.user
             setUserName(userName)
-            
+            const image=decodedToken.image
+            setImage(image)
         }
     },[token])
     const handleLogout = () => {
@@ -36,7 +38,7 @@ const Navbar = () => {
             {isLoggedIn && isProvider && <Link to='/dashboard'>Dashboard</Link> }
             {isLoggedIn && isProvider && <Link to='/Provider-Dashboard'>Provider Dashboard</Link>}
             {isLoggedIn && !isLoggedInWithGoogle &&<div> <div><h2>{userName}</h2></div> <div> <button onClick={handleLogout}>Logout</button></div></div>}
-           {isLoggedIn && isLoggedInWithGoogle && <div> <div><h2>{userName}</h2></div>  <GoogleLogout
+           {isLoggedIn && isLoggedInWithGoogle && <div> <div><h2>{userName}</h2><img src={image} alt='Sample'/></div>  <GoogleLogout
             clientId={clientId}
             buttonText={"Logout"}
             onLogoutSuccess={handleLogout}

@@ -1,5 +1,6 @@
-import React, { createContext,useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { createContext, useEffect, useState } from 'react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import "./App.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -12,6 +13,7 @@ import AdminDashboard from './components/Dashboard/AdminDashboard';
 import ProviderDashboard from './components/Dashboard/ProviderDashboard';
 import "./components/User Components/Login.css";
 import { gapi } from 'gapi-script';
+
 export const UserContext = createContext();
 const clientId="562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com"
 
@@ -21,36 +23,61 @@ const App = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isProvider, setIsProvider] = useState(false);
     const [isLoggedInWithGoogle, setIsLoggedInWithGoogle] = useState(!!token)
-     
-    useEffect(()=>{
-        function start(){
+    const navigate = useNavigate();
+    const location = useLocation();
+    useEffect(() => {
+        function start() {
             gapi.client.init({
-                clientId:clientId,
-                scope:""
+                clientId: clientId,
+                scope: ""
             })
         }
-        gapi.load('client:auth2',start)
+        gapi.load('client:auth2', start)
     })
 
+    useEffect(() => {
+        if (!isLoggedIn && !['/login', '/register'].includes(window.location.pathname)) {
+            navigate('/login');
+        }
+    }, [isLoggedIn, navigate]);
+
+    
+    // useEffect(() => {
+    //     navigate('/login');
+    // }, [navigate]);
+
+    
+
+    
+    const shouldDisplayNavbar = !(location.pathname === '/login' || location.pathname === '/register');
 
     return (
-     
-
-            <div className="App">
-                <header className="App-header">
-                    <UserContext.Provider value={{ isLoggedInWithGoogle, setIsLoggedInWithGoogle,setToken, token, isLoggedIn, setIsLoggedIn, isAdmin, setIsAdmin, isProvider, setIsProvider }}>
-                        <Navbar />
-                        <Routes>
-                            <Route path='/login' element={<Login />} />
-                            <Route path='/register' element={<Register />} />
-                            <Route path='/dashboard' element={<UserDashboard />} />
-                            <Route path='/admin-dashboard' element={<AdminDashboard />} />
-                            <Route path='/Provider-Dashboard' element={<ProviderDashboard />} />
-                        </Routes>
-                    </UserContext.Provider>
-                </header>
-            </div>
-      
+        <div className="App">
+            <header className="App-header">
+                <UserContext.Provider value={{ 
+                    isLoggedInWithGoogle, 
+                    setIsLoggedInWithGoogle,
+                    setToken, 
+                    token, 
+                    isLoggedIn, 
+                    setIsLoggedIn, 
+                    isAdmin, 
+                    setIsAdmin, 
+                    isProvider, 
+                    setIsProvider 
+                }}>
+                    
+                    {shouldDisplayNavbar && <Navbar />}
+                    <Routes>
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/register' element={<Register />} />
+                        <Route path='/dashboard' element={<UserDashboard />} />
+                        <Route path='/admin-dashboard' element={<AdminDashboard />} />
+                        <Route path='/provider-dashboard' element={<ProviderDashboard />} />
+                    </Routes>
+                </UserContext.Provider>
+            </header>
+        </div>
     );
 }
 

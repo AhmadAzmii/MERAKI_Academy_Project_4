@@ -4,6 +4,7 @@ import { UserContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode'; // Corrected import
 import { GoogleLogin } from 'react-google-login';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
@@ -83,57 +84,63 @@ function Login() {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-image">
-                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" />
+        <div className="container d-flex align-items-center justify-content-center min-vh-100">
+            <div className="card p-4" style={{ maxWidth: '400px', width: '100%' }}>
+                <div className="text-center mb-4">
+                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" className="img-fluid" />
                 </div>
-                <div className="login-form">
-                    <h2>Sign in with</h2>
-                    <div className="social-login-buttons">
-                        <GoogleLogin
-                            clientId={clientId}
-                            cookiePolicy={'single_host_origin'}
-                            onSuccess={handleGoogleLoginSuccess}
-                            onFailure={() => {
-                                console.log('Login Failed');
-                                setMessage('Google login failed');
-                                setTimeout(() => setMessage(""), 3000);
-                            }}
-                            isSignedIn={true}
+                <h2 className="text-center mb-3">Sign in with</h2>
+                <div className="d-flex justify-content-center mb-3">
+                    <GoogleLogin
+                        clientId={clientId}
+                        cookiePolicy={'single_host_origin'}
+                        onSuccess={handleGoogleLoginSuccess}
+                        onFailure={() => {
+                            console.log('Login Failed');
+                            setMessage('Google login failed');
+                            setTimeout(() => setMessage(""), 3000);
+                        }}
+                        isSignedIn={true}
+                        className="btn btn-outline-primary w-100"
+                    />
+                </div>
+                <div className="d-flex align-items-center mb-4">
+                    <hr className="flex-grow-1" />
+                    <span className="px-2">Or</span>
+                    <hr className="flex-grow-1" />
+                </div>
+                <form>
+                    <div className="form-group mb-3">
+                        <input
+                            type="email"
+                            className="form-control"
+                            placeholder="Email address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
-                    <div className="divider">Or</div>
-                    <form>
-                        <div className="form-group">
-                            <input
-                                type="email"
-                                placeholder="Email address"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <div className="forgot-password">
-                            <a href="#!">Forgot password?</a>
-                        </div>
-                        <button className='login-button' type="button" onClick={handleLogin}>Login</button>
-                        <p className="register-link">
-                            Don't have an account? <a href="#!" onClick={() => navigate('/register')}>Register</a>
-                        </p>
-                    </form>
-                    {message && <p className="error-message">{message}</p>}
-                </div>
+                    <div className="form-group mb-3">
+                        <input
+                            type="password"
+                            className="form-control"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="text-end mb-3">
+                        <a href="#!" className="text-decoration-none">Forgot password?</a>
+                    </div>
+                    <button className='btn btn-primary w-100' type="button" onClick={handleLogin}>Login</button>
+                </form>
+                <p className="text-center mt-3">
+                    Don't have an account? <a href="#!" className="text-decoration-none" onClick={() => navigate('/register')}>Register</a>
+                </p>
+                {message && <p className="text-center text-danger mt-3">{message}</p>}
             </div>
         </div>
     );
+
 }
 
 export default Login;

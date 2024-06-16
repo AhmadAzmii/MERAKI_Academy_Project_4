@@ -3,7 +3,30 @@
     color: #fff;
     padding: 10px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center; 
+    flex-direction: row-reverse;
+}
+.navbar button {
+    background-color: transparent !important;
+    color: #fff !important;
+    border: none !important;
+    cursor: pointer !important;
+    margin-left: 10px !important;
+    padding: 8px 16px !important; /* Adjust padding as needed */
+    font-size: 14px !important; /* Adjust font size as needed */
+    border-radius: 4px !important; /* Rounded corners */
+    border: 1px solid #fff !important; /* White border */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+
+    /* Optional: Hover effect */
+}
+
+.navbar button:hover {
+    background-color: #fff !important; /* White background on hover */
+    color: #333 !important; /* Dark text on hover */
+    border-color: #fff !important;  /* White border on hover */
+    text-decoration: none !important; /* Remove underline on hover if needed */
 }
 
 .navbar a {
@@ -23,4 +46,18 @@
 .navbar button:hover,
 .navbar a:hover {
     text-decoration: underline;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center; 
+}
+
+.avatar-container {
+    margin-left: 10px; 
+}
+
+.avatar-image {
+ 
+    border-radius: 50%; 
 }

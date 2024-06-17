@@ -12,4 +12,4 @@ usersRouter.post("/login", login)
 usersRouter.get("/",getAllUsers)
 
 usersRouter.post('/google-login',googleLogin)
-module.exports = usersRouter
+module.exports = usersRouter    

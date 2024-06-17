@@ -44,3 +44,60 @@ a{
 a:hover{
   text-decoration: none;
 }
+#topbar {
+  background-color: #343a40;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+
+#sidebar {
+  width: 250px;
+  background-color: #343a40;
+  padding: 15px;
+  color: #fff;
+}
+
+#sidebar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#sidebar ul.components {
+  padding: 0;
+}
+
+#sidebar ul li {
+  padding: 10px;
+  font-size: 1.1rem;
+  list-style: none;
+}
+
+#sidebar ul li a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+}
+
+#sidebar ul li a:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+#content {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.table-responsive {
+  margin-top: 20px;
+}
+
+.table thead {
+  background-color: #343a40;
+  color: #fff;
+}

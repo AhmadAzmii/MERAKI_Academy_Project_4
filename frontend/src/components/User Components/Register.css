@@ -1,55 +1,41 @@
-/* .register-container {
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
 }
 
-.register-container h3 {
+.register-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.form-left {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-left .form-select,
+.form-left .specialist-checkbox,
+.form-left .w-100,
+.form-left .text-center {
+  grid-column: span 2;
+}
+
+.form-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.specialist-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.text-danger {
   text-align: center;
-  margin-bottom: 20px;
 }
-
-.register-container label {
-  font-weight: bold;
-}
-
-.register-container input[type='text'],
-.register-container input[type='number'],
-.register-container input[type='email'],
-.register-container input[type='password'],
-.register-container input[type='file'],
-.register-container select {
-  width: calc(100% - 12px);
-  padding: 8px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.register-container input[type='checkbox'] {
-  margin-right: 8px;
-}
-
-.register-container button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.register-container button:hover {
-  background-color: #0056b3;
-}
-
-.register-container p {
-  margin-top: 10px;
-  color: #dc3545;
-  font-size: 14px;
-} */

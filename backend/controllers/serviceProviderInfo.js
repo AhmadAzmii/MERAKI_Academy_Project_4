@@ -153,7 +153,7 @@ const getProviderInfoByAuthorId = (req, res) => {
             } else {
                 res.status(404).json({
                     success: false,
-                    message: `No service provider information found for author ${authorId}`,
+                    message: `No service provider information found for  `,
                 });
             }
         })

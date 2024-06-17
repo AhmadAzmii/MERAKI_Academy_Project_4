@@ -89,7 +89,7 @@ const AdminDashboard = () => {
     labels: ['January', 'February', 'March', 'April', 'May'],
     datasets: [
       {
-        label: 'Revenue',
+        label: 'Orders',
         data: [85, 69, 90, 91, 76],
         fill: false,
         backgroundColor: 'rgba(75,192,192,0.4)',
@@ -99,7 +99,7 @@ const AdminDashboard = () => {
   };
 
   const pieData = {
-    labels: ['Red', 'Blue', 'Yellow'],
+    labels: ['Amman', 'Irbid', 'Aqaba'],
     datasets: [
       {
         label: 'Population',
@@ -109,6 +109,16 @@ const AdminDashboard = () => {
       },
     ],
   };
+
+  const doughnutData={
+    labels:["Oil Change","Tire Replacement","Engine Repair"],
+    datasets:[{
+      label: 'Population',
+        data: [200, 50, 100],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+    }]
+  }
 
   return (
     <div className="d-flex flex-column">
@@ -197,22 +207,22 @@ const AdminDashboard = () => {
               <h2>Charts</h2>
               <div className="row">
                 <div className="col-md-6">
-                  <h3>Bar Chart</h3>
+                  <h3>Sales Chart</h3>
                   <Bar data={barData} />
                 </div>
                 <div className="col-md-6">
-                  <h3>Line Chart</h3>
+                  <h3>Orders Chart</h3>
                   <Line data={lineData} />
                 </div>
               </div>
               <div className="row mt-4">
                 <div className="col-md-6">
-                  <h3>Pie Chart</h3>
+                  <h3>Location Chart</h3>
                   <Pie data={pieData} />
                 </div>
                 <div className="col-md-6">
-                  <h3>Doughnut Chart</h3>
-                  <Doughnut data={pieData} />
+                  <h3>Services Chart</h3>
+                  <Doughnut data={doughnutData} />
                 </div>
               </div>
             </>

@@ -37,3 +37,10 @@
 .logo{
   color: black;
 }
+a{
+  text-decoration: none;
+}
+
+a:hover{
+  text-decoration: none;
+}

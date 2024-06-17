@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
+import { UserContext } from '../../App';
 import {jwtDecode} from 'jwt-decode';
 import StarRating from './StarRating';
 import './UserDashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
-  const token = localStorage.getItem("token");
-
+  const { token, isLoggedIn } = useContext(UserContext);
+  const navigate = useNavigate();
   const [providerInfo, setProviderInfo] = useState([]);
   const [userId, setUserId] = useState('');
   const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState(0);
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
       setUserId(userId);
-      getAllProvidersInfo();
     }
+    getAllProvidersInfo();
   }, [token]);
 
   const getAllProvidersInfo = () => {
@@ -33,6 +36,11 @@ const UserDashboard = () => {
   };
 
   const handleReview = (postId) => {
+    if (!isLoggedIn) {
+      setShowLoginPopup(true);
+      return;
+    }
+
     const headers = {
       Authorization: `Bearer ${token}`
     };
@@ -43,18 +51,18 @@ const UserDashboard = () => {
       { review: newReview, rating, customer: userId },
       { headers }
     )
-    .then((result) => {
-      if (result.status === 201 && result.data.success) {
-        setProviderInfo(providerInfo.map((post) =>
-          postId === post._id ? { ...post, reviews: [...post.reviews, result.data.review] } : post
-        ));
-      }
-      setNewReview("");
-      setRating(0);
-    })
-    .catch((err) => {
-      console.error("Error adding review:", err);
-    });
+      .then((result) => {
+        if (result.status === 201 && result.data.success) {
+          setProviderInfo(providerInfo.map((post) =>
+            postId === post._id ? { ...post, reviews: [...post.reviews, result.data.review] } : post
+          ));
+        }
+        setNewReview("");
+        setRating(0);
+      })
+      .catch((err) => {
+        console.error("Error adding review:", err);
+      });
   };
 
   const handleSpecialistChange = (e) => {
@@ -115,6 +123,15 @@ const UserDashboard = () => {
           </div>
         ))}
       </div>
+
+      {showLoginPopup && (
+        <div className="login-popup">
+          <div className="popup-content">
+            <p>You need to login first to perform this action.</p>
+            <button className="btn btn-primary" onClick={() => navigate('/login')}>Login</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

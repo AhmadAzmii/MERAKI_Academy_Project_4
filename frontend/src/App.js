@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import "./App.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Register from './components/User Components/Register';
@@ -25,50 +24,44 @@ const App = () => {
     const [isLoggedInWithGoogle, setIsLoggedInWithGoogle] = useState(!!token)
     const navigate = useNavigate();
     const location = useLocation();
+
     useEffect(() => {
         function start() {
             gapi.client.init({
                 clientId: clientId,
                 scope: ""
-            })
+            });
         }
-        gapi.load('client:auth2', start)
-    })
+        gapi.load('client:auth2', start);
+    }, []);
+
+
+
+    const shouldDisplayNavbar = !(location.pathname === '/login' || location.pathname === '/register' || location.pathname==='/admin-dashboard');
 
     useEffect(() => {
-        if (!isLoggedIn && !['/login', '/register'].includes(window.location.pathname)) {
-            navigate('/login');
+        if (!isLoggedIn && shouldDisplayNavbar) {
+            navigate('/dashboard');
         }
-    }, [isLoggedIn, navigate]);
-
-    
-    // useEffect(() => {
-    //     navigate('/login');
-    // }, [navigate]);
-
-    
-
-    
-    const shouldDisplayNavbar = !(location.pathname === '/login' || location.pathname === '/register');
-
+    }, [isLoggedIn, navigate,shouldDisplayNavbar]);
     return (
         <div className="App">
             <header className="App-header">
-                <UserContext.Provider value={{ 
-                    isLoggedInWithGoogle, 
+                <UserContext.Provider value={{
+                    isLoggedInWithGoogle,
                     setIsLoggedInWithGoogle,
-                    setToken, 
-                    token, 
-                    isLoggedIn, 
-                    setIsLoggedIn, 
-                    isAdmin, 
-                    setIsAdmin, 
-                    isProvider, 
-                    setIsProvider 
+                    setToken,
+                    token,
+                    isLoggedIn,
+                    setIsLoggedIn,
+                    isAdmin,
+                    setIsAdmin,
+                    isProvider,
+                    setIsProvider
                 }}>
-                    
                     {shouldDisplayNavbar && <Navbar />}
                     <Routes>
+                        <Route path='/' element={<UserDashboard />} />
                         <Route path='/login' element={<Login />} />
                         <Route path='/register' element={<Register />} />
                         <Route path='/dashboard' element={<UserDashboard />} />

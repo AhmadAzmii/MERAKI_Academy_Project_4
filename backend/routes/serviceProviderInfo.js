@@ -11,10 +11,10 @@ const providerInfoRouter = express.Router()
 
 providerInfoRouter.get("/author/:authorId", getProviderInfoByAuthorId);
 
-providerInfoRouter.post("/", authentication, authorization("CREATE_POSTS"), createNewProviderInfo)
+providerInfoRouter.post("/", authentication, authorization("CREATE_POSTS","everything"), createNewProviderInfo)
 providerInfoRouter.get("/", getAllProvidersInfo)
 providerInfoRouter.get("/:id", getProviderInfoById)
 providerInfoRouter.put("/:id", updateProviderInfoById)
 providerInfoRouter.delete("/:id", deleteProviderInfoById)
-providerInfoRouter.post("/:id/reviews", authentication, authorization("CREATE_REVIEWS"), createNewReview)
+providerInfoRouter.post("/:id/reviews", authentication, authorization("CREATE_REVIEWS","everything"), createNewReview)
 module.exports = providerInfoRouter

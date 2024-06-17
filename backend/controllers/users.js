@@ -181,4 +181,30 @@ const googleLogin = async (req, res) => {
     }
 };
 
-module.exports = { register, login ,getAllUsers,googleLogin}
+const deleteUserById= (req,res)=>{
+    const {id}=req.params
+    usersModel
+    .findOneAndDelete({_id:id})
+    .then((result)=>{
+        if (!result) {
+            return res.status(404).json({
+                success: false,
+                message: `user with id => ${id} not found`,
+            });
+        } else {
+            res.status(200).json({
+                success: true,
+                message: `user deleted`,
+            });
+        }
+    })
+    .catch((err)=>{
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+            err: err.message
+        })
+    })
+}
+
+module.exports = { register, login ,getAllUsers,googleLogin,deleteUserById}

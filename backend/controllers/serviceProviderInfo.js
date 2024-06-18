@@ -28,7 +28,7 @@ const userId = req.token.userId
 const getAllProvidersInfo = (req, res) => {
     providerInfoModel
         .find()
-        .populate("author","userName")
+        .populate("author")
         .populate("reviews") 
         .populate("specialist")
         .then((result) => {

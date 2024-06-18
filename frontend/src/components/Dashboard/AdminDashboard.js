@@ -311,7 +311,7 @@ const AdminDashboard = () => {
                         <td>{user.email}</td>
                         <td>{user.role.role}</td>
                         <td>{user.specialist?.name}</td>
-                        <td>{user.role.permissions}</td>
+                        <td>{user.role.permissions?.join(", ")}</td>
                         <td>
                           <button
                             onClick={() => handleUpdate(user._id)}

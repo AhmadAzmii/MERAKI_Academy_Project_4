@@ -20,6 +20,7 @@ const Navbar = () => {
             setUserName(userName);
             const image = decodedToken.image;
             setImage(image);
+            console.log(userName);
         }
     }, [token]);
 

@@ -4,11 +4,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import "./Navbar.css";
 import { jwtDecode } from 'jwt-decode';
 import { GoogleLogout } from 'react-google-login';
+import axios from 'axios';
 
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
 const Navbar = () => {
     const { isLoggedIn, setIsLoggedIn, setToken, isProvider, token, isLoggedInWithGoogle } = useContext(UserContext);
+   
     const [userName, setUserName] = useState("");
     const [image, setImage] = useState("");
     const navigate = useNavigate();
@@ -18,12 +20,21 @@ const Navbar = () => {
             const decodedToken = jwtDecode(token);
             const userName = decodedToken.user;
             setUserName(userName);
-            const image = decodedToken.image;
-            setImage(image);
-            console.log(userName);
+            const userId=decodedToken.userId
+            
+            axios.get(`http://localhost:5000/users/${userId}`)
+            .then((result) => {
+                const user = result.data.user;
+                
+                setImage(user.image);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
         }
     }, [token]);
-
+  
+    
     const handleLogout = () => {
         setIsLoggedIn(false);
         setToken("");

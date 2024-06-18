@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { UserContext } from "../../App";
-import {jwtDecode} from "jwt-decode"; // Correct import
+import {jwtDecode} from "jwt-decode";
 import StarRating from "./StarRating";
 import "./UserDashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -45,6 +45,7 @@ const UserDashboard = () => {
       .get("http://localhost:5000/providerInfo/")
       .then((result) => {
         setProviderInfo(result.data.providersInfo);
+        console.log(providerInfo);
       })
       .catch((err) => {
         console.error("Error fetching provider info:", err);
@@ -104,9 +105,9 @@ const UserDashboard = () => {
             onChange={handleSpecialistChange}
           >
             <option value="">All Posts</option>
-            {providerInfo.map((post) => (
-              <option key={post._id} value={post.specialist.name}>
-                {post.specialist.name}
+            {providerInfo?.map((post) => (
+              <option key={post._id} value={post?.specialist?.name}>
+                {post?.specialist?.name}
               </option>
             ))}
           </select>
@@ -131,29 +132,39 @@ const UserDashboard = () => {
                       {post.author.userName}
                     </MDBCardTitle>
                     <MDBCardSubTitle className="text-center text-muted">
-                      {post.specialist.name}
+                      {console.log(post)}
+                    <b> Specialty :{post?.specialist?.name}</b>
                     </MDBCardSubTitle>
                   </div>
                 </div>
-                <MDBCardText className="mt-3">{post.title}</MDBCardText>
+                <MDBCardText className="mt-3"><b>{post.title}</b> </MDBCardText>
                 <MDBCardText>{post.description}</MDBCardText>
                 <ul className="list-group mb-3">
                   <li className="list-group-item">
-                    Availability: {post.availability}
+                    <b>Availability: </b>{post.availability}
                   </li>
                   <li className="list-group-item">
-                    Experience: {post.experience}
+                  <b> Experience:</b> {post.experience}
                   </li>
                 </ul>
                 {post.reviews.map((review, i) => (
                   <MDBCard key={i} className="mb-3">
                     <MDBCardBody>
-                      <MDBCardTitle>Review: {review.review}</MDBCardTitle>
-                      <MDBCardSubTitle>
-                        {review.customer && review.customer.name
-                          ? `Customer: ${review.customer.name}`
-                          : "Customer: Anonymous"}
-                      </MDBCardSubTitle>
+                      <div className="d-flex align-items-center mb-3">
+                        {review.customer.image && (
+                          <img
+                            src={review.customer.image}
+                            alt={review.customer.name}
+                            className="author-image rounded-circle me-3"
+                          />
+                        )}
+                        <div>
+                          <MDBCardTitle className="text-center mb-0">
+                            {review.customer.userName}
+                          </MDBCardTitle>
+                        </div>
+                      </div>
+                      <MDBCardText>{review.review}</MDBCardText>
                       <StarRating rating={review.rating} />
                     </MDBCardBody>
                   </MDBCard>
@@ -179,9 +190,16 @@ const UserDashboard = () => {
       </MDBRow>
 
       {showLoginPopup && (
-        <div className="alert alert-danger text-center" role="alert">
-          <p>You need to login first to perform this action.</p>
-          <MDBBtn onClick={() => navigate("/login")}>Login</MDBBtn>
+        <div className="login-popup">
+          <div className="popup-content">
+            <p>You need to login first to perform this action.</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </button>
+          </div>
         </div>
       )}
     </MDBContainer>

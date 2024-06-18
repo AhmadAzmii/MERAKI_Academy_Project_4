@@ -29,7 +29,12 @@ const getAllProvidersInfo = (req, res) => {
     providerInfoModel
         .find()
         .populate("author")
-        .populate("reviews") 
+        .populate({
+            path: 'reviews',
+            populate: {
+            path: 'customer',
+            },
+          })
         .populate("specialist")
         .then((result) => {
             if (result.length) {
@@ -55,9 +60,17 @@ const getAllProvidersInfo = (req, res) => {
 }
 
 const getProviderInfoById = (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
     providerInfoModel
-        .findById(id)
+        .findById({ _id: id })
+        .populate("author")
+        .populate({
+            path: 'reviews',
+            populate: {
+                path: 'customer',
+            },
+        })
+        .populate("specialist")
         .then((result) => {
             if (!result) {
                 res.status(404).json({
@@ -67,8 +80,8 @@ const getProviderInfoById = (req, res) => {
             } else {
                 res.status(200).json({
                     success: true,
-                    message: `The provider information ${id} `,
-                    category: result,
+                    message: `The provider information with id => ${id}`,
+                    providerInfo: result,
                 });
             }
         })
@@ -78,8 +91,9 @@ const getProviderInfoById = (req, res) => {
                 message: `Server Error`,
                 err: err.message,
             });
-        })
+        });
 }
+
 
 const updateProviderInfoById = (req, res) => {
     const { id } = req.params
@@ -140,7 +154,7 @@ const getProviderInfoByAuthorId = (req, res) => {
     console.log(`Author ID: ${authorId}`);
     providerInfoModel
         .find({ author: authorId })
-        .populate("author", "userName")
+        .populate("author")
         .populate("reviews")
         .populate("specialist")
         .then((result) => {

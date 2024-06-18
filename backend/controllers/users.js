@@ -5,6 +5,34 @@ const { OAuth2Client } = require('google-auth-library');
 const Role=require('../models/role')
 const client = new OAuth2Client("562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com");
 
+const getUserById = (req, res) => {
+    const { id } = req.params;
+
+    usersModel
+        .findById(id)
+        .populate("role")
+        .populate("specialist")
+        .then((result) => {
+            if (!result) {
+                return res.status(404).json({
+                    success: false,
+                    message: `User with id => ${id} not found`,
+                });
+            }
+            res.status(200).json({
+                success: true,
+                message: `User found`,
+                user: result,
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                success: false,
+                message: "Server Error",
+                err: err.message,
+            });
+        });
+};
 const register = async (req, res) => {
     let role = '6664b711c97330a23805e283'; 
     const { firstName, lastName, email, phoneNumber, password, image, userName, age, specialist } = req.body
@@ -85,7 +113,6 @@ const login = (req, res) => {
                     specialist: result.specialist,
                     phoneNumber: result.phoneNumber,
                     role: result.role,
-                    image:result.image
                 }
                 const options = {
                     expiresIn: "60m",
@@ -207,4 +234,4 @@ const deleteUserById= (req,res)=>{
     })
 }
 
-module.exports = { register, login ,getAllUsers,googleLogin,deleteUserById}
+module.exports = { register, login ,getAllUsers,googleLogin,deleteUserById,getUserById}

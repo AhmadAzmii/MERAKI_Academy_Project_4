@@ -1,8 +1,22 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import React, { useEffect, useState } from "react";
+import {jwtDecode} from "jwt-decode";
+import React, { createContext, useEffect, useState } from "react";
+import {
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBCardTitle,
+  MDBCardText,
+  MDBInput,
+  MDBTextArea,
+  MDBBtn,
+  MDBCardSubTitle,
+} from "mdb-react-ui-kit";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./ProviderDashboard.css";
-
+export const providerInfoContext=createContext()
 const ProviderDashboard = () => {
   const token = localStorage.getItem("token");
   const specialist = localStorage.getItem("specialist");
@@ -11,7 +25,6 @@ const ProviderDashboard = () => {
   const [message, setMessage] = useState("");
   const [experience, setExperience] = useState("");
   const [availability, setAvailability] = useState("");
-  // const [userName, setUserName] = useState("");
   const [providerInfo, setProviderInfo] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
 
@@ -50,6 +63,10 @@ const ProviderDashboard = () => {
       )
       .then((result) => {
         setMessage(result.data.message);
+        setAvailability("")
+        setExperience("")
+        setDescription("")
+        setTitle("")
         setTimeout(() => setMessage(""), 3000);
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userId;
@@ -132,136 +149,150 @@ const ProviderDashboard = () => {
   };
 
   return (
-    <div className="ProviderDashboard">
-      <div className="Provider-Info">
-        <h2 className="mb-4">Add Info</h2>
-        <div className="form-group mb-3">
-          <label>Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group mb-3">
-          <label>Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="form-control"
-          ></textarea>
-        </div>
-        <div className="form-group mb-3">
-          <label>Experience</label>
-          <input
-            type="text"
-            value={experience}
-            onChange={(e) => setExperience(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group mb-3">
-          <label>Availability</label>
-          <input
-            type="text"
-            value={availability}
-            onChange={(e) => setAvailability(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        {message && <p className="text-danger">{message}</p>}
-        <button className="btn" onClick={handleAddProviderInfo}>
-          Create New Provider Information
-        </button>
-      </div>
-      <h2 className="mt-5">Provider Information</h2>
-      {providerInfo?.map((info) => {
-        const decodedToken = jwtDecode(token);
-        const userId = decodedToken.userId;
-        return (
-          <div key={info._id} className="card mt-3">
-            <div className="card-body">
-              <p className="card-text">{info.author.userName}</p>
-              <p className="card-text">{info.specialist.name}</p>
-              <h5 className="card-title">{info.title}</h5>
-              <p className="card-text">{info.description}</p>
-              <p className="card-text">Experience: {info.experience}</p>
-              <p className="card-text">Availability: {info.availability}</p>
-              {userId === info.author._id && (
-                <div className="update-form">
-                  {isUpdated ? (
-                    <div>
-                      <div className="form-group">
-                        <label>New Title</label>
-                        <input
-                          type="text"
-                          onChange={(e) => (info.newTitle = e.target.value)}
-                          className="form-control"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>New Description</label>
-                        <textarea
-                          onChange={(e) =>
-                            (info.newDescription = e.target.value)
-                          }
-                          className="form-control"
-                        ></textarea>
-                      </div>
-                      <div className="form-group">
-                        <label>New Availability</label>
-                        <input
-                          type="text"
-                          onChange={(e) =>
-                            (info.newAvailability = e.target.value)
-                          }
-                          className="form-control"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>New Experience</label>
-                        <input
-                          type="text"
-                          onChange={(e) =>
-                            (info.newExperience = e.target.value)
-                          }
-                          className="form-control"
-                        />
-                      </div>
-                    </div>
-                  ) : null}
-                  <button
-                    className="btn mt-3"
-                    onClick={() => {
-                      setIsUpdated(!isUpdated);
-                      if (isUpdated) {
-                        handleUpdate(
-                          info._id,
-                          info.newTitle,
-                          info.newDescription,
-                          info.newExperience,
-                          info.newAvailability
-                        );
-                      }
-                    }}
-                  >
-                    {isUpdated ? "Save" : "Update"}
-                  </button>
-                  <button
-                    className="btn btn-danger mt-3"
-                    onClick={() => handleDelete(info._id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
+    <providerInfoContext.Provider value={{
+      providerInfo
+    }}>
+    <MDBContainer className="ProviderDashboard">
+      <MDBRow>
+        <MDBCol md="6">
+          <h2 className="mb-4">Add Info</h2>
+          <div className="form-group mb-3">
+            <label>Title</label>
+            <MDBInput
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="form-control"
+            />
           </div>
-        );
-      })}
-    </div>
-  );
+          <div className="form-group mb-3">
+            <label>Description</label>
+            <MDBTextArea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Experience</label>
+            <MDBInput
+              type="text"
+              value={experience}
+              onChange={(e) => setExperience(e.target.value)}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Availability</label>
+            <MDBInput
+              type="text"
+              value={availability}
+              onChange={(e) => setAvailability(e.target.value)}
+              className="form-control"
+            />
+          </div>
+          {message && <div className="alert alert-danger">{message}</div>}
+          <MDBBtn onClick={handleAddProviderInfo}>Create New Provider Information</MDBBtn>
+        </MDBCol>
+      </MDBRow>
+
+      <h2 className="mt-5">Provider Information</h2>
+      <MDBRow>
+        {providerInfo?.map((info) => {
+          const decodedToken = jwtDecode(token);
+          const userId = decodedToken.userId;
+          return (
+            <MDBCol md="6" key={info._id} className="mt-3">
+              <MDBCard>
+                <MDBCardBody>
+                <div className="d-flex align-items-center mb-3">
+                <img src={info.author.image} alt={info.author.userName}
+                 className="author-image rounded-circle me-3" />
+                <MDBCardTitle className="text-center mb-0">
+                      {info.author.userName}
+                    </MDBCardTitle>
+                    </div>
+                    <MDBCardSubTitle className="text-center text-muted">
+                      
+                    <b>{info?.specialist?.name}</b>
+                    </MDBCardSubTitle>
+                    
+                  <MDBCardTitle><b>Title: </b>{info.title}</MDBCardTitle>
+                  {console.log(info)}
+                  <MDBCardText><b>Description: </b> {info.description}</MDBCardText>
+                  <p><b>Experience: </b> {info.experience}</p>
+                  <p><b>Availability: </b>: {info.availability}</p>
+                  {userId === info.author._id && (
+                    <div className="update-form">
+                      {isUpdated ? (
+                        <div>
+                          <div className="form-group">
+                            <label>New Title</label>
+                            <MDBInput
+                              type="text"
+                              onChange={(e) => (info.newTitle = e.target.value)}
+                              className="form-control"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>New Description</label>
+                            <MDBTextArea
+                              onChange={(e) => (info.newDescription = e.target.value)}
+                              className="form-control"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>New Availability</label>
+                            <MDBInput
+                              type="text"
+                              onChange={(e) => (info.newAvailability = e.target.value)}
+                              className="form-control"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>New Experience</label>
+                            <MDBInput
+                              type="text"
+                              onChange={(e) => (info.newExperience = e.target.value)}
+                              className="form-control"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+                      <MDBBtn
+                        className="mt-3"
+                        onClick={() => {
+                          setIsUpdated(!isUpdated);
+                          if (isUpdated) {
+                            handleUpdate(
+                              info._id,
+                              info.newTitle,
+                              info.newDescription,
+                              info.newExperience,
+                              info.newAvailability
+                            );
+                          }
+                        }}
+                      >
+                        {isUpdated ? "Save" : "Update"}
+                      </MDBBtn>
+                      <MDBBtn
+                        className="btn-danger mt-3"
+                        onClick={() => handleDelete(info._id)}
+                      >
+                        Delete
+                      </MDBBtn>
+                    </div>
+                  )}
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+          );
+        })}
+      </MDBRow>
+    </MDBContainer>
+</providerInfoContext.Provider>  
+);
 };
 
 export default ProviderDashboard;

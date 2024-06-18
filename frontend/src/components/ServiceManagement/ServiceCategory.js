@@ -26,7 +26,7 @@ const ServiceCategories = () => {
   return (
     <div className='ServiceCategories'>
       <CategoryContext.Provider value={{ categories, setCategories }}>
-      
+
         <div>
           {categories.map(category => (
             <div key={category.id}>

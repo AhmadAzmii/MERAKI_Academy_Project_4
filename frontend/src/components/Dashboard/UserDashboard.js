@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { UserContext } from "../../App";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import StarRating from "./StarRating";
 import "./UserDashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -27,15 +27,15 @@ const UserDashboard = () => {
   const [rating, setRating] = useState(0);
   const [selectedSpecialist, setSelectedSpecialist] = useState("");
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [userName, setUserName] = useState("");
+
 
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-      const userName = decodedToken.user;
+      
       setUserId(userId);
-      setUserName(userName);
+    
     }
     getAllProvidersInfo();
   }, [token]);
@@ -115,14 +115,18 @@ const UserDashboard = () => {
       </MDBRow>
 
       <MDBRow>
-        {filteredProviderInfo.map((post) => (
+        {filteredProviderInfo.map((post) =>{
+            const firstLetter = post.author.userName.charAt(0).toUpperCase();
+            const imagePath = require(`../../alphabetImages/${firstLetter}.png`);
+        return (
+          
           <MDBCol md="6" key={post._id}>
             <MDBCard className="mb-4">
               <MDBCardBody>
                 <div className="d-flex align-items-center mb-3">
                   {post.author.image && (
                     <img
-                      src={post.author.image}
+                      src={imagePath}
                       alt={post.author.userName}
                       className="author-image rounded-circle me-3"
                     />
@@ -133,7 +137,7 @@ const UserDashboard = () => {
                     </MDBCardTitle>
                     <MDBCardSubTitle className="text-center text-muted">
                       {console.log(post)}
-                    <b> Specialty :{post?.specialist?.name}</b>
+                      <b> Specialty :{post?.specialist?.name}</b>
                     </MDBCardSubTitle>
                   </div>
                 </div>
@@ -144,16 +148,20 @@ const UserDashboard = () => {
                     <b>Availability: </b>{post.availability}
                   </li>
                   <li className="list-group-item">
-                  <b> Experience:</b> {post.experience}
+                    <b> Experience:</b> {post.experience}
                   </li>
                 </ul>
-                {post.reviews.map((review, i) => (
+                {post.reviews.map((review, i) =>
+                {
+                  const firstLetter = review.customer.userName.charAt(0).toUpperCase();
+                  const imagePath = require(`../../alphabetImages/${firstLetter}.png`);
+                  return (
                   <MDBCard key={i} className="mb-3">
                     <MDBCardBody>
                       <div className="d-flex align-items-center mb-3">
                         {review.customer.image && (
                           <img
-                            src={review.customer.image}
+                            src={imagePath}
                             alt={review.customer.name}
                             className="author-image rounded-circle me-3"
                           />
@@ -161,6 +169,7 @@ const UserDashboard = () => {
                         <div>
                           <MDBCardTitle className="text-center mb-0">
                             {review.customer.userName}
+                            {console.log(review)}
                           </MDBCardTitle>
                         </div>
                       </div>
@@ -168,7 +177,7 @@ const UserDashboard = () => {
                       <StarRating rating={review.rating} />
                     </MDBCardBody>
                   </MDBCard>
-                ))}
+                )})}
                 <MDBInput
                   className="form-control mb-2"
                   type="text"
@@ -186,7 +195,7 @@ const UserDashboard = () => {
               </MDBCardBody>
             </MDBCard>
           </MDBCol>
-        ))}
+        )})}
       </MDBRow>
 
       {showLoginPopup && (

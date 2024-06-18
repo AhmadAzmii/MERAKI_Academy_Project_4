@@ -14,7 +14,7 @@ import "./components/User Components/Login.css";
 import { gapi } from 'gapi-script';
 
 export const UserContext = createContext();
-const clientId="562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com"
+const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com"
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -37,13 +37,13 @@ const App = () => {
 
 
 
-    const shouldDisplayNavbar = !(location.pathname === '/login' || location.pathname === '/register' || location.pathname==='/admin-dashboard');
+    const shouldDisplayNavbar = !(location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/admin-dashboard');
 
     useEffect(() => {
         if (!isLoggedIn && shouldDisplayNavbar) {
             navigate('/dashboard');
         }
-    }, [isLoggedIn, navigate,shouldDisplayNavbar]);
+    }, [isLoggedIn, navigate, shouldDisplayNavbar]);
     return (
         <div className="App">
             <header className="App-header">

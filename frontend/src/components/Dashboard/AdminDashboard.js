@@ -19,6 +19,7 @@ import {
 } from "mdb-react-ui-kit";
 
 const AdminDashboard = () => {
+  const Admin =require("../../alphabetImages/Admin.png")
   const { setIsLoggedIn, setToken, token } = useContext(UserContext);
   const [userNameOne, setUserNameOne] = useState("");
   const [imageOne, setImageOne] = useState("");
@@ -215,14 +216,14 @@ const AdminDashboard = () => {
         className="bg-dark p-3 d-flex justify-content-between align-items-center"
       >
         <div className="d-flex align-items-center">
-          {imageOne && (
+         
             <img
-              src={imageOne}
+              src={Admin}
               alt="User"
               className="rounded-circle mr-2"
               style={{ width: "40px", height: "40px" }}
             />
-          )}
+          
           <span className="text-white">{userNameOne}</span>
         </div>
         <button onClick={handleLogout} className="btn btn-danger">
@@ -233,6 +234,7 @@ const AdminDashboard = () => {
         <nav id="sidebar" className="bg-dark">
           <div className="p-4">
             <h1 className="logo">Admin</h1>
+          
             <ul className="list-unstyled components mb-5">
               <li>
                 <a

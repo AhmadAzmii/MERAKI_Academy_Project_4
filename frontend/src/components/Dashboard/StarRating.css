@@ -1,4 +1,4 @@
-/* StarRating.css */
+
 .star-rating {
     display: flex;
     justify-content: center;
@@ -8,10 +8,10 @@
   .star {
     font-size: 2rem;
     cursor: pointer;
-    color: #d3d3d3; /* Default star color */
+    color: #d3d3d3; 
   }
   
   .star.filled {
-    color: #ffd700; /* Filled star color */
+    color: #ffd700; 
   }
       

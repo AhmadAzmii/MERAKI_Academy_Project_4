@@ -2,9 +2,9 @@ import axios from 'axios';
 import React, { useContext, useState } from 'react';
 import { UserContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode'; // Corrected import
+import { jwtDecode } from 'jwt-decode';
 import { GoogleLogin } from 'react-google-login';
-// import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
@@ -51,7 +51,7 @@ function Login() {
             const googleToken = res.tokenId;
             const result = await axios.post('http://localhost:5000/users/google-login', { token: googleToken });
             setToken(result.data.token);
-            
+
             localStorage.setItem('token', result.data.token);
 
             setIsLoggedIn(true);

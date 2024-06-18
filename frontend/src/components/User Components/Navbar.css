@@ -1,63 +1,57 @@
+
+
 .navbar {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
     display: flex;
     justify-content: space-between;
-    align-items: center; 
+    align-items: center;
+    background-color: #333;
+    padding: 10px 20px;
+    color: white;
     flex-direction: row-reverse;
-}
-.navbar button {
-    background-color: transparent !important;
-    color: #fff !important;
-    border: none !important;
-    cursor: pointer !important;
-    margin-left: 10px !important;
-    padding: 8px 16px !important; /* Adjust padding as needed */
-    font-size: 14px !important; /* Adjust font size as needed */
-    border-radius: 4px !important; /* Rounded corners */
-    border: 1px solid #fff !important; /* White border */
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
-
-    /* Optional: Hover effect */
-}
-
-.navbar button:hover {
-    background-color: #fff !important; /* White background on hover */
-    color: #333 !important; /* Dark text on hover */
-    border-color: #fff !important;  /* White border on hover */
-    text-decoration: none !important; /* Remove underline on hover if needed */
 }
 
 .navbar a {
-    color: #fff;
+    color: white;
     text-decoration: none;
-    margin-left: 10px;
+    margin: 0 10px;
+    font-size: 18px;
 }
 
-.navbar button {
-    background-color: transparent;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-.navbar button:hover,
 .navbar a:hover {
     text-decoration: underline;
 }
 
 .navbar-right {
     display: flex;
-    align-items: center; 
+    align-items: center;
+}
+
+.navbar-right h2 {
+    margin-right: 20px;
+    font-size: 20px;
+}
+
+.navbar-right button, .navbar-right .google-logout-button {
+    background-color: #ff4b5c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.navbar-right button:hover, .navbar-right .google-logout-button:hover {
+    background-color: #ff1e38;
 }
 
 .avatar-container {
-    margin-left: 10px; 
+    margin-left: 20px;
 }
 
 .avatar-image {
- 
-    border-radius: 50%; 
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
 }

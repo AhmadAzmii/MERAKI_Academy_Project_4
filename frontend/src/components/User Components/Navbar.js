@@ -2,39 +2,39 @@ import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../App';
 import { useNavigate, Link } from 'react-router-dom';
 import "./Navbar.css";
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { GoogleLogout } from 'react-google-login';
-import axios from 'axios';
 
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
 const Navbar = () => {
-    const { isLoggedIn, setIsLoggedIn, setToken, isProvider, token, isLoggedInWithGoogle } = useContext(UserContext);
-   
+    const {      isLoggedInWithGoogle,
+     
+        setToken,
+        token,
+        isLoggedIn,
+        setIsLoggedIn,
+        isAdmin,
+        
+        isProvider,
+        } = useContext(UserContext);
+
     const [userName, setUserName] = useState("");
     const [image, setImage] = useState("");
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         if (token) {
             const decodedToken = jwtDecode(token);
             const userName = decodedToken.user;
             setUserName(userName);
-            const userId=decodedToken.userId
             
-            axios.get(`http://localhost:5000/users/${userId}`)
-            .then((result) => {
-                const user = result.data.user;
-                
-                setImage(user.image);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+            const firstLetter = userName.charAt(0).toUpperCase();
+            const imagePath = require(`../../alphabetImages/${firstLetter}.png`);
+            setImage(imagePath);
         }
     }, [token]);
-  
-    
+
     const handleLogout = () => {
         setIsLoggedIn(false);
         setToken("");
@@ -46,7 +46,7 @@ const Navbar = () => {
         <div className='navbar'>
             {isLoggedIn && isProvider && <Link to='/dashboard'>Dashboard</Link>}
             {isLoggedIn && isProvider && <Link to='/Provider-Dashboard'>Provider Dashboard</Link>}
-            
+
             <div className="navbar-right">
                 {isLoggedIn &&
                     <div>
@@ -57,12 +57,17 @@ const Navbar = () => {
                                 clientId={clientId}
                                 buttonText={"Logout"}
                                 onLogoutSuccess={handleLogout}
+                                render={renderProps => (
+                                    <button onClick={renderProps.onClick} className="google-logout-button">
+                                        Logout
+                                    </button>
+                                )}
                             />
                         }
                     </div>
                 }
             </div>
-            {isLoggedIn && isLoggedInWithGoogle &&
+            {isLoggedIn &&
                 <div className="avatar-container">
                     <img className="avatar-image" src={image} alt="Avatar" />
                 </div>

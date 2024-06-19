@@ -22,7 +22,7 @@ const AdminDashboard = () => {
   const Admin =require("../../alphabetImages/Admin.png")
   const { setIsLoggedIn, setToken, token } = useContext(UserContext);
   const [userNameOne, setUserNameOne] = useState("");
-  const [imageOne, setImageOne] = useState("");
+  // const [imageOne, setImageOne] = useState("");
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
 
@@ -72,8 +72,7 @@ const AdminDashboard = () => {
       setUserId(userId);
       const userName = decodedToken.user;
       setUserNameOne(userName);
-      const image = decodedToken.image;
-      setImageOne(image);
+     
 
       getAllUsers();
     }

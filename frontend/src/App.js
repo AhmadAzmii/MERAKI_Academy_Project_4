@@ -14,16 +14,17 @@ import "./components/User Components/Login.css";
 import { gapi } from 'gapi-script';
 import UserSettings from './components/Dashboard/UserSettings';
 import "./components/Dashboard/UserSettings.css"
+import ForgotPassword from './components/User Components/ForgotPassword';
 
 export const UserContext = createContext();
-const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com"
+const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token') || null);
     const [isLoggedIn, setIsLoggedIn] = useState(!!token);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isProvider, setIsProvider] = useState(false);
-    const [isLoggedInWithGoogle, setIsLoggedInWithGoogle] = useState(!!token)
+    const [isLoggedInWithGoogle, setIsLoggedInWithGoogle] = useState(!!token);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -37,15 +38,14 @@ const App = () => {
         gapi.load('client:auth2', start);
     }, []);
 
-
-
     const shouldDisplayNavbar = !(location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/admin-dashboard');
 
     useEffect(() => {
-        if (!isLoggedIn && shouldDisplayNavbar) {
+        if (!isLoggedIn && shouldDisplayNavbar && location.pathname !== '/forgot-password') {
             navigate('/dashboard');
         }
-    }, [isLoggedIn, navigate, shouldDisplayNavbar]);
+    }, [isLoggedIn, navigate, shouldDisplayNavbar, location.pathname]);
+
     return (
         <div className="App">
             <header className="App-header">
@@ -69,7 +69,8 @@ const App = () => {
                         <Route path='/dashboard' element={<UserDashboard />} />
                         <Route path='/admin-dashboard' element={<AdminDashboard />} />
                         <Route path='/provider-dashboard' element={<ProviderDashboard />} />
-                        <Route path="/user-settings" element={<UserSettings/>} />
+                        <Route path="/user-settings" element={<UserSettings />} />
+                        <Route path='/forgot-password' element={<ForgotPassword />} />
                     </Routes>
                 </UserContext.Provider>
             </header>

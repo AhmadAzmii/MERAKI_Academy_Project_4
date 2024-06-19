@@ -129,7 +129,9 @@ function Login() {
                         />
                     </div>
                     <div className="text-end mb-3">
-                        <a href="#!" className="text-decoration-none">Forgot password?</a>
+                    <p className="text-end mb-3">
+                <a href="#!" className="text-decoration-none" onClick={() => navigate('/forgot-password')}>Forgot password?</a>
+            </p>
                     </div>
                     <button className='btn btn-primary w-100' type="button" onClick={handleLogin}>Login</button>
                 </form>

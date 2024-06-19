@@ -3,8 +3,53 @@
     const jwt = require("jsonwebtoken");
     const { OAuth2Client } = require('google-auth-library');
     const Role=require('../models/role')
+    
     const client = new OAuth2Client("562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com");
+    const sendSms =require("./twilioService")
 
+    const otpStore = {};
+    const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+    
+    const forgotPassword = async (req, res) => {
+        const { email } = req.body;
+        const user = await usersModel.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+    
+        const otp = generateOtp();
+        otpStore[email] = otp;
+    
+        await sendSms("+962772341720", `Your OTP for password reset is ${otp}`);
+        res.status(200).json({ success: true, message: "OTP sent to your phone number" });
+    };
+    
+    const verifyOtp = (req, res) => {
+        const { email, otp } = req.body;
+        if (otpStore[email] === otp) {
+            delete otpStore[email];
+            const token = jwt.sign({ email }, process.env.SECRET, { expiresIn: '15m' }); 
+            res.status(200).json({ success: true, message: "OTP verified", token });
+        } else {
+            res.status(400).json({ success: false, message: "Invalid OTP" });
+        }
+    };
+    
+    const resetPassword = async (req, res) => {
+        const { token, newPassword } = req.body;
+        try {
+            const decoded = jwt.verify(token, process.env.SECRET);
+            const email = decoded.email;
+    
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            await usersModel.findOneAndUpdate({ email }, { password: hashedPassword });
+    
+            res.status(200).json({ success: true, message: "Password reset successfully" });
+        } catch (err) {
+            res.status(400).json({ success: false, message: "Invalid or expired token" });
+        }
+    };
+    
     const getUserById = (req, res) => {
         const { id } = req.params;
 
@@ -128,9 +173,9 @@
     
 
     const login = (req, res) => {
-        const password = req.body.password
-        const email = req.body.email.toLowerCase()
-
+        const password = req.body.password;
+        const email = req.body.email.toLowerCase();
+    
         usersModel
             .findOne({ email })
             .populate("role", "-_id -__v")
@@ -156,19 +201,21 @@
                         specialist: result.specialist,
                         phoneNumber: result.phoneNumber,
                         role: result.role,
-                    }
+                    };
                     const options = {
                         expiresIn: "60m",
-                    }
-                    const token = jwt.sign(payload, process.env.SECRET, options)
+                    };
+                    const token = jwt.sign(payload, process.env.SECRET, options);
+    
+                    
+                    await sendSms('+962772341720', 'Login successful! Welcome to our service.');
+    
                     res.status(200).json({
                         success: true,
                         message: `Valid login credentials`,
                         token: token,
-                    })
-                }
-                catch (error) {
-
+                    });
+                } catch (error) {
                     throw new Error(error.message);
                 }
             })
@@ -178,9 +225,8 @@
                     message: `Server Error`,
                     err: err.message,
                 });
-            })
-
-    }
+            });
+    };
 
     const getAllUsers=(req,res)=>{
         usersModel
@@ -277,4 +323,4 @@
         })
     }
 
-    module.exports = { register, login ,getAllUsers,googleLogin,deleteUserById,getUserById,updateUser}
+    module.exports = { register, login ,getAllUsers,googleLogin,deleteUserById,getUserById,updateUser,resetPassword,verifyOtp,forgotPassword}

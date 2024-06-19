@@ -2,7 +2,7 @@ const express = require("express")
 const authentication = require("../middleware/authentication")
 const authorization = require("../middleware/authorization")
 
-const { register, login,getAllUsers,googleLogin,deleteUserById,getUserById,updateUser } = require("../controllers/users")
+const { register, login,getAllUsers,googleLogin,deleteUserById,getUserById,updateUser ,forgotPassword,verifyOtp,resetPassword} = require("../controllers/users")
 
 const usersRouter = express.Router()
 
@@ -12,6 +12,9 @@ usersRouter.delete("/:id", authentication, authorization("everything"),deleteUse
 usersRouter.post("/register", register)
 usersRouter.post("/login", login)
 usersRouter.get("/",getAllUsers)
+usersRouter.post('/forgot-password', forgotPassword);
+usersRouter.post('/verify-otp', verifyOtp);
+usersRouter.post('/reset-password', resetPassword);
 
 usersRouter.post('/google-login',googleLogin)
 module.exports = usersRouter    

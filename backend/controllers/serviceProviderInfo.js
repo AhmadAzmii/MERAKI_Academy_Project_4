@@ -155,7 +155,12 @@ const getProviderInfoByAuthorId = (req, res) => {
     providerInfoModel
         .find({ author: authorId })
         .populate("author")
-        .populate("reviews")
+        .populate({
+            path: 'reviews',
+            populate: {
+                path: 'customer',
+            },
+        })
         .populate("specialist")
         .then((result) => {
             if (result.length) {

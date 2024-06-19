@@ -16,7 +16,7 @@ import {
 } from "mdb-react-ui-kit";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./ProviderDashboard.css";
-
+import StarRating from "./StarRating";
 export const providerInfoContext = createContext();
 
 const ProviderDashboard = () => {
@@ -29,7 +29,8 @@ const ProviderDashboard = () => {
   const [availability, setAvailability] = useState("");
   const [providerInfo, setProviderInfo] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
-
+  const [rating, setRating] = useState(0);
+  
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -52,6 +53,8 @@ const ProviderDashboard = () => {
         });
     }
   }, [token]);
+  
+  
 
   const handleAddProviderInfo = () => {
     const headers = {
@@ -149,11 +152,17 @@ const ProviderDashboard = () => {
         console.log(err);
       });
   };
+  // const getDefaultImage = (userName) => {
+  //   const firstLetter = userName.charAt(0).toUpperCase();
+  
+  //     return require(`../../alphabetImages/${firstLetter}.png`);
+   
+  // };
 
   return (
     <providerInfoContext.Provider value={{ providerInfo }}>
       <MDBContainer className="ProviderDashboard">
-        <MDBRow>
+        <MDBRow className="add-info">
           <MDBCol md="6">
             <h2 className="mb-4">Add Info</h2>
             <div className="form-group mb-3">
@@ -202,7 +211,8 @@ const ProviderDashboard = () => {
         <MDBRow>
           {providerInfo?.map((info) => {
             const firstLetter = info.author.userName.charAt(0).toUpperCase();
-            const imagePath = require(`../../alphabetImages/${firstLetter}.png`);
+            const defaultImagePath = require(`../../alphabetImages/${firstLetter}.png`);
+            const userImage = info.author.image || defaultImagePath;
 
             const decodedToken = jwtDecode(token);
             const userId = decodedToken.userId;
@@ -212,7 +222,7 @@ const ProviderDashboard = () => {
                   <MDBCardBody>
                     <div className="d-flex align-items-center mb-3">
                       <img
-                        src={imagePath}
+                        src={userImage}
                         alt={info.author.userName}
                         className="author-image rounded-circle me-3"
                       />
@@ -237,6 +247,39 @@ const ProviderDashboard = () => {
                     <p>
                       <b>Availability: </b>: {info.availability}
                     </p>
+                    {info.reviews?.length > 0 && (
+                      <div className="reviews-section">
+                        <h4>Reviews:</h4>
+                        {info.reviews.map((review, i) => {
+                          console.log(info);
+                           const getDefaultImage = (userName) => {
+                            const firstLetter = userName.charAt(0).toUpperCase();
+                          
+                              return require(`../../alphabetImages/${firstLetter}.png`);
+                           
+                          };
+                        return(
+                          <MDBCard key={i} className="mb-3">
+                            <MDBCardBody>
+                              <div className="d-flex align-items-center mb-3">
+                                <img
+                                  src={review.customer.image || getDefaultImage(review.customer.userName)}
+                                  alt={review.customer.userName}
+                                  className="author-image rounded-circle me-3"
+                                />
+                                <div>
+                                  <MDBCardTitle className="text-center mb-0">
+                                    {review.customer.userName}
+                                  </MDBCardTitle>
+                                </div>
+                              </div>
+                              <MDBCardText>{review.review}</MDBCardText>
+                              <StarRating rating={review.rating} />
+                            </MDBCardBody>
+                          </MDBCard>
+                        )})}
+                      </div>
+                    )}
                     {userId === info.author._id && (
                       <div className="update-form">
                         {isUpdated ? (

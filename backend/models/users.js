@@ -9,7 +9,7 @@ const usersSchema = new mongoose.Schema({
 
   phoneNumber: { type: String,  unique: true },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "Role" },
-  image: { type: String },
+  image: { type: String },  
   userName: { type: String,  },
   age: { type: Number, min: 18, max: 66, },
   specialist: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCategory" }

@@ -12,6 +12,8 @@ import AdminDashboard from './components/Dashboard/AdminDashboard';
 import ProviderDashboard from './components/Dashboard/ProviderDashboard';
 import "./components/User Components/Login.css";
 import { gapi } from 'gapi-script';
+import UserSettings from './components/Dashboard/UserSettings';
+import "./components/Dashboard/UserSettings.css"
 
 export const UserContext = createContext();
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com"
@@ -67,6 +69,7 @@ const App = () => {
                         <Route path='/dashboard' element={<UserDashboard />} />
                         <Route path='/admin-dashboard' element={<AdminDashboard />} />
                         <Route path='/provider-dashboard' element={<ProviderDashboard />} />
+                        <Route path="/user-settings" element={<UserSettings/>} />
                     </Routes>
                 </UserContext.Provider>
             </header>

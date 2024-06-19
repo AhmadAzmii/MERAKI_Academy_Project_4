@@ -8,16 +8,15 @@ import { GoogleLogout } from 'react-google-login';
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
 const Navbar = () => {
-    const {      isLoggedInWithGoogle,
-     
+    const {
+        isLoggedInWithGoogle,
         setToken,
         token,
         isLoggedIn,
         setIsLoggedIn,
         isAdmin,
-        
         isProvider,
-        } = useContext(UserContext);
+    } = useContext(UserContext);
 
     const [userName, setUserName] = useState("");
     const [image, setImage] = useState("");
@@ -69,7 +68,9 @@ const Navbar = () => {
             </div>
             {isLoggedIn &&
                 <div className="avatar-container">
-                    <img className="avatar-image" src={image} alt="Avatar" />
+                    <Link to="/user-settings">
+                        <img className="avatar-image" src={image} alt="Avatar" />
+                    </Link>
                 </div>
             }
         </div>

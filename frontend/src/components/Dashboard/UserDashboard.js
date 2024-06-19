@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { UserContext } from "../../App";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import StarRating from "./StarRating";
 import "./UserDashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -28,14 +28,11 @@ const UserDashboard = () => {
   const [selectedSpecialist, setSelectedSpecialist] = useState("");
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
-
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-      
       setUserId(userId);
-    
     }
     getAllProvidersInfo();
   }, [token]);
@@ -45,7 +42,6 @@ const UserDashboard = () => {
       .get("http://localhost:5000/providerInfo/")
       .then((result) => {
         setProviderInfo(result.data.providersInfo);
-        console.log(providerInfo);
       })
       .catch((err) => {
         console.error("Error fetching provider info:", err);
@@ -90,6 +86,11 @@ const UserDashboard = () => {
     setSelectedSpecialist(e.target.value);
   };
 
+  const getDefaultImage = (name) => {
+    const firstLetter = name.charAt(0).toUpperCase();
+    return require(`../../alphabetImages/${firstLetter}.png`);
+  };
+
   const filteredProviderInfo = selectedSpecialist
     ? providerInfo.filter((post) => post.specialist.name === selectedSpecialist)
     : providerInfo;
@@ -115,87 +116,75 @@ const UserDashboard = () => {
       </MDBRow>
 
       <MDBRow>
-        {filteredProviderInfo.map((post) =>{
-            const firstLetter = post.author.userName.charAt(0).toUpperCase();
-            const imagePath = require(`../../alphabetImages/${firstLetter}.png`);
-        return (
-          
-          <MDBCol md="6" key={post._id}>
-            <MDBCard className="mb-4">
-              <MDBCardBody>
-                <div className="d-flex align-items-center mb-3">
-                  {post.author.image && (
+        {filteredProviderInfo.map((post) => {
+          return (
+            <MDBCol md="6" key={post._id}>
+              <MDBCard className="mb-4">
+                <MDBCardBody>
+                  <div className="d-flex align-items-center mb-3">
                     <img
-                      src={imagePath}
+                      src={post.author.image || getDefaultImage(post.author.userName)}
                       alt={post.author.userName}
                       className="author-image rounded-circle me-3"
                     />
-                  )}
-                  <div>
-                    <MDBCardTitle className="text-center mb-0">
-                      {post.author.userName}
-                    </MDBCardTitle>
-                    <MDBCardSubTitle className="text-center text-muted">
-                      {console.log(post)}
-                      <b> Specialty :{post?.specialist?.name}</b>
-                    </MDBCardSubTitle>
+                    <div>
+                      <MDBCardTitle className="text-center mb-0">
+                        {post.author.userName}
+                      </MDBCardTitle>
+                      <MDBCardSubTitle className="text-center text-muted">
+                        <b> Specialty : {post?.specialist?.name}</b>
+                      </MDBCardSubTitle>
+                    </div>
                   </div>
-                </div>
-                <MDBCardText className="mt-3"><b>{post.title}</b> </MDBCardText>
-                <MDBCardText>{post.description}</MDBCardText>
-                <ul className="list-group mb-3">
-                  <li className="list-group-item">
-                    <b>Availability: </b>{post.availability}
-                  </li>
-                  <li className="list-group-item">
-                    <b> Experience:</b> {post.experience}
-                  </li>
-                </ul>
-                {post.reviews.map((review, i) =>
-                {
-                  const firstLetter = review.customer.userName.charAt(0).toUpperCase();
-                  const imagePath = require(`../../alphabetImages/${firstLetter}.png`);
-                  return (
-                  <MDBCard key={i} className="mb-3">
-                    <MDBCardBody>
-                      <div className="d-flex align-items-center mb-3">
-                        {review.customer.image && (
+                  <MDBCardText className="mt-3"><b>{post.title}</b></MDBCardText>
+                  <MDBCardText>{post.description}</MDBCardText>
+                  <ul className="list-group mb-3">
+                    <li className="list-group-item">
+                      <b>Availability: </b>{post.availability}
+                    </li>
+                    <li className="list-group-item">
+                      <b>Experience:</b> {post.experience}
+                    </li>
+                  </ul>
+                  {post.reviews.map((review, i) => (
+                    <MDBCard key={i} className="mb-3">
+                      <MDBCardBody>
+                        <div className="d-flex align-items-center mb-3">
                           <img
-                            src={imagePath}
-                            alt={review.customer.name}
+                            src={review.customer.image || getDefaultImage(review.customer.userName)}
+                            alt={review.customer.userName}
                             className="author-image rounded-circle me-3"
                           />
-                        )}
-                        <div>
-                          <MDBCardTitle className="text-center mb-0">
-                            {review.customer.userName}
-                            {console.log(review)}
-                          </MDBCardTitle>
+                          <div>
+                            <MDBCardTitle className="text-center mb-0">
+                              {review.customer.userName}
+                            </MDBCardTitle>
+                          </div>
                         </div>
-                      </div>
-                      <MDBCardText>{review.review}</MDBCardText>
-                      <StarRating rating={review.rating} />
-                    </MDBCardBody>
-                  </MDBCard>
-                )})}
-                <MDBInput
-                  className="form-control mb-2"
-                  type="text"
-                  placeholder="Review..."
-                  value={newReview}
-                  onChange={(e) => setNewReview(e.target.value)}
-                />
-                <StarRating rating={rating} setRating={setRating} />
-                <MDBBtn
-                  className="mt-2"
-                  onClick={() => handleReview(post._id)}
-                >
-                  Add review
-                </MDBBtn>
-              </MDBCardBody>
-            </MDBCard>
-          </MDBCol>
-        )})}
+                        <MDBCardText>{review.review}</MDBCardText>
+                        <StarRating rating={review.rating} />
+                      </MDBCardBody>
+                    </MDBCard>
+                  ))}
+                  <MDBInput
+                    className="form-control mb-2"
+                    type="text"
+                    placeholder="Review..."
+                    value={newReview}
+                    onChange={(e) => setNewReview(e.target.value)}
+                  />
+                  <StarRating rating={rating} setRating={setRating} />
+                  <MDBBtn
+                    className="mt-2"
+                    onClick={() => handleReview(post._id)}
+                  >
+                    Add review
+                  </MDBBtn>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+          );
+        })}
       </MDBRow>
 
       {showLoginPopup && (

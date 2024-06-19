@@ -7,8 +7,7 @@ import {
   MDBCardBody,
   MDBInput,
   MDBCheckbox,
-  MDBBtn,
-  MDBFile
+  MDBBtn
 } from 'mdb-react-ui-kit';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,7 +20,6 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [image, setImage] = useState("");
   const [userName, setUserName] = useState("");
   const [specialist, setSpecialist] = useState("");
   const [age, setAge] = useState("");
@@ -47,10 +45,6 @@ const Register = () => {
     fetchCategories();
   }, []);
 
-  const handleFileChange = (e) => {
-    setImage(e.target.files[0]);
-  };
-
   const handleSubmit = async () => {
     if (password !== confirmPassword) {
       setMessage("Passwords do not match");
@@ -58,42 +52,31 @@ const Register = () => {
       return;
     }
 
-    const reader = new FileReader();
-    reader.readAsDataURL(image);
-    reader.onloadend = async () => {
-      const userData = {
-        firstName,
-        lastName,
-        email,
-        password,
-        phoneNumber,
-        image: reader.result,
-        userName,
-        age,
-        specialist: isSpecialist ? specialist : null
-      };
-
-      try {
-        const response = await axios.post("http://localhost:5000/users/register", userData);
-        setMessage(response.data.message);
-        setTimeout(() => {
-          setMessage("");
-
-        }, 3000);
-      } catch (error) {
-        setMessage(error.response?.data?.message || "Registration failed");
-        setTimeout(() => setMessage(""), 3000);
-      }
+    const userData = {
+      firstName,
+      lastName,
+      email,
+      password,
+      phoneNumber,
+      userName,
+      age,
+      specialist: isSpecialist ? specialist : null
     };
 
-    reader.onerror = () => {
-      setMessage("Failed to read the image file");
+    try {
+      const response = await axios.post("http://localhost:5000/users/register", userData);
+      setMessage(response.data.message);
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Registration failed");
       setTimeout(() => setMessage(""), 3000);
-    };
+    }
   };
 
   return (
-    <UserInfoContext.Provider value={{ image, setImage, userName, setUserName }}>
+    <UserInfoContext.Provider value={{ userName, setUserName }}>
       <MDBContainer fluid className="p-4 register-container">
         <MDBCard className="text-black">
           <MDBCardBody className="p-md-5">
@@ -108,11 +91,6 @@ const Register = () => {
                 <MDBInput label="Phone Number" type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
                 <MDBInput label="User Name" type="text" value={userName} onChange={(e) => setUserName(e.target.value)} />
                 <MDBInput label="Age" type="number" value={age} onChange={(e) => setAge(e.target.value)} />
-                <label htmlFor="image" className="form-label">Image</label>
-                <MDBFile
-                  id="image"
-                  onChange={handleFileChange}
-                />
                 <div className="specialist-checkbox">
                   <MDBCheckbox
                     name="isSpecialist"

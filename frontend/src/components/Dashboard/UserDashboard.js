@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
-import { UserContext } from "../../App";
-import {jwtDecode} from "jwt-decode";
-import StarRating from "./StarRating";
-import "./UserDashboard.css";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
+import { UserContext } from '../../App';
+import { jwtDecode } from 'jwt-decode';
+import StarRating from './StarRating';
+import './UserDashboard.css';
+import { useNavigate } from 'react-router-dom';
 import {
   MDBContainer,
   MDBRow,
@@ -16,18 +16,19 @@ import {
   MDBCardSubTitle,
   MDBInput,
   MDBBtn,
-} from "mdb-react-ui-kit";
+} from 'mdb-react-ui-kit';
+import  ContactUs  from './ContactUs';
 
 const UserDashboard = () => {
   const { token, isLoggedIn } = useContext(UserContext);
   const navigate = useNavigate();
   const [providerInfo, setProviderInfo] = useState([]);
-  const [userId, setUserId] = useState("");
-  const [newReview, setNewReview] = useState("");
+  const [userId, setUserId] = useState('');
+  const [newReview, setNewReview] = useState('');
   const [rating, setRating] = useState(0);
-  const [selectedSpecialist, setSelectedSpecialist] = useState("");
+  const [selectedSpecialist, setSelectedSpecialist] = useState('');
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-
+  const [showContactUsPopup, setShowContactUsPopup] = useState(false); 
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -39,12 +40,12 @@ const UserDashboard = () => {
 
   const getAllProvidersInfo = () => {
     axios
-      .get("http://localhost:5000/providerInfo/")
+      .get('http://localhost:5000/providerInfo/')
       .then((result) => {
         setProviderInfo(result.data.providersInfo);
       })
       .catch((err) => {
-        console.error("Error fetching provider info:", err);
+        console.error('Error fetching provider info:', err);
       });
   };
 
@@ -73,12 +74,12 @@ const UserDashboard = () => {
                 : post
             )
           );
-          setNewReview("");
+          setNewReview('');
           setRating(0);
         }
       })
       .catch((err) => {
-        console.error("Error adding review:", err);
+        console.error('Error adding review:', err);
       });
   };
 
@@ -94,6 +95,11 @@ const UserDashboard = () => {
   const filteredProviderInfo = selectedSpecialist
     ? providerInfo.filter((post) => post.specialist.name === selectedSpecialist)
     : providerInfo;
+
+  
+  const toggleContactUsPopup = () => {
+    setShowContactUsPopup(!showContactUsPopup);
+  };
 
   return (
     <MDBContainer className="UserDashboard">
@@ -187,13 +193,25 @@ const UserDashboard = () => {
         })}
       </MDBRow>
 
+      
+      <MDBBtn onClick={toggleContactUsPopup}>Contact Us</MDBBtn>
+
+      {showContactUsPopup && (
+        <div className="contact-us-popup">
+          <div className="popup-content">
+            <ContactUs onClose={toggleContactUsPopup} /> 
+          </div>
+        </div>
+      )}
+
+  
       {showLoginPopup && (
         <div className="login-popup">
           <div className="popup-content">
             <p>You need to login first to perform this action.</p>
             <button
               className="btn btn-primary"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate('/login')}
             >
               Login
             </button>

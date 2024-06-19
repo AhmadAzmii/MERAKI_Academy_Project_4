@@ -14,7 +14,7 @@ const Navbar = () => {
         token,
         isLoggedIn,
         setIsLoggedIn,
-        isAdmin,
+      
         isProvider,
     } = useContext(UserContext);
 

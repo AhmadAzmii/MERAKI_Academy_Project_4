@@ -29,7 +29,7 @@ const ProviderDashboard = () => {
   const [availability, setAvailability] = useState("");
   const [providerInfo, setProviderInfo] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
-  const [rating, setRating] = useState(0);
+  // const [rating, setRating] = useState(0);
   
   useEffect(() => {
     if (token) {

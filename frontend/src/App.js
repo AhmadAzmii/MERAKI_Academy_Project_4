@@ -25,6 +25,8 @@ const App = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isProvider, setIsProvider] = useState(false);
     const [isLoggedInWithGoogle, setIsLoggedInWithGoogle] = useState(!!token);
+    const [userName, setUserName] = useState("");
+    const [image, setImage] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -59,7 +61,11 @@ const App = () => {
                     isAdmin,
                     setIsAdmin,
                     isProvider,
-                    setIsProvider
+                    setIsProvider,
+                    userName,
+                    setUserName,
+                    image,
+                    setImage
                 }}>
                     {shouldDisplayNavbar && <Navbar />}
                     <Routes>

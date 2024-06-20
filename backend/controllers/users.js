@@ -9,7 +9,7 @@
 
     const otpStore = {};
     const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     const forgotPassword = async (req, res) => {
         const { email } = req.body;
         const user = await usersModel.findOne({ email });
@@ -268,7 +268,7 @@
 
             console.log(payload);
             
-            // Fetch role details from the database
+            
             const role = await Role.findById("6664b711c97330a23805e283").populate('role');
             if (!role) {
                 return res.status(404).json({ message: 'Role not found' });
@@ -323,4 +323,34 @@
         })
     }
 
-    module.exports = { register, login ,getAllUsers,googleLogin,deleteUserById,getUserById,updateUser,resetPassword,verifyOtp,forgotPassword}
+    const getUserInfo = (req, res) => {
+    const { id } = req.params;
+
+    usersModel
+        .findById({_id:id})
+        .select('userName image')
+        .then((result) => {
+            if (!result) {
+                return res.status(404).json({
+                    success: false,
+                    message: `User with id => ${id} not found`,
+                });
+            }
+            res.status(200).json({
+                success: true,
+                message: `User info retrieved successfully`,
+                user: result,
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                success: false,
+                message: "Server Error",
+                err: err.message,
+            });
+        });
+};
+
+
+
+    module.exports = { register, login ,getAllUsers,googleLogin,deleteUserById,getUserById,updateUser,resetPassword,verifyOtp,forgotPassword,getUserInfo}

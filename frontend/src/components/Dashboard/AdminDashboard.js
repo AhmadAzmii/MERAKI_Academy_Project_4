@@ -107,7 +107,7 @@ const AdminDashboard = () => {
   };
 
   const handleUpdate = () => {
-    // Add update logic here
+    
     console.log(`Update user with ID: ${userId}`);
   };
   const handleSubmit = async () => {
@@ -201,7 +201,7 @@ const AdminDashboard = () => {
     datasets: [
       {
         label: "Population",
-        data: [200, 50, 100],
+        data: [200, 500, 100],
         backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
         hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
       },

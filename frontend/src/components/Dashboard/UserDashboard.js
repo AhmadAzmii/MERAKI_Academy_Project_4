@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { UserContext } from '../../App';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRemove, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from 'jwt-decode';
+import { UserContext } from '../../App';
 import StarRating from './StarRating';
 import './UserDashboard.css';
 import { useNavigate } from 'react-router-dom';
@@ -17,10 +20,10 @@ import {
   MDBInput,
   MDBBtn,
 } from 'mdb-react-ui-kit';
-import  ContactUs  from './ContactUs';
+import ContactUs from './ContactUs';
 
 const UserDashboard = () => {
-  const { token, isLoggedIn } = useContext(UserContext);
+  const { token, isLoggedIn, userName, image } = useContext(UserContext);
   const navigate = useNavigate();
   const [providerInfo, setProviderInfo] = useState([]);
   const [userId, setUserId] = useState('');
@@ -28,7 +31,10 @@ const UserDashboard = () => {
   const [rating, setRating] = useState(0);
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [showContactUsPopup, setShowContactUsPopup] = useState(false); 
+  const [showContactUsPopup, setShowContactUsPopup] = useState(false);
+  const [review, setReview] = useState([])
+  const [isUpdated, setIsUpdated] = useState(false);
+
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -70,40 +76,103 @@ const UserDashboard = () => {
           setProviderInfo((prevInfo) =>
             prevInfo.map((post) =>
               postId === post._id
-                ? { ...post, reviews: [...post.reviews, result.data.review] }
+                ? { ...post, reviews: [...post.reviews, { ...result.data.review, customer: { userName, image } }] }
                 : post
             )
           );
-          setNewReview('');
+
           setRating(0);
         }
+        setNewReview('');
       })
       .catch((err) => {
         console.error('Error adding review:', err);
       });
   };
 
+
+
   const handleSpecialistChange = (e) => {
     setSelectedSpecialist(e.target.value);
   };
 
   const getDefaultImage = (name) => {
-    const firstLetter = name.charAt(0).toUpperCase();
-    return require(`../../alphabetImages/${firstLetter}.png`);
+    const firstLetter = name?.charAt(0)?.toUpperCase();
+    if (firstLetter) {
+      return require(`../../alphabetImages/${firstLetter}.png`);
+    }
+  };
+
+  const getImage = (image, name) => {
+    return image || getDefaultImage(name);
   };
 
   const filteredProviderInfo = selectedSpecialist
     ? providerInfo.filter((post) => post.specialist.name === selectedSpecialist)
     : providerInfo;
 
-  
   const toggleContactUsPopup = () => {
+    if (!isLoggedIn) {
+      setShowLoginPopup(true);
+      return;
+    }
     setShowContactUsPopup(!showContactUsPopup);
   };
+  const handleDelete = (reviewId) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    axios
+      .delete(`http://localhost:5000/providerInfo/${reviewId}/reviews`, { headers })
+      .then((result) => {
+        if (result.status === 200 && result.data.success) {
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) => ({
+              ...post,
+              reviews: post.reviews.filter((review) => review._id !== reviewId),
+            }))
+          );
+        }
+      })
+      .catch((err) => {
+        console.error('Error deleting review:', err);
+      });
+  };
+
+  const handleUpdate = (reviewId, newReview, newRating) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    axios
+      .put(
+        `http://localhost:5000/providerInfo/${reviewId}/reviews`,
+        { review: newReview, rating: newRating },
+        { headers }
+      )
+      .then((result) => {
+        if (result.status === 200 && result.data.success) {
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) => ({
+              ...post,
+              reviews: post.reviews.map((rev) =>
+                rev._id === reviewId ? { ...rev, review: newReview, rating: newRating } : rev
+              ),
+            }))
+          );
+          setIsUpdated(false); // Reset isUpdated after successful update
+        }
+      })
+      .catch((err) => {
+        console.error('Error updating review:', err);
+      });
+  };
+
 
   return (
     <MDBContainer className="UserDashboard">
-      <h2>User Dashboard</h2>
+
       <MDBRow className="mb-4">
         <MDBCol md="6">
           <select
@@ -122,14 +191,14 @@ const UserDashboard = () => {
       </MDBRow>
 
       <MDBRow>
-        {filteredProviderInfo.map((post) => {
+        {filteredProviderInfo?.map((post) => {
           return (
             <MDBCol md="6" key={post._id}>
               <MDBCard className="mb-4">
                 <MDBCardBody>
                   <div className="d-flex align-items-center mb-3">
                     <img
-                      src={post.author.image || getDefaultImage(post.author.userName)}
+                      src={getImage(post.author.image, post.author.userName)}
                       alt={post.author.userName}
                       className="author-image rounded-circle me-3"
                     />
@@ -153,11 +222,11 @@ const UserDashboard = () => {
                     </li>
                   </ul>
                   {post.reviews.map((review, i) => (
-                    <MDBCard key={i} className="mb-3">
+                    <MDBCard key={i} className="card-review mb-3">
                       <MDBCardBody>
                         <div className="d-flex align-items-center mb-3">
                           <img
-                            src={review.customer.image || getDefaultImage(review.customer.userName)}
+                            src={getImage(review.customer.image, review.customer.userName)}
                             alt={review.customer.userName}
                             className="author-image rounded-circle me-3"
                           />
@@ -169,6 +238,46 @@ const UserDashboard = () => {
                         </div>
                         <MDBCardText>{review.review}</MDBCardText>
                         <StarRating rating={review.rating} />
+                        {isLoggedIn && userId === review.customer._id && (
+        <button
+          onClick={() => handleDelete(review._id)}
+          className="btn btn-sm btn-danger"
+        >
+          <FontAwesomeIcon icon={faRemove} />
+        </button>
+      )}
+                        {isUpdated && (
+                          <div className="update-review-form">
+                            <div className="form-group">
+                              <label>New Review</label>
+                              <MDBInput
+                                type="text"
+
+                                onChange={(e) => setNewReview(e.target.value)}
+                                className="form-control"
+                              />
+                            </div>
+                            <div>
+                              <StarRating rating={rating} setRating={setRating} />
+                            </div>
+                          </div>
+                        )}
+
+
+{isLoggedIn && userId === review.customer._id && (
+        <button
+          onClick={() => {
+            setIsUpdated(!isUpdated);
+            if (isUpdated) {
+              handleUpdate(review._id, newReview, rating);
+            }
+          }}
+          className="btn btn-sm btn-primary mr-2"
+        >
+          {isUpdated ? "Save" : "Update"}
+          <FontAwesomeIcon icon={faEdit} />
+        </button>
+      )}
                       </MDBCardBody>
                     </MDBCard>
                   ))}
@@ -176,7 +285,6 @@ const UserDashboard = () => {
                     className="form-control mb-2"
                     type="text"
                     placeholder="Review..."
-                    value={newReview}
                     onChange={(e) => setNewReview(e.target.value)}
                   />
                   <StarRating rating={rating} setRating={setRating} />
@@ -193,18 +301,16 @@ const UserDashboard = () => {
         })}
       </MDBRow>
 
-      
       <MDBBtn onClick={toggleContactUsPopup}>Contact Us</MDBBtn>
 
       {showContactUsPopup && (
         <div className="contact-us-popup">
           <div className="popup-content">
-            <ContactUs onClose={toggleContactUsPopup} /> 
+            <ContactUs onClose={toggleContactUsPopup} />
           </div>
         </div>
       )}
 
-  
       {showLoginPopup && (
         <div className="login-popup">
           <div className="popup-content">

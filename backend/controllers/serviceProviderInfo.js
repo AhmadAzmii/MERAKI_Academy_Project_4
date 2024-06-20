@@ -174,6 +174,7 @@ const getProviderInfoByAuthorId = (req, res) => {
                     success: false,
                     message: `No service provider information found for  `,
                 });
+                
             }
         })
         .catch((err) => {

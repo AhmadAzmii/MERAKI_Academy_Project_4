@@ -1,9 +1,17 @@
 
-import React from 'react';
+import React, { useContext,useState } from 'react';
 import './StarRating.css';
+import { UserContext } from '../../App';
 
 const StarRating = ({ rating, setRating }) => {
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const { isLoggedIn,isProvider } = useContext(UserContext);
   const handleClick = (index) => {
+    if (!isLoggedIn&&!isProvider) {
+      
+      setShowLoginPopup(showLoginPopup)
+      return;
+    }
     setRating(index + 1);
   };
 

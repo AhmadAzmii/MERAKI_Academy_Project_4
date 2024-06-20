@@ -2,7 +2,7 @@ const express = require("express")
 
 const { createNewProviderInfo, getAllProvidersInfo, getProviderInfoById, updateProviderInfoById, deleteProviderInfoById ,getProviderInfoByAuthorId} = require("../controllers/serviceProviderInfo")
 
-const { createNewReview } = require("../controllers/review")
+const { createNewReview ,deleteReviewById,updateReviewById} = require("../controllers/review")
 
 const authentication = require("../middleware/authentication")
 const authorization = require("../middleware/authorization")
@@ -17,4 +17,6 @@ providerInfoRouter.get("/:id", getProviderInfoById)
 providerInfoRouter.put("/:id", updateProviderInfoById)
 providerInfoRouter.delete("/:id", deleteProviderInfoById)
 providerInfoRouter.post("/:id/reviews", authentication, authorization("CREATE_REVIEWS","everything"), createNewReview)
+providerInfoRouter.delete("/:id/reviews",authentication, authorization("CREATE_REVIEWS","everything"),deleteReviewById)
+providerInfoRouter.put("/:id/reviews",authentication, authorization("CREATE_REVIEWS","everything"),updateReviewById)
 module.exports = providerInfoRouter

@@ -1,44 +1,123 @@
 .UserDashboard {
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-image: url('https://media.istockphoto.com/id/1589417945/photo/hand-of-mechanic-holding-car-service-and-checking.webp?b=1&s=170667a&w=0&k=20&c=ve2SFpPfslb8-QEgtqkHPLG4SR15aLlJiaJrqqfa164=');
+  background-size: cover;
+  background-position: center;
   padding: 20px;
-}
-
-.review-input {
-  margin-top: 10px;
-}
-
-.login-popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-.contact-us-popup{
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in-out;
+  }
   
-  justify-content: center;  
-  z-index: 1000;
-  flex-direction: column;
-}
-.popup-content {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
+  .UserDashboard h2 {
   text-align: center;
-}
-
-.author-image {
+  margin-bottom: 20px;
+  color: #007bff;
+  }
+  
+  .form-select {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  }
+  
+  .author-image {
   width: 50px;
   height: 50px;
-}
+  object-fit: cover;
+  }
+  
+  .mb-3, .mb-4 {
+  margin-bottom: 1.5rem !important;
+  }
+  
+  .list-group-item {
+  background-color: #f8f9fa;
+  border: none;
+  }
+  
+  .list-group-item b {
+  color: #007bff;
+  }
+  
+  .card-review {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 10px;
+  }
+  
+  .card-review img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  }
+  
+  .MDBCard {
+  transition: transform 0.3s ease-in-out;
+  }
+  
+  .MDBCard
+  {
+  transform: translateY(-10px);
+  }
+  
+  .MDBBtn {
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  
+  .MDBBtn
+  {
+  background-color: #0056b3;
+  transform: scale(1.05);
+  }
+  
+  .login-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .contact-us-popup{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    
+    justify-content: center;  
+    z-index: 1000;
+    flex-direction: column;
+  }
+  .popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  @keyframes fadeIn {
+  from {
+  opacity: 0;
+  }
+  to {
+  opacity: 1;
+  }
+  }
+  
+  @keyframes popup {
+  from {
+  transform: translate(-50%, -40%);
+  }
+  to {
+  transform: translate(-50%, -50%);
+  }
+  }

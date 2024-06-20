@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import {
   MDBContainer,
   MDBRow,
@@ -14,10 +14,12 @@ import {
 } from 'mdb-react-ui-kit';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
-import "./UserDashboard.css"
+import { UserContext } from '../../App';
+import "./UserDashboard.css";
 
 const UserSettings = () => {
   const token = localStorage.getItem("token");
+  const { setUserName, setImage } = useContext(UserContext);
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
@@ -29,8 +31,8 @@ const UserSettings = () => {
     image: ''
   });
   const [message, setMessage] = useState('');
-  const [image, setImage] = useState(null);
-  const navigate=useNavigate()
+  const [image, setImageFile] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -85,15 +87,17 @@ const UserSettings = () => {
       .put(`http://localhost:5000/users/${userData._id}`, updatedUserData, { headers })
       .then((result) => {
         setMessage(result.data.message);
+        setUserName(updatedUserData.userName);  // Update context value
+        setImage(updatedUserData.image);        // Update context value
         if (token) {
           const decodedToken = jwtDecode(token);
-          const specialist =decodedToken.specialist
-          if(specialist){
-        navigate("/provider-dashboard")
-      }else{
-        navigate("/dashboard")
-      }
-      }
+          const specialist = decodedToken.specialist;
+          if (specialist) {
+            navigate("/provider-dashboard");
+          } else {
+            navigate("/dashboard");
+          }
+        }
         setTimeout(() => setMessage(''), 3000);
       })
       .catch((err) => {
@@ -109,17 +113,18 @@ const UserSettings = () => {
   };
 
   const handleFileChange = (e) => {
-    setImage(e.target.files[0]);
+    setImageFile(e.target.files[0]);
   };
-  const backToDashboard= ()=>{
-    navigate("/dashboard")
-  }
+
+  const backToDashboard = () => {
+    navigate("/dashboard");
+  };
 
   const uploadImageToCloudinary = async () => {
     const data = new FormData();
     data.append("file", image);
-    data.append("upload_preset", "rgtsukxl"); 
-    data.append("cloud_name", "dqefjpmuo"); 
+    data.append("upload_preset", "rgtsukxl");
+    data.append("cloud_name", "dqefjpmuo");
 
     try {
       const response = await fetch("https://api.cloudinary.com/v1_1/dqefjpmuo/image/upload", {
@@ -127,7 +132,7 @@ const UserSettings = () => {
         body: data
       });
       const result = await response.json();
-      return result.url; 
+      return result.url;
     } catch (error) {
       console.error("Error uploading image to Cloudinary:", error);
       return null;
@@ -220,12 +225,12 @@ const UserSettings = () => {
               </div>
               {message && <div className="alert alert-danger">{message}</div>}
               <div className='buttons'>
-              <MDBBtn onClick={handleUpdateUser}>
-                Update User Information
-              </MDBBtn>
-              <MDBBtn onClick={backToDashboard}>
-                Cancel
-              </MDBBtn>
+                <MDBBtn onClick={handleUpdateUser}>
+                  Update User Information
+                </MDBBtn>
+                <MDBBtn onClick={backToDashboard}>
+                  Cancel
+                </MDBBtn>
               </div>
             </MDBCardBody>
           </MDBCard>

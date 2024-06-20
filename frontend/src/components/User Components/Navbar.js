@@ -38,7 +38,7 @@ const Navbar = () => {
           
           setUserName(userName);
           setImage(userImage);
-          setIsProvider(userSpecialist !== null); // Set isProvider based on the specialist attribute
+          setIsProvider(userSpecialist !== null); 
         })
         .catch(error => {
           console.error('Error fetching user info:', error);

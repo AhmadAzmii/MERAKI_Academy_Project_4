@@ -161,7 +161,7 @@ const UserDashboard = () => {
               ),
             }))
           );
-          setIsUpdated(false); // Reset isUpdated after successful update
+          setIsUpdated(false); 
         }
       })
       .catch((err) => {

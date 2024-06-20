@@ -96,6 +96,32 @@ const updateReviewById=(req,res)=>{
         })
     })
 }
+const getAllReviews = (req, res) => {
+    reviewModel
+        .find()
+        .populate("customer") // Assuming 'customer' is a reference field in your review model
+        .then((result) => {
+            if (result.length > 0) {
+                res.status(200).json({
+                    success: true,
+                    message: `All reviews`,
+                    reviews: result,
+                });
+            } else {
+                res.status(200).json({
+                    success: false,
+                    message: `No reviews found`,
+                });
+            }
+        })
+        .catch((err) => {
+            res.status(500).json({
+                success: false,
+                message: `Server Error`,
+                err: err.message,
+            });
+        });
+};
 module.exports = {
-    createNewReview,deleteReviewById,updateReviewById
+    createNewReview,deleteReviewById,updateReviewById,getAllReviews
 };

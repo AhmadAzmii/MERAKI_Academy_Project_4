@@ -1,14 +1,16 @@
-const authorization = (string) => {
+const authorization = (...requiredPermissions) => {
     return (req, res, next) => {
-        tokenPermissions = req.token.role.permissions.includes(string)
-        if (!tokenPermissions) {
+        const tokenPermissions = req.token.role.permissions;
+        const hasPermission = requiredPermissions.some(permission => tokenPermissions.includes(permission));
+
+        if (!hasPermission) {
             return res.status(403).json({
                 success: false,
                 message: `Unauthorized`,
-            })
-
+            });
         }
         next();
-    }
-}
+    };
+};
+
 module.exports = authorization;

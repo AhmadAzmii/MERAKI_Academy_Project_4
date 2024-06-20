@@ -3,7 +3,7 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faEdit ,faRemove} from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 import "./AdminDashboard.css";
 import { UserContext } from "../../App";
@@ -40,6 +40,8 @@ const AdminDashboard = () => {
   const [message, setMessage] = useState("");
   const [isSpecialist, setIsSpecialist] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [reviews, setReviews] = useState([]);
+
 
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -77,6 +79,24 @@ const AdminDashboard = () => {
       getAllUsers();
     }
   }, [token]);
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/providerInfo/reviews");
+        if (response.data.success) {
+          setReviews(response.data.reviews);
+        } else {
+          console.error("No reviews found");
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+  
+    fetchReviews();
+  }, []);
+  
+  
 
   const getAllUsers = () => {
     axios
@@ -88,6 +108,22 @@ const AdminDashboard = () => {
         console.log(err);
       });
   };
+  const handleDeleteReviews = async (reviewId) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+  
+      const response = await axios.delete(`http://localhost:5000/providerInfo/${reviewId}/reviews`, { headers });
+  
+      if (response.status === 200 && response.data.success) {
+        setReviews(reviews.filter((review) => review._id !== reviewId));
+      }
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
+  
 
   const handleDelete = (userId) => {
     const headers = {
@@ -114,11 +150,24 @@ const AdminDashboard = () => {
     if (password !== confirmPassword) {
       setMessage("Passwords do not match");
       setTimeout(() => setMessage(""), 3000);
+      return;
     }
-    const reader = new FileReader();
-    reader.readAsDataURL(image);
-    reader.onloadend = async () => {
-      const image = reader.result;
+
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "rgtsukxl");
+    formData.append("cloud_name", "dqefjpmuo");
+
+    try {
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dqefjpmuo/image/upload",
+        {
+          method: "post",
+          body: formData,
+        }
+      );
+      const result = await response.json();
+      const imageUrl = result.url;
 
       const userData = {
         firstName,
@@ -126,31 +175,32 @@ const AdminDashboard = () => {
         email,
         password,
         phoneNumber,
-        image: image,
+        image: imageUrl,
         userName,
-
         age,
         specialist: isSpecialist ? specialist : null,
       };
 
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/users/register",
-          userData
-        );
-        setMessage(response.data.message);
-       setUsers([...users,response.data.user])
+      const registerResponse = await axios.post(
+        "http://localhost:5000/users/register",
+        userData
+      );
+
+      if (registerResponse.data.success) {
+        setMessage(registerResponse.data.message);
+        setUsers([...users, registerResponse.data.user]);
         setTimeout(() => setMessage(""), 3000);
-      } catch (error) {
-        setMessage(error.response?.data?.message || "Registration failed");
+      } else {
+        setMessage(registerResponse.data.message || "Registration failed");
         setTimeout(() => setMessage(""), 3000);
       }
-    };
-    reader.onerror = () => {
-      setMessage("Failed to read the image file");
+    } catch (error) {
+      console.error("Error uploading image to Cloudinary:", error);
+      setMessage("Image upload failed");
       setTimeout(() => setMessage(""), 3000);
-    };
+    }
   };
+
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -236,6 +286,14 @@ const AdminDashboard = () => {
           
             <ul className="list-unstyled components mb-5">
               <li>
+                <a href="#adminDashboard"
+                onClick={()=>setSelectedSection("adminDashboard")}
+                className="dropdown-toggle"
+                >
+                  Admin Dashboard
+                </a>
+              </li>
+              <li>
                 <a
                   href="#userDashboard"
                   onClick={() => setSelectedSection("userDashboard")}
@@ -263,6 +321,16 @@ const AdminDashboard = () => {
                 </a>
               </li>
               <li>
+  <a
+    href="#reviews"
+    onClick={() => setSelectedSection("reviews")}
+    className="dropdown-toggle"
+  >
+    Reviews
+  </a>
+</li>
+
+              <li>
                 <a
                   href="#charts"
                   onClick={() => setSelectedSection("charts")}
@@ -284,6 +352,84 @@ const AdminDashboard = () => {
           </div>
         </nav>
         <div id="content" className="p-4 p-md-5">
+        {selectedSection === "adminDashboard" && (
+  <div>
+    <h1>Admin Dashboard</h1>
+    <div className="container-fluid">
+      <div className="row mb-4">
+        <div className="col-lg-6">
+          <Bar data={barData} />
+        </div>
+        <div className="col-lg-6">
+          <Line data={lineData} />
+        </div>
+      </div>
+      <div className="row mb-4">
+        <div className="col-lg-6">
+          <Pie data={pieData} />
+        </div>
+        <div className="col-lg-6">
+          <Doughnut data={doughnutData} />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-lg-12">
+          <h3>Reviews</h3>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <th>Profile Picture</th>
+                <th>User Name</th>
+                <th>Review</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reviews.map((review) => (
+                <tr key={review._id}>
+                  <td><img className="avatar-image" src={review.customer.image} alt="Avatar"/></td>
+                  <td>{review.customer.userName}</td>
+                  <td>{review.review}</td>
+                  <td>{review.rating}</td>
+                
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="col-lg-12 mt-4">
+          <h3>Users</h3>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                
+                <th>Profile Picture</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user._id}>
+                  <td><img className="avatar-image" src={user.image}alt="Avatar"/></td>
+                  <td>{user.firstName}</td>
+                  <td>{user.lastName}</td>
+                  <td>{user.role.role}</td>
+                  <td>{user.email}</td>
+                  <td>{user.phoneNumber}</td>
+                  
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
           {selectedSection === "userDashboard" && (
             <h2>Hello from User Dashboard</h2>
           )}
@@ -297,22 +443,23 @@ const AdminDashboard = () => {
                 <table className="table table-bordered table-hover">
                   <thead className="thead-dark">
                     <tr>
+                      <th>Profile Picture</th>
                       <th>Username</th>
                       <th>Email</th>
                       <th>Role</th>
-                      <th>Specialist</th>
-                      <th>Permissions</th>
+                      <th>Phone Number</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map((user) => (
                       <tr key={user._id}>
+                        <td><img className="avatar-image" src={user.image} alt="Avatar"/></td>
                         <td>{user.userName}</td>
                         <td>{user.email}</td>
                         <td>{user.role.role}</td>
-                        <td>{user.specialist?.name}</td>
-                        <td>{user.role.permissions?.join(", ")}</td>
+                        <td>{user.phoneNumber}</td>
+                        
                         <td>
                           <button
                             onClick={() => handleUpdate(user._id)}
@@ -336,6 +483,43 @@ const AdminDashboard = () => {
               </div>
             </>
           )}
+          {selectedSection === "reviews" && (
+  <>
+    <h2>Reviews</h2>
+    <div className="table-responsive">
+      <table className="table table-bordered table-hover">
+        <thead className="thead-dark">
+          <tr>
+            <th>Customer Name</th>
+            <th>Review</th>
+            <th>Rating</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reviews.map((review) => (
+            <tr key={review._id}>
+              {console.log(review)}
+              <td>{review.customer.userName}</td>
+              <td>{review.review}</td>
+              <td>{review.rating}</td>
+              <td>{new Date(review.date).toLocaleDateString()}</td>
+              <td>
+              <button
+          onClick={() => handleDeleteReviews(review._id)}
+          className="btn btn-sm btn-danger"
+        >
+          <FontAwesomeIcon icon={faRemove} />
+        </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </>
+)}
           {selectedSection === "charts" && (
             <>
               <h2>Charts</h2>

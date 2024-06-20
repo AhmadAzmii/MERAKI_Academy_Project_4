@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { UserContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';
 
@@ -140,14 +140,14 @@ function Login() {
                         />
                     </div>
                     {message && <div className="alert alert-danger mt-3">{message}</div>}
-                           <p className="text-end mb-3">
-                <a href="#!" className="text-decoration-none" onClick={() => navigate('/forgot-password')}>Forgot password?</a>
-            </p>
-               
+                    <p className="text-end mb-3">
+                        <a href="#!" className="text-decoration-none" onClick={() => navigate('/forgot-password')}>Forgot password?</a>
+                    </p>
+
                     <button type="button" className="btn btn-primary w-100" onClick={handleLogin}>Sign In</button>
-                     <p className="text-center mt-3">
-                    Don't have an account? <a href="#!" className="text-decoration-none" onClick={() => navigate('/register')}>Register</a>
-                </p>
+                    <p className="text-center mt-3">
+                        Don't have an account? <a href="#!" className="text-decoration-none" onClick={() => navigate('/register')}>Register</a>
+                    </p>
                 </form>
             </div>
         </div>

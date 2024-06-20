@@ -183,5 +183,18 @@ a:hover {
     padding: 0;
   }
 }
+.form-group input[type="file"] {
+  border: 1px solid #ced4da;
+  padding: 8px;
+  width: calc(100% - 16px);
+  border-radius: 4px;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.form-group input[type="file"]:focus {
+  outline: none;
+  border-color: #8c8c8c;
+}
 
 

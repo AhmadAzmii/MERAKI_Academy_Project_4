@@ -209,6 +209,7 @@ const UserDashboard = () => {
                       className="author-image rounded-circle me-3"
                     />
                     <div>
+                   
                       <MDBCardTitle className="text-center mb-0">
                         {post.author.userName}
                       </MDBCardTitle>
@@ -216,7 +217,17 @@ const UserDashboard = () => {
                         <b> Specialty : {post?.specialist?.name}</b>
                       </MDBCardSubTitle>
                     </div>
+                    
                   </div>
+                  {post.image && (
+              <div className="post-image-container">
+                <img
+                  src={post.image}
+                  alt="Provider Post"
+                  className="post-image"
+                />
+              </div>
+            )}
                   <MDBCardText className="mt-3"><b>{post.title}</b></MDBCardText>
                   <MDBCardText>{post.description}</MDBCardText>
                   <ul className="list-group mb-3">

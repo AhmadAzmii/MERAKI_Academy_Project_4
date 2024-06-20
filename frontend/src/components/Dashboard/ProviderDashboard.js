@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import {
   MDBContainer,
   MDBRow,
@@ -14,9 +14,10 @@ import {
   MDBBtn,
   MDBCardSubTitle,
 } from "mdb-react-ui-kit";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./ProviderDashboard.css";
 import StarRating from "./StarRating";
+
 export const providerInfoContext = createContext();
 
 const ProviderDashboard = () => {
@@ -27,10 +28,10 @@ const ProviderDashboard = () => {
   const [message, setMessage] = useState("");
   const [experience, setExperience] = useState("");
   const [availability, setAvailability] = useState("");
+  const [image, setImage] = useState(null); // State to hold the image file
   const [providerInfo, setProviderInfo] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
-  // const [rating, setRating] = useState(0);
-  
+
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -48,30 +49,50 @@ const ProviderDashboard = () => {
         .catch((err) => {
           console.error(err);
           setMessage(
-            err.response?.data?.message || "Error fetching provider information"
+            err.response?.data?.message ||
+              "Error fetching provider information"
           );
         });
     }
   }, [token]);
-  
-  
 
-  const handleAddProviderInfo = () => {
+  const handleAddProviderInfo = async () => {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
+
+    // Upload image to Cloudinary if image state is set
+    let imageUrl = null;
+    if (image) {
+      try {
+        imageUrl = await uploadImageToCloudinary(image);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        setMessage("Error uploading image");
+        return;
+      }
+    }
+
     axios
       .post(
         "http://localhost:5000/providerInfo/",
-        { title, description, availability, experience, specialist },
+        {
+          title,
+          description,
+          availability,
+          experience,
+          specialist,
+          image: imageUrl, // Include image URL in the data
+        },
         { headers }
       )
       .then((result) => {
         setMessage(result.data.message);
-        setAvailability("")
-        setExperience("")
-        setDescription("")
-        setTitle("")
+        setAvailability("");
+        setExperience("");
+        setDescription("");
+        setTitle("");
+        setImage(null); // Reset image state after upload
         setTimeout(() => setMessage(""), 3000);
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userId;
@@ -99,16 +120,30 @@ const ProviderDashboard = () => {
       });
   };
 
-  const handleUpdate = (
+  const handleUpdate = async (
     postId,
     newTitle,
     newDescription,
     newExperience,
-    newAvailability
+    newAvailability,
+    newImage // Include newImage parameter for updating image
   ) => {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
+
+    // Upload new image to Cloudinary if newImage state is set
+    let imageUrl = null;
+    if (newImage) {
+      try {
+        imageUrl = await uploadImageToCloudinary(newImage);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        setMessage("Error uploading image");
+        return;
+      }
+    }
+
     axios
       .put(
         `http://localhost:5000/providerInfo/${postId}`,
@@ -117,6 +152,7 @@ const ProviderDashboard = () => {
           experience: newExperience,
           description: newDescription,
           title: newTitle,
+          image: imageUrl, // Include updated image URL in the data
         },
         { headers }
       )
@@ -130,6 +166,7 @@ const ProviderDashboard = () => {
                   description: newDescription,
                   availability: newAvailability,
                   experience: newExperience,
+                  image: imageUrl, // Update image in the post object
                 }
               : post
           )
@@ -152,12 +189,29 @@ const ProviderDashboard = () => {
         console.log(err);
       });
   };
-  // const getDefaultImage = (userName) => {
-  //   const firstLetter = userName.charAt(0).toUpperCase();
-  
-  //     return require(`../../alphabetImages/${firstLetter}.png`);
-   
-  // };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
+
+  // Function to upload image to Cloudinary
+  const uploadImageToCloudinary = async (imageFile) => {
+    const data = new FormData();
+    data.append("file", imageFile);
+    data.append("upload_preset", "rgtsukxl");
+    data.append("cloud_name", "dqefjpmuo");
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dqefjpmuo/image/upload",
+      {
+        method: "post",
+        body: data,
+      }
+    );
+    const result = await response.json();
+    return result.url;
+  };
 
   return (
     <providerInfoContext.Provider value={{ providerInfo }}>
@@ -197,6 +251,16 @@ const ProviderDashboard = () => {
                 type="text"
                 value={availability}
                 onChange={(e) => setAvailability(e.target.value)}
+                className="form-control"
+              />
+            </div>
+            {/* Image Upload Input */}
+            <div className="form-group mb-3">
+              <label>Upload Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
                 className="form-control"
               />
             </div>
@@ -247,23 +311,30 @@ const ProviderDashboard = () => {
                     <p>
                       <b>Availability: </b>: {info.availability}
                     </p>
+
+                    {/* Render Image */}
+                    {info.image && (
+                      <div className="post-image-container">
+                        <img
+                          src={info.image}
+                          alt="Provider Post"
+                          className="post-image"
+                        />
+                      </div>
+                    )}
+
                     {info.reviews?.length > 0 && (
                       <div className="reviews-section">
                         <h4>Reviews:</h4>
-                        {info.reviews.map((review, i) => {
-                          console.log(info);
-                           const getDefaultImage = (userName) => {
-                            const firstLetter = userName.charAt(0).toUpperCase();
-                          
-                              return require(`../../alphabetImages/${firstLetter}.png`);
-                           
-                          };
-                        return(
+                        {info.reviews.map((review, i) => (
                           <MDBCard key={i} className="mb-3">
                             <MDBCardBody>
                               <div className="d-flex align-items-center mb-3">
                                 <img
-                                  src={review.customer.image || getDefaultImage(review.customer.userName)}
+                                  src={
+                                    review.customer.image ||
+                                    require(`../../alphabetImages/${review.customer.userName.charAt(0).toUpperCase()}.png`)
+                                  }
                                   alt={review.customer.userName}
                                   className="author-image rounded-circle me-3"
                                 />
@@ -277,9 +348,11 @@ const ProviderDashboard = () => {
                               <StarRating rating={review.rating} />
                             </MDBCardBody>
                           </MDBCard>
-                        )})}
+                        ))}
                       </div>
                     )}
+
+                    {/* Update Form with Image Upload */}
                     {userId === info.author._id && (
                       <div className="update-form">
                         {isUpdated ? (
@@ -321,6 +394,18 @@ const ProviderDashboard = () => {
                                 className="form-control"
                               />
                             </div>
+                            {/* New Image Upload Input */}
+                            <div className="form-group mb-3">
+                              <label>New Image</label>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) =>
+                                  (info.newImage = e.target.files[0])
+                                }
+                                className="form-control"
+                              />
+                            </div>
                           </div>
                         ) : null}
                         <MDBBtn
@@ -333,7 +418,8 @@ const ProviderDashboard = () => {
                                 info.newTitle,
                                 info.newDescription,
                                 info.newExperience,
-                                info.newAvailability
+                                info.newAvailability,
+                                info.newImage // Pass newImage to handleUpdate
                               );
                             }
                           }}

@@ -603,7 +603,7 @@ const AdminDashboard = () => {
                       <label htmlFor="image" className="form-label">
                         Image
                       </label>
-                      <MDBFile id="image" onChange={handleFileChange} />
+                      <MDBFile className="form-group mb-3" id="image" onChange={handleFileChange} />
                       <div className="specialist-checkbox">
                         <MDBCheckbox
                           name="isSpecialist"

@@ -6,15 +6,20 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Register from './components/User Components/Register';
 import './components/User Components/Register.css';
 import Login from './components/User Components/Login';
-import UserDashboard from './components/Dashboard/UserDashboard';
 import Navbar from './components/User Components/Navbar';
-import AdminDashboard from './components/Dashboard/AdminDashboard';
-import ProviderDashboard from './components/Dashboard/ProviderDashboard';
 import "./components/User Components/Login.css";
-import { gapi } from 'gapi-script';
-import UserSettings from './components/Dashboard/UserSettings';
 import "./components/Dashboard/UserSettings.css"
 import ForgotPassword from './components/User Components/ForgotPassword';
+
+
+import UserDashboard from './components/Dashboard/UserDashboard';
+
+import AdminDashboard from './components/Dashboard/AdminDashboard';
+import ProviderDashboard from './components/Dashboard/ProviderDashboard';
+
+import { gapi } from 'gapi-script';
+import UserSettings from './components/Dashboard/UserSettings';
+
 
 export const UserContext = createContext();
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
@@ -24,7 +29,7 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(!!token);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isProvider, setIsProvider] = useState(false);
-    const [isLoggedInWithGoogle, setIsLoggedInWithGoogle] = useState(!!token);
+    const [isLoggedInWithGoogle, setIsLoggedInWithGoogle] = useState(false);
     const [userName, setUserName] = useState("");
     const [image, setImage] = useState("");
     const navigate = useNavigate();

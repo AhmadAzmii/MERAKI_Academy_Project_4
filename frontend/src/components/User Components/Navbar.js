@@ -1,18 +1,14 @@
-// Navbar.jsx
-
 import React, { useContext, useEffect } from 'react';
 import { UserContext } from '../../App';
 import { useNavigate, Link } from 'react-router-dom';
 import { GoogleLogout } from 'react-google-login';
 import axios from 'axios';
 import "./Navbar.css";
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
 const Navbar = () => {
-    // const [userNameGoogle, setUserNameGoogle] = useState("")
-    // const [imageGoogle, setImageGoogle] = useState("")
   const {
     isLoggedInWithGoogle,
     setToken,
@@ -20,6 +16,7 @@ const Navbar = () => {
     isLoggedIn,
     setIsLoggedIn,
     isProvider,
+    setIsProvider,
     userName,
     setUserName,
     image,
@@ -32,24 +29,22 @@ const Navbar = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-    //   const userName = decodedToken.user;
-    //   const image = decodedToken.image
-    //   console.log(decodedToken);
-    //   setUserNameGoogle(userName)
-    //   setImageGoogle(image)
 
       axios.get(`http://localhost:5000/users/${userId}`)
         .then(response => {
           const userImage = response.data.user.image;
           const userName = response.data.user.userName;
+          const userSpecialist = response.data.user.specialist;
+          
           setUserName(userName);
           setImage(userImage);
+          setIsProvider(userSpecialist !== null); // Set isProvider based on the specialist attribute
         })
         .catch(error => {
           console.error('Error fetching user info:', error);
         });
     }
-  }, [token, setUserName, setImage]);
+  }, [token, setUserName, setImage, setIsProvider]);
 
   const getDefaultImage = (name) => {
     const firstLetter = name?.charAt(0)?.toUpperCase();
@@ -71,7 +66,7 @@ const Navbar = () => {
 
   return (
     <div className='navbar'>
-        {isLoggedIn && (
+      {isLoggedIn && (
         <div className="avatar-container">
           <img className="avatar-image" src={getImage(image, userName)} alt="Avatar" />
         </div>
@@ -86,7 +81,6 @@ const Navbar = () => {
           )}
         </>
       )}
-
       <div className="navbar-right">
         {isLoggedIn && (
           <div className="logout-container">
@@ -108,8 +102,6 @@ const Navbar = () => {
           </div>
         )}
       </div>
-
-      
     </div>
   );
 };

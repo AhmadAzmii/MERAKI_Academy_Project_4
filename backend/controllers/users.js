@@ -258,44 +258,74 @@
     }
 
     const googleLogin = async (req, res) => {
-        const { token } = req.body;
         try {
+            const { token } = req.body;
             const ticket = await client.verifyIdToken({
                 idToken: token,
-                audience:"562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com"
+                audience: "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com",
             });
-            const payload = ticket.getPayload();
-
-            console.log(payload);
-            
-            
-            const role = await Role.findById("6664b711c97330a23805e283").populate('role');
-            if (!role) {
-                return res.status(404).json({ message: 'Role not found' });
-            }
-
     
-
-            const jwtPayload = { 
-                user: payload.given_name + " " + payload.family_name,
-                firstName: payload.given_name,
-                lastName: payload.family_name,
-                userId: payload.sub,
-                email: payload.email,
-                role: role,
-                permissions: role.permissions,
-                specialist: null,
-                image:payload.picture
+            const payload = ticket.getPayload();
+            const { email, given_name, family_name, picture } = payload;
+    
+            let user = await usersModel.findOne({ email });
+    
+            if (!user) {
+                const role = await Role.findById("6664b711c97330a23805e283").populate('role');
+                if (!role) {
+                    return res.status(500).json({ success: false, message: "Default user role not found" });
+                }
+    
+                const newUser = new usersModel({
+                    email,
+                    firstName: given_name,
+                    lastName: family_name,
+                    image: picture,
+                    role: role._id,
+                    userName: given_name+""+family_name,
+                    phoneNumber: "1",
+                    password: "",
+                    specialist: null 
+                });
+    
+                user = await newUser.save();
+            }
+    
+            const userWithRole = await usersModel.findOne({ email }).populate("role");
+    
+            if (!userWithRole) {
+                return res.status(500).json({ success: false, message: "Failed to retrieve user after creation" });
+            }
+    
+            const tokenPayload = {
+                user: userWithRole.userName,
+                email: userWithRole.email,
+                userId: userWithRole._id,
+                role: userWithRole.role,
+                image: userWithRole.image,
             };
-
-            const appToken = jwt.sign(jwtPayload, process.env.SECRET, { expiresIn: '1h' });
-
-            res.status(200).json({ token: appToken });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ message: 'Failed to authenticate Google token' });
+    
+            if (userWithRole.role.role === 'serviceProvider') {
+                tokenPayload.specialist = userWithRole.specialist;
+            }
+    
+            const newToken = jwt.sign(tokenPayload, process.env.SECRET, { expiresIn: '1h' });
+    
+            res.status(200).json({
+                success: true,
+                message: "Logged in successfully",
+                token: newToken,
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({
+                success: false,
+                message: "Server Error",
+                error: err.message,
+            });
         }
     };
+    
 
     const deleteUserById= (req,res)=>{
         const {id}=req.params

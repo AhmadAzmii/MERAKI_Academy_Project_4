@@ -1,15 +1,14 @@
-import axios from 'axios';
 import React, { useContext, useState } from 'react';
 import { UserContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { GoogleLogin } from 'react-google-login';
-
+import axios from 'axios';
 
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
 function Login() {
-    const { setToken, setIsLoggedIn, setIsAdmin, setIsProvider, setIsLoggedInWithGoogle } = useContext(UserContext);
+    const { setToken, setIsLoggedIn, setIsAdmin, setIsProvider, setIsLoggedInWithGoogle, setUserName, setImage } = useContext(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -27,39 +26,9 @@ function Login() {
             const role = decodedToken.role.role;
             const specialistId = decodedToken.specialist?._id;
 
-            if (role === 'serviceProvider') {
-                if (specialistId) {
-                    localStorage.setItem('specialist', specialistId);
-                }
-                setIsAdmin(false);
-                navigate('/Provider-Dashboard');
-            } else if (role === 'Admin') {
-                setIsAdmin(true);
-                navigate('/admin-dashboard');
-            } else {
-                navigate('/dashboard');
-            }
-        } catch (err) {
-            console.error(err);
-            setMessage(err.response?.data?.message || 'Login failed');
-            setTimeout(() => setMessage(""), 3000);
-        }
-    };
+            setUserName(decodedToken.user);
+            setImage(decodedToken.image);
 
-    const handleGoogleLoginSuccess = async (res) => {
-        try {
-            const googleToken = res.tokenId;
-            const result = await axios.post('http://localhost:5000/users/google-login', { token: googleToken });
-            setToken(result.data.token);
-
-            localStorage.setItem('token', result.data.token);
-
-            setIsLoggedIn(true);
-            setIsLoggedInWithGoogle(true)
-            const decodedToken = jwtDecode(result.data.token);
-            const role = decodedToken.role.role;
-            const specialistId = decodedToken.specialist?._id;
-            console.log(decodedToken);
             if (role === 'serviceProvider') {
                 if (specialistId) {
                     localStorage.setItem('specialist', specialistId);
@@ -78,7 +47,48 @@ function Login() {
             }
         } catch (err) {
             console.error(err);
-            setMessage(err.response?.data?.message || 'google login failed');
+            setMessage(err.response?.data?.message || 'Login failed');
+            setTimeout(() => setMessage(""), 3000);
+        }
+    };
+
+    const handleGoogleLoginSuccess = async (res) => {
+        try {
+            const googleToken = res.tokenId;
+            const result = await axios.post('http://localhost:5000/users/google-login', { token: googleToken });
+            setToken(result.data.token);
+
+            localStorage.setItem('token', result.data.token);
+
+            setIsLoggedIn(true);
+            setIsLoggedInWithGoogle(true);
+
+            const decodedToken = jwtDecode(result.data.token);
+            const role = decodedToken.role.role;
+            const specialistId = decodedToken.specialist?._id;
+
+            setUserName(decodedToken.user);
+            setImage(decodedToken.image);
+
+            if (role === 'serviceProvider') {
+                if (specialistId) {
+                    localStorage.setItem('specialist', specialistId);
+                }
+                setIsAdmin(false);
+                setIsProvider(true);
+                navigate('/Provider-Dashboard');
+            } else if (role === 'Admin') {
+                setIsAdmin(true);
+                setIsProvider(false);
+                navigate('/admin-dashboard');
+            } else {
+                setIsAdmin(false);
+                setIsProvider(false);
+                navigate('/dashboard');
+            }
+        } catch (err) {
+            console.error(err);
+            setMessage(err.response?.data?.message || 'Google login failed');
             setTimeout(() => setMessage(""), 3000);
         }
     };
@@ -101,6 +111,7 @@ function Login() {
                             setTimeout(() => setMessage(""), 3000);
                         }}
                         isSignedIn={true}
+                        prompt="select_account"
                         className="btn btn-outline-primary w-100"
                     />
                 </div>
@@ -128,21 +139,12 @@ function Login() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    <div className="text-end mb-3">
-                    <p className="text-end mb-3">
-                <a href="#!" className="text-decoration-none" onClick={() => navigate('/forgot-password')}>Forgot password?</a>
-            </p>
-                    </div>
-                    <button className='btn btn-primary w-100' type="button" onClick={handleLogin}>Login</button>
+                    {message && <div className="alert alert-danger mt-3">{message}</div>}
+                    <button type="button" className="btn btn-primary w-100" onClick={handleLogin}>Sign In</button>
                 </form>
-                <p className="text-center mt-3">
-                    Don't have an account? <a href="#!" className="text-decoration-none" onClick={() => navigate('/register')}>Register</a>
-                </p>
-                {message && <p className="text-center text-danger mt-3">{message}</p>}
             </div>
         </div>
     );
-
 }
 
 export default Login;

@@ -15,7 +15,8 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../App';
-import "./UserDashboard.css";
+// import "./UserDashboard.css"; // Include any other CSS if needed
+import "./UserSettings.css"; // Import the CSS file
 
 const UserSettings = () => {
   const token = localStorage.getItem("token");
@@ -87,8 +88,8 @@ const UserSettings = () => {
       .put(`http://localhost:5000/users/${userData._id}`, updatedUserData, { headers })
       .then((result) => {
         setMessage(result.data.message);
-        setUserName(updatedUserData.userName);  // Update context value
-        setImage(updatedUserData.image);        // Update context value
+        setUserName(updatedUserData.userName);  
+        setImage(updatedUserData.image);        
         if (token) {
           const decodedToken = jwtDecode(token);
           const specialist = decodedToken.specialist;
@@ -141,101 +142,98 @@ const UserSettings = () => {
 
   return (
     <MDBContainer className='UserSettings'>
-      <MDBRow>
-        <MDBCol md="6">
-          <MDBCard>
-            <MDBCardBody>
-              <MDBCardTitle>Update User Information</MDBCardTitle>
-              <div className="form-group mb-3">
-                <label>First Name</label>
-                <MDBInput
-                  type="text"
-                  name="firstName"
-                  // value={userData.firstName}
-                  onChange={handleChange}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label>Last Name</label>
-                <MDBInput
-                  type="text"
-                  name="lastName"
-                  // value={userData.lastName}
-                  onChange={handleChange}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label>Phone Number</label>
-                <MDBInput
-                  type="text"
-                  name="phoneNumber"
-                  // value={userData.phoneNumber}
-                  onChange={handleChange}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label>Username</label>
-                <MDBInput
-                  type="text"
-                  name="userName"
-                  // value={userData.userName}
-                  onChange={handleChange}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label>Age</label>
-                <MDBInput
-                  type="number"
-                  name="age"
-                  // value={userData.age}
-                  onChange={handleChange}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label>Password</label>
-                <MDBInput
-                  type="password"
-                  name="password"
-                  // value={userData.password}
-                  onChange={handleChange}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label>Confirm Password</label>
-                <MDBInput
-                  type="password"
-                  name="confirmPassword"
-                  // value={userData.confirmPassword}
-                  onChange={handleChange}
-                  className="form-control"
-                />
-              </div>
-              <div className="form-group mb-3">
-                <label htmlFor="image" className="form-label">Image</label>
-                <MDBFile
-                  id="image"
-                  onChange={handleFileChange}
-                />
-              </div>
-              {message && <div className="alert alert-danger">{message}</div>}
-              <div className='buttons'>
-                <MDBBtn onClick={handleUpdateUser}>
-                  Update User Information
-                </MDBBtn>
-                <MDBBtn onClick={backToDashboard}>
-                  Cancel
-                </MDBBtn>
-              </div>
-            </MDBCardBody>
-          </MDBCard>
-        </MDBCol>
-      </MDBRow>
+      <MDBCard>
+        <MDBCardTitle>Update Your Information</MDBCardTitle>
+        <MDBCardBody className='settings'>
+          
+          <div className="form-group mb-3">
+            <label>First Name</label>
+            <MDBInput
+              type="text"
+              name="firstName"
+              // value={userData.firstName}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Last Name</label>
+            <MDBInput
+              type="text"
+              name="lastName"
+              // value={userData.lastName}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Phone Number</label>
+            <MDBInput
+              type="text"
+              name="phoneNumber"
+              // value={userData.phoneNumber}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Username</label>
+            <MDBInput
+              type="text"
+              name="userName"
+              // value={userData.userName}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Age</label>
+            <MDBInput
+              type="number"
+              name="age"
+              // value={userData.age}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Password</label>
+            <MDBInput
+              type="password"
+              name="password"
+              // value={userData.password}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label>Confirm Password</label>
+            <MDBInput
+              type="password"
+              name="confirmPassword"
+              // value={userData.confirmPassword}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group mb-3">
+            <label htmlFor="image" className="form-label">Image</label>
+            <MDBFile
+              id="image"
+              onChange={handleFileChange}
+            />
+          </div>
+          {message && <div className="alert alert-danger">{message}</div>}
+          <div className='buttons'>
+            <MDBBtn onClick={handleUpdateUser}>
+              Update User Information
+            </MDBBtn>
+            <MDBBtn onClick={backToDashboard}>
+              Cancel
+            </MDBBtn>
+          </div>
+        </MDBCardBody>
+      </MDBCard>
     </MDBContainer>
   );
 };

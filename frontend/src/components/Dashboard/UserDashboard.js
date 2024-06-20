@@ -172,7 +172,13 @@ const UserDashboard = () => {
 
   return (
     <MDBContainer className="UserDashboard">
-
+ <div className="image-container">
+        <img
+          src="https://media.istockphoto.com/id/1589417945/photo/hand-of-mechanic-holding-car-service-and-checking.webp?b=1&s=170667a&w=0&k=20&c=ve2SFpPfslb8-QEgtqkHPLG4SR15aLlJiaJrqqfa164="
+          alt="Background"
+          className="dashboard-image"
+        />
+      </div>
       <MDBRow className="mb-4">
         <MDBCol md="6">
           <select
@@ -195,7 +201,7 @@ const UserDashboard = () => {
           return (
             <MDBCol md="6" key={post._id}>
               <MDBCard className="mb-4">
-                <MDBCardBody>
+                <MDBCardBody className='post'>
                   <div className="d-flex align-items-center mb-3">
                     <img
                       src={getImage(post.author.image, post.author.userName)}
@@ -274,7 +280,7 @@ const UserDashboard = () => {
           }}
           className="btn btn-sm btn-primary mr-2"
         >
-          {isUpdated ? "Save" : "Update"}
+          {isUpdated ? "Save" : ""}
           <FontAwesomeIcon icon={faEdit} />
         </button>
       )}

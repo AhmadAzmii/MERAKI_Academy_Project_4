@@ -9,7 +9,8 @@
 
     const otpStore = {};
     const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
-
+    
+    //! Otp but need sub
     const forgotPassword = async (req, res) => {
         const { email } = req.body;
         const user = await usersModel.findOne({ email });

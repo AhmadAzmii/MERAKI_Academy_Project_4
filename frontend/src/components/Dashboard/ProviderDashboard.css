@@ -3,6 +3,7 @@
 }
 
 .update-form {
+  flex-direction: column;
   display: flex;
     justify-content: space-between;
   margin-top: 20px;

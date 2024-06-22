@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import './Message.css'
-const Message = ({ socket, userId }) => {
+import {jwtDecode} from 'jwt-decode';
+const Message = ({ socket, providerId ,providerUserName}) => {
     const [to, setTo] = useState("");
     const [message, setMessage] = useState("");
     const [allMessages, setAllMessages] = useState([]);
-
+    const token=localStorage.getItem("token")
+    const [user_id, setUser_id] = useState("")
+    const [userName, setUserName] = useState("")
+    useEffect(()=>{
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.userId;
+            setUser_id(userId);
+            const userName=decodedToken.user;
+            console.log(decodedToken);
+            setUserName(userName)
+          }
+    },[token])
     useEffect(() => {
-        socket.on("message", receiveMessage);
-
+        socket?.on("message", receiveMessage);
+        console.log(providerId);
         return () => {
-            socket.off("message", receiveMessage);
+            socket?.off("message", receiveMessage);
         };
     }, [socket]);
 
     const sendMessage = () => {
-        socket.emit("message", { to, from: userId, message });
+        socket?.emit("message", { to: providerId, from:userName, message });
     };
 
     const receiveMessage = (data) => {
@@ -24,6 +37,7 @@ const Message = ({ socket, userId }) => {
 
     return (
         <div className='Message'>
+            
             <h2>Chat</h2>
             <input 
                 type='text' 
@@ -34,15 +48,15 @@ const Message = ({ socket, userId }) => {
             <input 
                 type='text' 
                 placeholder='to' 
-                value={to}
-                onChange={(e) => setTo(e.target.value)} 
+                value={providerId}
+                
             />
             <button onClick={sendMessage}>
                 Send 
             </button>
             <div className="messages">
                 {allMessages.length > 0 && allMessages.map((msg, index) => (
-                    <p key={index} className={msg.from === userId ? 'from-me' : 'from-other'}>
+                    <p key={index} className={msg.from === userName ? 'from-me' : 'from-other'}>
                         <small>{msg.from}: {msg.message}</small>
                     </p>
                 ))}

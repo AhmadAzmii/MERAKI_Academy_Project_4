@@ -6,8 +6,10 @@ import axios from 'axios';
 import "./Navbar.css";
 import { jwtDecode } from 'jwt-decode';
 import {
+
   MDBRow,
   MDBCol,
+
   MDBBtn,
 } from 'mdb-react-ui-kit';
 
@@ -114,7 +116,7 @@ const Navbar = () => {
     <div className='navbar'>
       {isLoggedIn && (
         <div className="avatar-container">
-          {weather && (
+          {/* {weather && (
             <div className="weather-card">
               <div className="weather-card-header">
                 <MDBRow>
@@ -156,7 +158,7 @@ const Navbar = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
           <img className="avatar-image" src={getImage(image, userName)} alt="Avatar" />
         </div>
       )}

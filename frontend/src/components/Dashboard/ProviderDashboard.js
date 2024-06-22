@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import {
   MDBContainer,
   MDBRow,
@@ -28,9 +28,11 @@ const ProviderDashboard = () => {
   const [message, setMessage] = useState("");
   const [experience, setExperience] = useState("");
   const [availability, setAvailability] = useState("");
-  const [image, setImage] = useState(null); // State to hold the image file
+  const [image, setImage] = useState(null);
   const [providerInfo, setProviderInfo] = useState([]);
-  const [isUpdated, setIsUpdated] = useState(false);
+  const [isUpdated, setIsUpdated] = useState({});
+
+  const [editStates, setEditStates] = useState({});
 
   useEffect(() => {
     if (token) {
@@ -61,7 +63,6 @@ const ProviderDashboard = () => {
       Authorization: `Bearer ${token}`,
     };
 
-    // Upload image to Cloudinary if image state is set
     let imageUrl = null;
     if (image) {
       try {
@@ -82,7 +83,7 @@ const ProviderDashboard = () => {
           availability,
           experience,
           specialist,
-          image: imageUrl, // Include image URL in the data
+          image: imageUrl,
         },
         { headers }
       )
@@ -92,7 +93,7 @@ const ProviderDashboard = () => {
         setExperience("");
         setDescription("");
         setTitle("");
-        setImage(null); // Reset image state after upload
+        setImage(null);
         setTimeout(() => setMessage(""), 3000);
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userId;
@@ -120,19 +121,13 @@ const ProviderDashboard = () => {
       });
   };
 
-  const handleUpdate = async (
-    postId,
-    newTitle,
-    newDescription,
-    newExperience,
-    newAvailability,
-    newImage // Include newImage parameter for updating image
-  ) => {
+  const handleUpdate = async (postId) => {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
 
-    // Upload new image to Cloudinary if newImage state is set
+    const { newTitle, newDescription, newExperience, newAvailability, newImage } = editStates[postId] || {};
+
     let imageUrl = null;
     if (newImage) {
       try {
@@ -152,7 +147,7 @@ const ProviderDashboard = () => {
           experience: newExperience,
           description: newDescription,
           title: newTitle,
-          image: imageUrl, // Include updated image URL in the data
+          image: imageUrl,
         },
         { headers }
       )
@@ -166,11 +161,12 @@ const ProviderDashboard = () => {
                   description: newDescription,
                   availability: newAvailability,
                   experience: newExperience,
-                  image: imageUrl, // Update image in the post object
+                  image: imageUrl,
                 }
               : post
           )
         );
+        setIsUpdated((prev) => ({ ...prev, [postId]: false }));
       })
       .catch((err) => {
         console.error(err);
@@ -195,7 +191,17 @@ const ProviderDashboard = () => {
     setImage(file);
   };
 
-  // Function to upload image to Cloudinary
+  const handleEditImageChange = (postId, e) => {
+    const file = e.target.files[0];
+    setEditStates((prev) => ({
+      ...prev,
+      [postId]: {
+        ...prev[postId],
+        newImage: file,
+      },
+    }));
+  };
+
   const uploadImageToCloudinary = async (imageFile) => {
     const data = new FormData();
     data.append("file", imageFile);
@@ -254,7 +260,6 @@ const ProviderDashboard = () => {
                 className="form-control"
               />
             </div>
-            {/* Image Upload Input */}
             <div className="form-group mb-3">
               <label>Upload Image</label>
               <input
@@ -280,9 +285,22 @@ const ProviderDashboard = () => {
 
             const decodedToken = jwtDecode(token);
             const userId = decodedToken.userId;
+
+            const isCurrentPostUpdated = isUpdated[info._id] || false;
+
+            const handleInputChange = (postId, field, value) => {
+              setEditStates((prev) => ({
+                ...prev,
+                [postId]: {
+                  ...prev[postId],
+                  [field]: value,
+                },
+              }));
+            };
+
             return (
-              <MDBCol md="6" key={info._id} className="mt-3">
-                <MDBCard>
+              <MDBCol md="6" key={info._id} className="mb-4">
+                <MDBCard className="provider-card">
                   <MDBCardBody>
                     <div className="d-flex align-items-center mb-3">
                       <img
@@ -312,7 +330,6 @@ const ProviderDashboard = () => {
                       <b>Availability: </b>: {info.availability}
                     </p>
 
-                    {/* Render Image */}
                     {info.image && (
                       <div className="post-image-container">
                         <img
@@ -352,24 +369,37 @@ const ProviderDashboard = () => {
                       </div>
                     )}
 
-                    {/* Update Form with Image Upload */}
                     {userId === info.author._id && (
                       <div className="update-form">
-                        {isUpdated ? (
+                        {isCurrentPostUpdated ? (
                           <div>
                             <div className="form-group">
                               <label>New Title</label>
                               <MDBInput
                                 type="text"
-                                onChange={(e) => (info.newTitle = e.target.value)}
+                                value={editStates[info._id]?.newTitle || title}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    info._id,
+                                    "newTitle",
+                                    e.target.value
+                                  )
+                                }
                                 className="form-control"
                               />
                             </div>
                             <div className="form-group">
                               <label>New Description</label>
                               <MDBTextArea
+                                value={
+                                  editStates[info._id]?.newDescription ||description
+                                }
                                 onChange={(e) =>
-                                  (info.newDescription = e.target.value)
+                                  handleInputChange(
+                                    info._id,
+                                    "newDescription",
+                                    e.target.value
+                                  )
                                 }
                                 className="form-control"
                               />
@@ -378,8 +408,15 @@ const ProviderDashboard = () => {
                               <label>New Availability</label>
                               <MDBInput
                                 type="text"
+                                value={
+                                  editStates[info._id]?.newAvailability || availability
+                                }
                                 onChange={(e) =>
-                                  (info.newAvailability = e.target.value)
+                                  handleInputChange(
+                                    info._id,
+                                    "newAvailability",
+                                    e.target.value
+                                  )
                                 }
                                 className="form-control"
                               />
@@ -388,20 +425,24 @@ const ProviderDashboard = () => {
                               <label>New Experience</label>
                               <MDBInput
                                 type="text"
+                                value={editStates[info._id]?.newExperience || experience}
                                 onChange={(e) =>
-                                  (info.newExperience = e.target.value)
+                                  handleInputChange(
+                                    info._id,
+                                    "newExperience",
+                                    e.target.value
+                                  )
                                 }
                                 className="form-control"
                               />
                             </div>
-                            {/* New Image Upload Input */}
                             <div className="form-group mb-3">
                               <label>New Image</label>
                               <input
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) =>
-                                  (info.newImage = e.target.files[0])
+                                  handleEditImageChange(info._id, e)
                                 }
                                 className="form-control"
                               />
@@ -411,20 +452,16 @@ const ProviderDashboard = () => {
                         <MDBBtn
                           className="mt-3"
                           onClick={() => {
-                            setIsUpdated(!isUpdated);
-                            if (isUpdated) {
-                              handleUpdate(
-                                info._id,
-                                info.newTitle,
-                                info.newDescription,
-                                info.newExperience,
-                                info.newAvailability,
-                                info.newImage // Pass newImage to handleUpdate
-                              );
+                            setIsUpdated((prev) => ({
+                              ...prev,
+                              [info._id]: !isCurrentPostUpdated,
+                            }));
+                            if (isCurrentPostUpdated) {
+                              handleUpdate(info._id);
                             }
                           }}
                         >
-                          {isUpdated ? "Save" : "Update"}
+                          {isCurrentPostUpdated ? "Save" : "Update"}
                         </MDBBtn>
                         <MDBBtn
                           className="btn-danger mt-3"

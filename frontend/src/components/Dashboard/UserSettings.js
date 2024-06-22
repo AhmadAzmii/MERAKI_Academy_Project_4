@@ -3,8 +3,7 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import {
   MDBContainer,
-  MDBRow,
-  MDBCol,
+ 
   MDBCard,
   MDBCardBody,
   MDBCardTitle,
@@ -15,8 +14,8 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../App';
-// import "./UserDashboard.css"; // Include any other CSS if needed
-import "./UserSettings.css"; // Import the CSS file
+// import "./UserDashboard.css";
+import "./UserSettings.css"; 
 
 const UserSettings = () => {
   const token = localStorage.getItem("token");

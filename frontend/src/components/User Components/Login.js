@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { UserContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';
 
@@ -19,16 +19,16 @@ function Login() {
             const result = await axios.post('http://localhost:5000/users/login', { email, password });
             setToken(result.data.token);
             localStorage.setItem('token', result.data.token);
-
+    
             setIsLoggedIn(true);
-
+    
             const decodedToken = jwtDecode(result.data.token);
             const role = decodedToken.role.role;
             const specialistId = decodedToken.specialist?._id;
-
+    
             setUserName(decodedToken.user);
             setImage(decodedToken.image);
-
+    
             if (role === 'serviceProvider') {
                 if (specialistId) {
                     localStorage.setItem('specialist', specialistId);
@@ -46,29 +46,29 @@ function Login() {
                 navigate('/dashboard');
             }
         } catch (err) {
-            console.error(err);
+            console.error("Client-side error during login process:", err);
             setMessage(err.response?.data?.message || 'Login failed');
             setTimeout(() => setMessage(""), 3000);
         }
     };
+    
 
     const handleGoogleLoginSuccess = async (res) => {
         try {
             const googleToken = res.tokenId;
             const result = await axios.post('http://localhost:5000/users/google-login', { token: googleToken });
-            setToken(result.data.token);
+            const token = result.data.token;
+            const decodedToken = jwtDecode(token);
 
-            localStorage.setItem('token', result.data.token);
-
+            setToken(token);
+            localStorage.setItem('token', token);
             setIsLoggedIn(true);
             setIsLoggedInWithGoogle(true);
-
-            const decodedToken = jwtDecode(result.data.token);
-            const role = decodedToken.role.role;
-            const specialistId = decodedToken.specialist?._id;
-
             setUserName(decodedToken.user);
             setImage(decodedToken.image);
+
+            const role = decodedToken.role.role;
+            const specialistId = decodedToken.specialist?._id;
 
             if (role === 'serviceProvider') {
                 if (specialistId) {
@@ -89,7 +89,7 @@ function Login() {
         } catch (err) {
             console.error(err);
             setMessage(err.response?.data?.message || 'Google login failed');
-            setTimeout(() => setMessage(""), 3000);
+            setTimeout(() => setMessage(''), 3000);
         }
     };
 
@@ -106,9 +106,9 @@ function Login() {
                         cookiePolicy={'single_host_origin'}
                         onSuccess={handleGoogleLoginSuccess}
                         onFailure={() => {
-                            console.log('Login Failed');
+                            console.log('Google login failed');
                             setMessage('Google login failed');
-                            setTimeout(() => setMessage(""), 3000);
+                            setTimeout(() => setMessage(''), 3000);
                         }}
                         isSignedIn={true}
                         prompt="select_account"

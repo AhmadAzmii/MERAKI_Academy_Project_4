@@ -17,6 +17,8 @@ import {
   MDBBtn,
   MDBFile,
 } from "mdb-react-ui-kit";
+import socketInit from '../../socket.server';
+import Message from '../Dashboard/Message';
 
 const AdminDashboard = () => {
   const Admin =require("../../alphabetImages/Admin.png")
@@ -25,6 +27,10 @@ const AdminDashboard = () => {
   // const [imageOne, setImageOne] = useState("");
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
+    const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [tokenOne, setTokenOne] = useState("")
+  const [user_id, setUser_id] = useState("")
 
   const [selectedSection, setSelectedSection] = useState("dashboard");
   const navigate = useNavigate();
@@ -258,6 +264,24 @@ const AdminDashboard = () => {
     ],
   };
 
+  useEffect(()=>{
+    socket?.on("connect",()=>{
+        setIsConnected(true);
+        console.log("Connected to socket");
+    });
+
+    socket?.on("connect_error",(error)=>{
+        setIsConnected(false);
+        console.log(error);
+    });
+
+    return ()=>{
+        setIsConnected(false);
+        socket?.close();
+        socket?.removeAllListeners();
+    };
+  },[socket]);
+
   return (
     <div className="d-flex flex-column">
       <nav
@@ -355,6 +379,18 @@ const AdminDashboard = () => {
         {selectedSection === "adminDashboard" && (
   <div>
     <h1>Admin Dashboard</h1>
+    <input type="text" placeholder="user_id"
+    onChange={(e)=>setUser_id(e.target.value)}/>
+    <input type="text" placeholder="token"
+    onChange={(e)=>setTokenOne(e.target.value)}/>
+    <button onClick={()=>{
+      setSocket(socketInit({
+        user_id,tokenOne
+      }))
+    }}>
+      connect
+    </button>
+    {isConnected &&  <Message socket={socket} userId={user_id}/>}
     <div className="container-fluid">
       <div className="row mb-4">
         <div className="col-lg-6">

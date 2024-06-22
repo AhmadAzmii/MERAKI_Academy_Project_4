@@ -176,23 +176,27 @@
         const password = req.body.password;
         const email = req.body.email.toLowerCase();
     
+        console.log("Login attempt for email:", email);
+    
         usersModel
             .findOne({ email })
             .populate("role", "-_id -__v")
             .populate("specialist")
             .then(async (result) => {
                 if (!result) {
+                    console.log("User not found for email:", email);
                     return res.status(403).json({
                         success: false,
-                        message: `The email doesn't exist or The password you’ve entered is incorrect`,
+                        message: `The email doesn't exist or the password you’ve entered is incorrect`,
                     });
                 }
                 try {
                     const valid = await bcrypt.compare(password, result.password);
                     if (!valid) {
+                        console.log("Invalid password for email:", email);
                         return res.status(403).json({
                             success: false,
-                            message: `The email doesn't exist or The password you’ve entered is incorrect`,
+                            message: `The email doesn't exist or the password you’ve entered is incorrect`,
                         });
                     }
                     const payload = {
@@ -207,8 +211,9 @@
                     };
                     const token = jwt.sign(payload, process.env.SECRET, options);
     
-                    
-                    await sendSms('+962772341720', 'Login successful! Welcome to our service.');
+                    console.log("Login successful for email:", email);
+    
+                    // await sendSms('+962772341720', 'Login successful! Welcome to our service.');
     
                     res.status(200).json({
                         success: true,
@@ -216,10 +221,16 @@
                         token: token,
                     });
                 } catch (error) {
-                    throw new Error(error.message);
+                    console.error("Error during login process:", error.message);
+                    res.status(500).json({
+                        success: false,
+                        message: `Server Error`,
+                        err: error.message,
+                    });
                 }
             })
             .catch((err) => {
+                console.error("Server error during login process:", err.message);
                 res.status(500).json({
                     success: false,
                     message: `Server Error`,
@@ -227,6 +238,7 @@
                 });
             });
     };
+    
 
     const getAllUsers=(req,res)=>{
         usersModel

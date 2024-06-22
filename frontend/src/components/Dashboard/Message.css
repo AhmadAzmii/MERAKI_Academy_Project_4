@@ -1,0 +1,26 @@
+.Message {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.messages {
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.messages p {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.messages .from-me {
+    background-color: #dcf8c6;
+    text-align: right;
+}
+
+.messages .from-other {
+    background-color: #f1f0f0;
+}

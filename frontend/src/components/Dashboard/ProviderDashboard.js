@@ -17,7 +17,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./ProviderDashboard.css";
 import StarRating from "./StarRating";
-
+import io from 'socket.io-client';
 export const providerInfoContext = createContext();
 
 const ProviderDashboard = () => {
@@ -33,6 +33,33 @@ const ProviderDashboard = () => {
   const [isUpdated, setIsUpdated] = useState({});
 
   const [editStates, setEditStates] = useState({});
+  const [allMessages, setAllMessages] = useState([]);
+
+  const [providerId, setProviderId] = useState('');
+  const [providerUserName, setProviderUserName] = useState('');
+  const socket = io('http://localhost:8080', {
+    extraHeaders: {
+      tokenone: token,
+      user_id: providerId,
+    },
+  });
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setProviderId(decodedToken.userId);
+      setProviderUserName(decodedToken.user);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    socket.on('message', (data) => {
+      setAllMessages((prevMessages) => [...prevMessages, data]);
+    });
+
+    return () => {
+      socket.off('message');
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (token) {
@@ -223,7 +250,16 @@ const ProviderDashboard = () => {
     <providerInfoContext.Provider value={{ providerInfo }}>
       <MDBContainer className="ProviderDashboard">
         <MDBRow className="add-info">
+   
+
           <MDBCol md="6">
+                 <div className='messages'>
+        {allMessages.map((msg, index) => (
+          <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
+            <small>{msg.from}: {msg.message}</small>
+          </p>
+        ))}
+      </div>
             <h2 className="mb-4">Add Info</h2>
             <div className="form-group mb-3">
               <label>Title</label>

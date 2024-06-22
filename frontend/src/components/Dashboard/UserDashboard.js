@@ -3,7 +3,7 @@ import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRemove, faEdit } from "@fortawesome/free-solid-svg-icons";
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { UserContext } from '../../App';
 import StarRating from './StarRating';
 import './UserDashboard.css';
@@ -109,11 +109,11 @@ const UserDashboard = () => {
       setShowLoginPopup(true);
       return;
     }
-
+  
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-
+  
     axios
       .post(
         `http://localhost:5000/providerInfo/${postId}/reviews`,
@@ -124,24 +124,24 @@ const UserDashboard = () => {
         if (result.status === 201 && result.data.success) {
           console.log("New review added:", result.data.review);
           console.log("Customer object:", result.data.review.customer);
-
+  
           setProviderInfo((prevInfo) =>
             prevInfo.map((post) =>
               postId === post._id
                 ? {
-                  ...post,
-                  reviews: [
-                    ...post.reviews,
-                    {
-                      ...result.data.review,
-                      customer: { ...result.data.review.customer, userName, image, _id: userId },
-                    },
-                  ],
-                }
+                    ...post,
+                    reviews: [
+                      ...post.reviews,
+                      {
+                        ...result.data.review,
+                        customer: { ...result.data.review.customer, userName, image, _id: userId },
+                      },
+                    ],
+                  }
                 : post
             )
           );
-
+         
           setRating((prev) => ({ ...prev, [postId]: 0 }));
         }
         setNewReview((prev) => ({ ...prev, [postId]: "" }));
@@ -150,7 +150,7 @@ const UserDashboard = () => {
         console.error('Error adding review:', err);
       });
   };
-
+  
   const handleSpecialistChange = (e) => {
     setSelectedSpecialist(e.target.value);
   };
@@ -263,25 +263,26 @@ const UserDashboard = () => {
         Connect
       </button>
       {isConnected && <Message socket={socket} providerId={providerId} providerUserName={providerUserName} />}
+      
       {weather && (
         <div className="row d-flex justify-content-center py-5">
           <div className="col-md-8 col-lg-6 col-xl-5">
             <div className="card text-body" style={{ borderRadius: "35px" }}>
-
+              
               <div className="card-body p-4">
-                <MDBRow>
-                  <MDBCol md="6" className="mb-4">
-                    <input
-                      type='text'
-                      className="form-control"
-                      placeholder='Enter a City'
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                  </MDBCol>
-                  <MDBCol md="6" className="mb-4">
-                    <MDBBtn onClick={handleSearch}> Search</MDBBtn>
-                  </MDBCol>
-                </MDBRow>
+              <MDBRow>
+        <MDBCol md="6" className="mb-4">
+          <input 
+            type='text' 
+            className="form-control" 
+            placeholder='Enter a City' 
+            onChange={(e) => setSearch(e.target.value)} 
+          />
+        </MDBCol>
+        <MDBCol md="6" className="mb-4">
+          <MDBBtn onClick={handleSearch}> Search</MDBBtn>
+        </MDBCol>
+      </MDBRow>
                 <div className="d-flex">
                   <h6 className="flex-grow-1">{weather.name}</h6>
                   <h6>{new Date().toLocaleTimeString()}</h6>
@@ -297,7 +298,7 @@ const UserDashboard = () => {
                     <div><i className="fas fa-sun fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.clouds.all}% </span></div>
                   </div>
                   <div>
-                    <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} width="100px" alt="Weather icon" />
+                    <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} width="100px" alt="Weather icon"/>
                   </div>
                 </div>
               </div>
@@ -330,23 +331,23 @@ const UserDashboard = () => {
       </MDBRow>
 
       <MDBRow>
-        {filteredProviderInfo?.map((post, i) => {
+        {filteredProviderInfo?.map((post,i) => {
           return (
             <MDBCol md="6" key={post._id}>
               <MDBCard className="mb-4">
                 <MDBCardBody className="post">
                   <div className="d-flex align-items-center mb-3">\
-
+                  
                     <img
                       src={getImage(post.author.image, post.author.userName)}
                       alt={post.author.userName}
-                      onClick={() => {
+                      onClick={()=>{
                         setIsConnected(true)
                         setProviderId(post.author._id);
                         setProviderUserName(post.author.userName)
 
-
-                        { console.log("provider" + post.author._id); }
+                        
+                        {console.log("provider"+post.author._id);}
                       }}
                       className="author-image rounded-circle me-3"
                     />
@@ -396,61 +397,61 @@ const UserDashboard = () => {
                           </div>
                         </div>
                         <MDBCardText>{review.review}</MDBCardText>
-
-                        <StarRating rating={review.rating} postId={post._id} />
+                         
+                        <StarRating rating={review.rating}   postId={post._id}/>
                         {isLoggedIn && userId === review.customer._id && (
-                          <>
-                            <button
-                              onClick={() => handleDelete(review._id)}
-                              className="btn btn-sm btn-danger"
-                            >
-                              <FontAwesomeIcon icon={faRemove} /> Delete
-                            </button>
-                            <button
-                              onClick={() => setIsUpdated(review._id)}
-                              className="btn btn-sm btn-primary mr-2"
-                            >
-
-                              <FontAwesomeIcon icon={faEdit} />
-                            </button>
-                            {isUpdated === review._id && (
-                              <div className="update-review-form">
-                                <div className="form-group">
-                                  <label>New Review</label>
-                                  <MDBInput
-                                    value={newReview[review._id] || review.review}
-                                    onChange={(e) => setNewReview({ ...newReview, [review._id]: e.target.value })}
-                                  />
-                                </div>
-                                <div>
-                                  <StarRating
-                                    rating={rating[review._id] || review.rating}
-                                    setRating={(newRating) => setRating({ ...rating, [review._id]: newRating })}
-                                  />
-                                </div>
-                                <button
-                                  onClick={() => handleUpdate(review._id, newReview[review._id] || review.review, rating[review._id] || review.rating)}
-                                  className="btn btn-sm btn-primary"
-                                >
-                                  Save
-                                </button>
-                              </div>
-                            )}
-                          </>
-                        )}
+  <>
+    <button
+      onClick={() => handleDelete(review._id)}
+      className="btn btn-sm btn-danger"
+    >
+      <FontAwesomeIcon icon={faRemove} /> Delete
+    </button>
+    <button
+      onClick={() => setIsUpdated(review._id)}
+      className="btn btn-sm btn-primary mr-2"
+    >
+      
+      <FontAwesomeIcon icon={faEdit} /> 
+    </button>
+    {isUpdated === review._id && (
+      <div className="update-review-form">
+        <div className="form-group">
+          <label>New Review</label>
+          <MDBInput
+            value={newReview[review._id] || review.review}
+            onChange={(e) => setNewReview({ ...newReview, [review._id]: e.target.value })}
+          />
+        </div>
+        <div>
+          <StarRating
+            rating={rating[review._id] || review.rating}
+            setRating={(newRating) => setRating({ ...rating, [review._id]: newRating })}
+          />
+        </div>
+        <button
+          onClick={() => handleUpdate(review._id, newReview[review._id] || review.review, rating[review._id] || review.rating)}
+          className="btn btn-sm btn-primary"
+        >
+          Save
+        </button>
+      </div>
+    )}
+  </>
+)}
 
                       </MDBCardBody>
                     </MDBCard>
                   ))}
-                  <MDBInput
-                    value={newReview[post._id] || ""}
-                    onChange={(e) => setNewReview({ ...newReview, [post._id]: e.target.value })}
-                    placeholder="Write your review..."
+                    <MDBInput 
+                value={newReview[post._id] || ""}
+                onChange={(e) => setNewReview({ ...newReview, [post._id]: e.target.value })}
+                placeholder="Write your review..."
                   />
-                  <StarRating
-                    rating={rating[post._id] || 0}
-                    setRating={(newRating) => setRating({ ...rating, [post._id]: newRating })}
-                  />
+                 <StarRating
+                rating={rating[post._id] || 0}
+                setRating={(newRating) => setRating({ ...rating, [post._id]: newRating })}
+              />
                   <MDBBtn
                     className="mt-2"
                     onClick={() => handleReview(post._id)}

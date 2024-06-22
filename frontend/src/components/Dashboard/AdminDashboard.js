@@ -264,23 +264,7 @@ const AdminDashboard = () => {
     ],
   };
 
-  useEffect(()=>{
-    socket?.on("connect",()=>{
-        setIsConnected(true);
-        console.log("Connected to socket");
-    });
 
-    socket?.on("connect_error",(error)=>{
-        setIsConnected(false);
-        console.log(error);
-    });
-
-    return ()=>{
-        setIsConnected(false);
-        socket?.close();
-        socket?.removeAllListeners();
-    };
-  },[socket]);
 
   return (
     <div className="d-flex flex-column">
@@ -379,18 +363,7 @@ const AdminDashboard = () => {
         {selectedSection === "adminDashboard" && (
   <div>
     <h1>Admin Dashboard</h1>
-    <input type="text" placeholder="user_id"
-    onChange={(e)=>setUser_id(e.target.value)}/>
-    <input type="text" placeholder="token"
-    onChange={(e)=>setTokenOne(e.target.value)}/>
-    <button onClick={()=>{
-      setSocket(socketInit({
-        user_id,tokenOne
-      }))
-    }}>
-      connect
-    </button>
-    {isConnected &&  <Message socket={socket} userId={user_id}/>}
+ 
     <div className="container-fluid">
       <div className="row mb-4">
         <div className="col-lg-6">

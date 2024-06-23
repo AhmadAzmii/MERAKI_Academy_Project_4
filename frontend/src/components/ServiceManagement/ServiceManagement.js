@@ -1,6 +1,14 @@
-import React, { createContext, useEffect, useState } from "react";
-import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import {jwtDecode} from 'jwt-decode';
+import { UserContext } from '../../App';
+import StarRating from './StarRating';
+import './UserDashboard.css';
+import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from "date-fns";
 import {
   MDBContainer,
   MDBRow,
@@ -9,246 +17,222 @@ import {
   MDBCardBody,
   MDBCardTitle,
   MDBCardText,
-  MDBInput,
-  MDBTextArea,
-  MDBBtn,
   MDBCardSubTitle,
-} from "mdb-react-ui-kit";
-import Message from './Message';
-import socketInit from '../../socket.server';
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./ProviderDashboard.css";
-import StarRating from "./StarRating";
-import io from 'socket.io-client';
-export const providerInfoContext = createContext();
+  MDBInput,
+  MDBBtn,
+} from 'mdb-react-ui-kit';
 
-const ProviderDashboard = () => {
-  const token = localStorage.getItem("token");
-  const specialist = localStorage.getItem("specialist");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [message, setMessage] = useState("");
-  const [experience, setExperience] = useState("");
-  const [availability, setAvailability] = useState("");
-  const [image, setImage] = useState(null);
+const apiKey = '374f6b9a93c2d20666eb4a186bd0df01';
+
+const UserDashboard = () => {
+  const { token, isLoggedIn, userName, image } = useContext(UserContext);
+  const navigate = useNavigate();
   const [providerInfo, setProviderInfo] = useState([]);
-  const [isUpdated, setIsUpdated] = useState({});
-  const [user_id, setUser_id] = useState("");
-  const [editStates, setEditStates] = useState({});
-  const [allMessages, setAllMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
-  const [providerId, setProviderId] = useState('');
-  const [providerUserName, setProviderUserName] = useState('');
   const [userId, setUserId] = useState('');
+  const [newReview, setNewReview] = useState({});
+  const [rating, setRating] = useState({});
+  const [selectedSpecialist, setSelectedSpecialist] = useState('');
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [showContactUsPopup, setShowContactUsPopup] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [user_id, setUser_id] = useState("");
+  const [tokenOne, setTokenOne] = useState("");
+  const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [messageFrom, setMessageFrom] = useState("")
-   const newSocket = io('http://localhost:8080', {
-    extraHeaders: {
-      tokenone: token,
-      user_id: providerId,
-    },
-  });
-  useEffect(() => {
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      setProviderId(decodedToken.userId);
-      setProviderUserName(decodedToken.user);
-    }
-  }, [token]);
+  const [weather, setWeather] = useState(null);
+  const [search, setSearch] = useState("");
+  const [providerId, setProviderId] = useState('');
+  const [providerUserName, setProviderUserName] = useState("");
 
-  useEffect(() => {
-    newSocket.on('message', (data) => {
-      setAllMessages((prevMessages) => [...prevMessages, data]);
-    });
-
-    return () => {
-      newSocket.off('message');
-    };
-  }, [newSocket]);
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-setUserId(userId)
-      axios
-        .get(`http://localhost:5000/providerInfo/author/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((result) => {
-          setProviderInfo(result.data.providersInfo);
-        })
-        .catch((err) => {
-          console.error(err);
-          setMessage(
-            err.response?.data?.message ||
-              "Error fetching provider information"
-          );
-        });
+      setUserId(userId);
     }
+    getAllProvidersInfo();
   }, [token]);
 
-  const handleAddProviderInfo = async () => {
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          fetchWeather(latitude, longitude);
+        },
+        (error) => {
+          console.error('Error fetching location', error);
+        }
+      );
+    }
+  }, []);
+
+  const fetchWeather = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`);
+      setWeather(response.data);
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+    }
+  };
+
+  const handleSearch = () => {
+    if (search) {
+      fetchWeatherByCity(search);
+    }
+  };
+
+  const fetchWeatherByCity = async (city) => {
+    try {
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`);
+      setWeather(response.data);
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+    }
+  };
+
+  const getAllProvidersInfo = () => {
+    axios
+      .get('http://localhost:5000/providerInfo/')
+      .then((result) => {
+        setProviderInfo(result.data.providersInfo);
+      })
+      .catch((err) => {
+        console.error('Error fetching provider info:', err);
+      });
+  };
+
+  const handleReview = (postId) => {
+    if (!isLoggedIn) {
+      setShowLoginPopup(true);
+      return;
+    }
+
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-
-    let imageUrl = null;
-    if (image) {
-      try {
-        imageUrl = await uploadImageToCloudinary(image);
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        setMessage("Error uploading image");
-        return;
-      }
-    }
 
     axios
       .post(
-        "http://localhost:5000/providerInfo/",
-        {
-          title,
-          description,
-          availability,
-          experience,
-          specialist,
-          image: imageUrl,
-        },
+        `http://localhost:5000/providerInfo/${postId}/reviews`,
+        { review: newReview[postId], rating: rating[postId], customer: userId },
         { headers }
       )
       .then((result) => {
-        setMessage(result.data.message);
-        setAvailability("");
-        setExperience("");
-        setDescription("");
-        setTitle("");
-        setImage(null);
-        setTimeout(() => setMessage(""), 3000);
-        const decodedToken = jwtDecode(token);
-        const userId = decodedToken.userId;
-        axios
-          .get(`http://localhost:5000/providerInfo/author/${userId}`, {
-            headers,
-          })
-          .then((res) => {
-            setProviderInfo(res.data.providersInfo);
-          })
-          .catch((err) => {
-            console.error(err);
-            setMessage(
-              err.response?.data?.message ||
-                "Error fetching provider information"
-            );
-            setTimeout(() => setMessage(""), 3000);
-          });
+        if (result.status === 201 && result.data.success) {
+          console.log("New review added:", result.data.review);
+          console.log("Customer object:", result.data.review.customer);
+
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) =>
+              postId === post._id
+                ? {
+                  ...post,
+                  reviews: [
+                    ...post.reviews,
+                    {
+                      ...result.data.review,
+                      customer: { ...result.data.review.customer, userName, image, _id: userId },
+                    },
+                  ],
+                }
+                : post
+            )
+          );
+
+          setRating((prev) => ({ ...prev, [postId]: 0 }));
+        }
+        setNewReview((prev) => ({ ...prev, [postId]: "" }));
       })
       .catch((err) => {
-        setMessage(
-          err.response?.data?.message || "Error adding provider information"
-        );
-        setTimeout(() => setMessage(""), 3000);
+        console.error('Error adding review:', err);
       });
   };
+  
+  const handleSpecialistChange = (e) => {
+    setSelectedSpecialist(e.target.value);
+  };
+  
+ 
+  const getUniqueSpecialistNames = (providers) => {
+    const specialistNames = providers.map((post) => post.specialist.name);
+    return [...new Set(specialistNames)];
+  };
+  const uniqueSpecialists = getUniqueSpecialistNames(providerInfo);
+  const getDefaultImage = (name) => {
+    const firstLetter = name?.charAt(0)?.toUpperCase();
+    if (firstLetter) {
+      return require(`../../alphabetImages/${firstLetter}.png`);
+    }
+  };
 
-  const handleUpdate = async (postId) => {
+  const getImage = (image, name) => {
+    return image || getDefaultImage(name);
+  };
+
+  const filteredProviderInfo = selectedSpecialist
+    ? providerInfo.filter((post) => post.specialist.name === selectedSpecialist)
+    : providerInfo;
+
+  const toggleContactUsPopup = () => {
+    if (!isLoggedIn) {
+      setShowLoginPopup(true);
+      return;
+    }
+    setShowContactUsPopup(!showContactUsPopup);
+  };
+
+  const handleDelete = (reviewId) => {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
 
-    const { newTitle, newDescription, newExperience, newAvailability, newImage } = editStates[postId] || {};
-
-    let imageUrl = null;
-    if (newImage) {
-      try {
-        imageUrl = await uploadImageToCloudinary(newImage);
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        setMessage("Error uploading image");
-        return;
-      }
-    }
-
     axios
-      .put(
-        `http://localhost:5000/providerInfo/${postId}`,
-        {
-          availability: newAvailability,
-          experience: newExperience,
-          description: newDescription,
-          title: newTitle,
-          image: imageUrl,
-        },
-        { headers }
-      )
-      .then((result) => {
-        setProviderInfo(
-          providerInfo.map((post) =>
-            post._id === postId
-              ? {
-                  ...post,
-                  title: newTitle,
-                  description: newDescription,
-                  availability: newAvailability,
-                  experience: newExperience,
-                  image: imageUrl,
-                }
-              : post
-          )
-        );
-        setIsUpdated((prev) => ({ ...prev, [postId]: false }));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
-  const handleDelete = (postId) => {
-    axios
-      .delete(`http://localhost:5000/providerInfo/${postId}`)
+      .delete(`http://localhost:5000/providerInfo/${reviewId}/reviews`, { headers })
       .then((result) => {
         if (result.status === 200 && result.data.success) {
-          setProviderInfo(providerInfo.filter((post) => post._id !== postId));
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) => ({
+              ...post,
+              reviews: post.reviews.filter((review) => review._id !== reviewId),
+            }))
+          );
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error('Error deleting review:', err);
       });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
+  const handleUpdate = (reviewId, newReview, newRating) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    axios
+      .put(
+        `http://localhost:5000/providerInfo/${reviewId}/reviews`,
+        { review: newReview, rating: newRating },
+        { headers }
+      )
+      .then((result) => {
+        if (result.status === 200 && result.data.success) {
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) => ({
+              ...post,
+              reviews: post.reviews.map((rev) =>
+                rev._id === reviewId ? { ...rev, review: newReview, rating: newRating } : rev
+              ),
+            }))
+          );
+          setIsUpdated(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Error updating review:', err);
+      });
   };
 
-  const handleEditImageChange = (postId, e) => {
-    const file = e.target.files[0];
-    setEditStates((prev) => ({
-      ...prev,
-      [postId]: {
-        ...prev[postId],
-        newImage: file,
-      },
-    }));
-  };
-
-  const uploadImageToCloudinary = async (imageFile) => {
-    const data = new FormData();
-    data.append("file", imageFile);
-    data.append("upload_preset", "rgtsukxl");
-    data.append("cloud_name", "dqefjpmuo");
-
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/dqefjpmuo/image/upload",
-      {
-        method: "post",
-        body: data,
-      }
-    );
-    const result = await response.json();
-    return result.url;
-  };
   useEffect(() => {
     socket?.on("connect", () => {
       setIsConnected(true);
@@ -267,294 +251,92 @@ setUserId(userId)
     };
   }, [socket]);
 
-
   return (
-    <providerInfoContext.Provider value={{ providerInfo }}>
-      <MDBContainer className="ProviderDashboard">
-        <MDBRow className="add-info">
-   
-
-          <MDBCol md="6">
-          <input
-        type="text"
-        placeholder="user id"
-        value={userId}
-      />
-      <input
-        type="text"
-        placeholder="token"
-        value={token}
-      />
-      <button onClick={() => setSocket(socketInit({ user_id, token }))}>
-        Connect
-      </button>
-      {/* {console.log(messageFrom)} */}
-      {isConnected && <Message socket={socket} providerId={providerId} />}
-                 <div className='messages'>
-        {allMessages.map((msg, index) => (
-          <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
-            {setMessageFrom(msg.from)}
-            <small>{msg.from}: {msg.message}</small>
-          </p>
-        ))}
+    <MDBContainer className="UserDashboard">
+      <div className="sidebar">
+        <h3>Menu</h3>
+        <a href="#home"><FontAwesomeIcon icon={faHome} className="me-2" />Home</a>
+        <a href="#profile"><FontAwesomeIcon icon={faUser} className="me-2" />Profile</a>
+        <a href="#settings"><FontAwesomeIcon icon={faCog} className="me-2" />Settings</a>
+        <a href="#messages"><FontAwesomeIcon icon={faEnvelope} className="me-2" />Messages</a>
       </div>
-            <h2 className="mb-4">Add Info</h2>
-            <div className="form-group mb-3">
-              <label>Title</label>
-              <MDBInput
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="form-control"
-              />
+      <MDBRow className="offset-md-3">
+        <MDBCol md="12">
+          <h2>User Dashboard</h2>
+          {weather && (
+            <div>
+              <h3>Weather Information</h3>
+              <p>Temperature: {weather.main.temp}°C</p>
+              <p>City: {weather.name}</p>
             </div>
-            <div className="form-group mb-3">
-              <label>Description</label>
-              <MDBTextArea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Experience</label>
-              <MDBInput
-                type="text"
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Availability</label>
-              <MDBInput
-                type="text"
-                value={availability}
-                onChange={(e) => setAvailability(e.target.value)}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Upload Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="form-control"
-              />
-            </div>
-            {message && <div className="alert alert-danger">{message}</div>}
-            
-            <MDBBtn onClick={handleAddProviderInfo}>
-              Create New Provider Information
-            </MDBBtn>
-          </MDBCol>
-        </MDBRow>
-
-        <h2 className="mt-5">Provider Information</h2>
-        <MDBRow>
-          {providerInfo?.map((info) => {
-            const firstLetter = info.author.userName.charAt(0).toUpperCase();
-            const defaultImagePath = require(`../../alphabetImages/${firstLetter}.png`);
-            const userImage = info.author.image || defaultImagePath;
-
-            const decodedToken = jwtDecode(token);
-            const userId = decodedToken.userId;
-
-            const isCurrentPostUpdated = isUpdated[info._id] || false;
-
-            const handleInputChange = (postId, field, value) => {
-              setEditStates((prev) => ({
-                ...prev,
-                [postId]: {
-                  ...prev[postId],
-                  [field]: value,
-                },
-              }));
-            };
-
-            return (
-              <MDBCol md="6" key={info._id} className="mb-4">
-                <MDBCard className="provider-card">
+          )}
+          <MDBRow>
+            <MDBCol size="4" md="6">
+              <MDBInput label="Search City" type="text" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <MDBBtn onClick={handleSearch}>Search</MDBBtn>
+            </MDBCol>
+          </MDBRow>
+          <MDBRow>
+            <MDBCol md="12">
+              <select value={selectedSpecialist} onChange={handleSpecialistChange} className="form-control">
+                <option value="">All Specialists</option>
+                {uniqueSpecialists.map((specialist, index) => (
+                  <option key={index} value={specialist}>
+                    {specialist}
+                  </option>
+                ))}
+              </select>
+            </MDBCol>
+          </MDBRow>
+          <MDBRow>
+            {filteredProviderInfo.map((post, index) => (
+              <MDBCol key={index} md="4">
+                <MDBCard className="mb-4">
                   <MDBCardBody>
                     <div className="d-flex align-items-center mb-3">
                       <img
-                        src={userImage}
-                        alt={info.author.userName}
-                        className="author-image rounded-circle me-3"
+                        src={getImage(post.specialist.image, post.specialist.name)}
+                        alt={post.specialist.name}
+                        className="specialist-img"
                       />
-                      <MDBCardTitle className="text-center mb-0">
-                        {info.author.userName}
-                      </MDBCardTitle>
+                      <div className="ms-3">
+                        <MDBCardTitle>{post.specialist.name}</MDBCardTitle>
+                        <MDBCardSubTitle>{post.specialist.category}</MDBCardSubTitle>
+                      </div>
                     </div>
-                    <MDBCardSubTitle className="text-center text-muted">
-                      <b>{info?.specialist?.name}</b>
-                    </MDBCardSubTitle>
-
-                    <MDBCardTitle>
-                      <b>Title: </b>
-                      {info.title}
-                    </MDBCardTitle>
-                    <MDBCardText>
-                      <b>Description: </b> {info.description}
-                    </MDBCardText>
-                    <p>
-                      <b>Experience: </b> {info.experience}
-                    </p>
-                    <p>
-                      <b>Availability: </b>: {info.availability}
-                    </p>
-
-                    {info.image && (
-                      <div className="post-image-container">
-                        <img
-                          src={info.image}
-                          alt="Provider Post"
-                          className="post-image"
-                        />
-                      </div>
-                    )}
-
-                    {info.reviews?.length > 0 && (
-                      <div className="reviews-section">
-                        <h4>Reviews:</h4>
-                        {info.reviews.map((review, i) => (
-                          <MDBCard key={i} className="mb-3">
-                            <MDBCardBody>
-                              <div className="d-flex align-items-center mb-3">
-                                <img
-                                  src={
-                                    review.customer.image ||
-                                    require(`../../alphabetImages/${review.customer.userName.charAt(0).toUpperCase()}.png`)
-                                  }
-                                  alt={review.customer.userName}
-                                  className="author-image rounded-circle me-3"
-                                />
-                                <div>
-                                  <MDBCardTitle className="text-center mb-0">
-                                    {review.customer.userName}
-                                  </MDBCardTitle>
-                                </div>
-                              </div>
-                              <MDBCardText>{review.review}</MDBCardText>
-                              <StarRating rating={review.rating} />
-                            </MDBCardBody>
-                          </MDBCard>
-                        ))}
-                      </div>
-                    )}
-
-                    {userId === info.author._id && (
-                      <div className="update-form">
-                        {isCurrentPostUpdated ? (
-                          <div>
-                            <div className="form-group">
-                              <label>New Title</label>
-                              <MDBInput
-                                type="text"
-                                value={editStates[info._id]?.newTitle || title}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    info._id,
-                                    "newTitle",
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="form-group">
-                              <label>New Description</label>
-                              <MDBTextArea
-                                value={
-                                  editStates[info._id]?.newDescription ||description
-                                }
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    info._id,
-                                    "newDescription",
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="form-group">
-                              <label>New Availability</label>
-                              <MDBInput
-                                type="text"
-                                value={
-                                  editStates[info._id]?.newAvailability || availability
-                                }
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    info._id,
-                                    "newAvailability",
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="form-group">
-                              <label>New Experience</label>
-                              <MDBInput
-                                type="text"
-                                value={editStates[info._id]?.newExperience || experience}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    info._id,
-                                    "newExperience",
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                            </div>
-                            <div className="form-group mb-3">
-                              <label>New Image</label>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) =>
-                                  handleEditImageChange(info._id, e)
-                                }
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                        ) : null}
-                        <MDBBtn
-                          className="mt-3"
-                          onClick={() => {
-                            setIsUpdated((prev) => ({
-                              ...prev,
-                              [info._id]: !isCurrentPostUpdated,
-                            }));
-                            if (isCurrentPostUpdated) {
-                              handleUpdate(info._id);
-                            }
-                          }}
-                        >
-                          {isCurrentPostUpdated ? "Save" : "Update"}
-                        </MDBBtn>
-                        <MDBBtn
-                          className="btn-danger mt-3"
-                          onClick={() => handleDelete(info._id)}
-                        >
-                          Delete
-                        </MDBBtn>
-                      </div>
-                    )}
+                    <MDBCardText>{post.specialist.bio}</MDBCardText>
+                    <StarRating
+                      rating={rating[post._id]}
+                      onRatingChange={(newRating) => setRating({ ...rating, [post._id]: newRating })}
+                    />
+                    <textarea
+                      value={newReview[post._id] || ''}
+                      onChange={(e) => setNewReview({ ...newReview, [post._id]: e.target.value })}
+                      className="form-control mb-2"
+                      rows="2"
+                      placeholder="Write a review"
+                    ></textarea>
+                    <MDBBtn size="sm" onClick={() => handleReview(post._id)}>
+                      Submit Review
+                    </MDBBtn>
+                    <MDBBtn size="sm" className="ms-2" color="danger" onClick={() => handleDelete(post._id)}>
+                      <FontAwesomeIcon icon={faRemove} />
+                    </MDBBtn>
+                    <MDBBtn size="sm" className="ms-2" color="info" onClick={() => handleUpdate(post._id, newReview[post._id], rating[post._id])}>
+                      <FontAwesomeIcon icon={faEdit} />
+                    </MDBBtn>
+                    <div>
+                      {post.reviews}
+                    </div>
                   </MDBCardBody>
                 </MDBCard>
               </MDBCol>
-            );
-          })}
-        </MDBRow>
-      </MDBContainer>
-    </providerInfoContext.Provider>
+            ))}
+          </MDBRow>
+        </MDBCol>
+      </MDBRow>
+    </MDBContainer>
   );
 };
 
-export default ProviderDashboard;
+export default UserDashboard;

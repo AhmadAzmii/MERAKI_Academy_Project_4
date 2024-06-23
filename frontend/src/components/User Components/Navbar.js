@@ -168,7 +168,10 @@ const Navbar = () => {
   <>
     <Link to='/user-settings'>Settings</Link>
     {isProvider ? (
+      <div>
+      <Link to='/Create-Post'> Create new post</Link>
       <Link to='/provider-dashboard'>Dashboard</Link>
+      </div>
     ) : (
       <Link to='/dashboard'>Dashboard</Link>
     )}

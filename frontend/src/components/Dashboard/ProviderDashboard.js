@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import {
   MDBContainer,
   MDBRow,
@@ -20,6 +20,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./ProviderDashboard.css";
 import StarRating from "./StarRating";
 import io from 'socket.io-client';
+import { formatDistanceToNow } from "date-fns";
 export const providerInfoContext = createContext();
 
 const ProviderDashboard = () => {
@@ -42,7 +43,7 @@ const ProviderDashboard = () => {
   const [userId, setUserId] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [messageFrom, setMessageFrom] = useState("")
-   const newSocket = io('http://localhost:8080', {
+  const newSocket = io('http://localhost:8080', {
     extraHeaders: {
       tokenone: token,
       user_id: providerId,
@@ -61,7 +62,7 @@ const ProviderDashboard = () => {
       setAllMessages((prevMessages) => [...prevMessages, data]);
       setMessageFrom(data.from);
     });
-console.log(messageFrom);
+    console.log(messageFrom);
     return () => {
       newSocket.off('message');
     };
@@ -70,7 +71,7 @@ console.log(messageFrom);
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-setUserId(userId)
+      setUserId(userId)
       axios
         .get(`http://localhost:5000/providerInfo/author/${userId}`, {
           headers: {
@@ -84,7 +85,7 @@ setUserId(userId)
           console.error(err);
           setMessage(
             err.response?.data?.message ||
-              "Error fetching provider information"
+            "Error fetching provider information"
           );
         });
     }
@@ -140,7 +141,7 @@ setUserId(userId)
             console.error(err);
             setMessage(
               err.response?.data?.message ||
-                "Error fetching provider information"
+              "Error fetching provider information"
             );
             setTimeout(() => setMessage(""), 3000);
           });
@@ -188,13 +189,13 @@ setUserId(userId)
           providerInfo.map((post) =>
             post._id === postId
               ? {
-                  ...post,
-                  title: newTitle,
-                  description: newDescription,
-                  availability: newAvailability,
-                  experience: newExperience,
-                  image: imageUrl,
-                }
+                ...post,
+                title: newTitle,
+                description: newDescription,
+                availability: newAvailability,
+                experience: newExperience,
+                image: imageUrl,
+              }
               : post
           )
         );
@@ -268,88 +269,38 @@ setUserId(userId)
     };
   }, [socket]);
 
-
+  useEffect(() => {
+    if (userId && token) {
+      setSocket(socketInit({ user_id: userId, token }));
+      setIsConnected(true)
+    }
+  }, [userId, token]);
   return (
     <providerInfoContext.Provider value={{ providerInfo }}>
       <MDBContainer className="ProviderDashboard">
-        <MDBRow className="add-info">
-   
+        {/* <input
+          type="text"
+          placeholder="user id"
+          value={userId}
+        />
+        <input
+          type="text"
+          placeholder="token"
+          value={token}
+        />
+        <button onClick={() => setSocket(socketInit({ user_id, token }))}>
+          Connect
+        </button> */}
 
-          <MDBCol md="6">
-          <input
-        type="text"
-        placeholder="user id"
-        value={userId}
-      />
-      <input
-        type="text"
-        placeholder="token"
-        value={token}
-      />
-      <button onClick={() => setSocket(socketInit({ user_id, token }))}>
-        Connect
-      </button>
-   
-      {isConnected && <Message socket={socket} userId={messageFrom} />}
-                 <div className='messages'>
-        {allMessages.map((msg, index) => (
-          <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
-            {console.log(msg.from)}
-            <small>{msg.from}: {msg.message}</small>
-          </p>
-        ))}
-      </div>
-            <h2 className="mb-4">Add Info</h2>
-            <div className="form-group mb-3">
-              <label>Title</label>
-              <MDBInput
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Description</label>
-              <MDBTextArea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Experience</label>
-              <MDBInput
-                type="text"
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Availability</label>
-              <MDBInput
-                type="text"
-                value={availability}
-                onChange={(e) => setAvailability(e.target.value)}
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-3">
-              <label>Upload Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="form-control"
-              />
-            </div>
-            {message && <div className="alert alert-danger">{message}</div>}
-            <MDBBtn onClick={handleAddProviderInfo}>
-              Create New Provider Information
-            </MDBBtn>
-          </MDBCol>
-        </MDBRow>
+        {isConnected && <Message socket={socket} userId={messageFrom} />}
+        <div className='messages'>
+          {allMessages.map((msg, index) => (
+            <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
+              {console.log(msg.from)}
+              <small>{msg.from}: {msg.message}</small>
+            </p>
+          ))}
+        </div>
 
         <h2 className="mt-5">Provider Information</h2>
         <MDBRow>
@@ -419,30 +370,32 @@ setUserId(userId)
                       <div className="reviews-section">
                         <h4>Reviews:</h4>
                         {info.reviews.map((review, i) => (
-                          <MDBCard key={i} className="mb-3">
-                            <MDBCardBody>
-                              <div className="d-flex align-items-center mb-3">
+                          <div key={i} className="review-card">
+                            <div className="review-author">
+
+                              <div>
                                 <img
                                   src={
                                     review.customer.image ||
                                     require(`../../alphabetImages/${review.customer.userName.charAt(0).toUpperCase()}.png`)
                                   }
                                   alt={review.customer.userName}
-                                  className="author-image rounded-circle me-3"
+                                  className="author-image rounded-circle"
                                 />
-                                <div>
-                                  <MDBCardTitle className="text-center mb-0">
-                                    {review.customer.userName}
-                                  </MDBCardTitle>
-                                </div>
+                                <span className="review-author-name">{review.customer.userName}</span>
+                                <p>{formatDistanceToNow(new Date(review.date))} ago</p>
+
                               </div>
-                              <MDBCardText>{review.review}</MDBCardText>
+                            </div>
+                            <div className="review-content">
+                              <p>{review.review}</p>
                               <StarRating rating={review.rating} />
-                            </MDBCardBody>
-                          </MDBCard>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     )}
+
 
                     {userId === info.author._id && (
                       <div className="update-form">
@@ -467,7 +420,7 @@ setUserId(userId)
                               <label>New Description</label>
                               <MDBTextArea
                                 value={
-                                  editStates[info._id]?.newDescription ||description
+                                  editStates[info._id]?.newDescription || description
                                 }
                                 onChange={(e) =>
                                   handleInputChange(

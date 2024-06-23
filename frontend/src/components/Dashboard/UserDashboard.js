@@ -2,12 +2,13 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRemove, faEdit } from "@fortawesome/free-solid-svg-icons";
-import {jwtDecode} from 'jwt-decode';
+import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope ,faBars, faTimes,faClipboard} from "@fortawesome/free-solid-svg-icons";
+import { jwtDecode } from 'jwt-decode';
 import { UserContext } from '../../App';
 import StarRating from './StarRating';
 import './UserDashboard.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from "date-fns";
 import {
   MDBContainer,
   MDBRow,
@@ -28,6 +29,7 @@ const apiKey = '374f6b9a93c2d20666eb4a186bd0df01';
 
 const UserDashboard = () => {
   const { token, isLoggedIn, userName, image } = useContext(UserContext);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const navigate = useNavigate();
   const [providerInfo, setProviderInfo] = useState([]);
   const [userId, setUserId] = useState('');
@@ -109,11 +111,11 @@ const UserDashboard = () => {
       setShowLoginPopup(true);
       return;
     }
-  
+
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-  
+
     axios
       .post(
         `http://localhost:5000/providerInfo/${postId}/reviews`,
@@ -124,24 +126,24 @@ const UserDashboard = () => {
         if (result.status === 201 && result.data.success) {
           console.log("New review added:", result.data.review);
           console.log("Customer object:", result.data.review.customer);
-  
+
           setProviderInfo((prevInfo) =>
             prevInfo.map((post) =>
               postId === post._id
                 ? {
-                    ...post,
-                    reviews: [
-                      ...post.reviews,
-                      {
-                        ...result.data.review,
-                        customer: { ...result.data.review.customer, userName, image, _id: userId },
-                      },
-                    ],
-                  }
+                  ...post,
+                  reviews: [
+                    ...post.reviews,
+                    {
+                      ...result.data.review,
+                      customer: { ...result.data.review.customer, userName, image, _id: userId },
+                    },
+                  ],
+                }
                 : post
             )
           );
-         
+
           setRating((prev) => ({ ...prev, [postId]: 0 }));
         }
         setNewReview((prev) => ({ ...prev, [postId]: "" }));
@@ -154,7 +156,13 @@ const UserDashboard = () => {
   const handleSpecialistChange = (e) => {
     setSelectedSpecialist(e.target.value);
   };
-
+  
+ 
+  const getUniqueSpecialistNames = (providers) => {
+    const specialistNames = providers.map((post) => post.specialist.name);
+    return [...new Set(specialistNames)];
+  };
+  const uniqueSpecialists = getUniqueSpecialistNames(providerInfo);
   const getDefaultImage = (name) => {
     const firstLetter = name?.charAt(0)?.toUpperCase();
     if (firstLetter) {
@@ -246,250 +254,279 @@ const UserDashboard = () => {
       socket?.removeAllListeners();
     };
   }, [socket]);
+ 
 
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+
+  useEffect(() => {
+    if (userId && token) {
+      setSocket(socketInit({ user_id: userId, token }));
+      setIsConnected(true)
+    }
+  }, [userId, token]);
   return (
-    <MDBContainer className="UserDashboard">
-      <div>
-      <input
-        type="text"
-        placeholder="user id"
-        value={userId}
+    <MDBContainer id='home' className="UserDashboard">
+      <FontAwesomeIcon
+        icon={sidebarVisible ? faTimes : faBars}
+        className="toggle-sidebar-icon"
+        onClick={toggleSidebar}
       />
-      <input
-        type="text"
-        placeholder="token"
-        value={token}
-      />
-      <button onClick={() => setSocket(socketInit({ user_id, token }))}>
-        Connect
-      </button>
+      <div className={`sidebar ${sidebarVisible ? 'sidebar-visible' : ''}`}>
+        <div>
+          <h3>Menu</h3>
+          <a href="#home"><FontAwesomeIcon icon={faHome} className="me-2" />Home</a>
+          
+          <a ><Link to='/user-settings'><FontAwesomeIcon icon={faCog} className="me-2" />Settings</Link></a>
+          <a href="#Posts"><FontAwesomeIcon icon={faClipboard} className="me-2" />Posts</a>
+          <a href="#message"><FontAwesomeIcon icon={faEnvelope} className="me-2" />Contact Us</a>
+        </div>
+        
       </div>
-      {isConnected && <Message socket={socket} providerId={providerId} />}
-      
-      {weather && (
-        <div className="row d-flex justify-content-center py-5">
-          <div className="col-md-8 col-lg-6 col-xl-5">
-            <div className="card text-body" style={{ borderRadius: "35px" }}>
-              
-              <div className="card-body p-4">
-              <MDBRow>
-        <MDBCol md="6" className="mb-4">
-          <input 
-            type='text' 
-            className="form-control" 
-            placeholder='Enter a City' 
-            onChange={(e) => setSearch(e.target.value)} 
-          />
-        </MDBCol>
-        <MDBCol md="6" className="mb-4">
-          <MDBBtn onClick={handleSearch}> Search</MDBBtn>
-        </MDBCol>
-      </MDBRow>
-                <div className="d-flex">
-                  <h6 className="flex-grow-1">{weather.name}</h6>
-                  <h6>{new Date().toLocaleTimeString()}</h6>
-                </div>
-                <div className="d-flex flex-column text-center mt-5 mb-4">
-                  <h6 className="display-4 mb-0 font-weight-bold">{weather.main.temp}°C</h6>
-                  <span className="small" style={{ color: "#868B94" }}>{weather.weather[0].description}</span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <div className="flex-grow-1" style={{ fontSize: "1rem" }}>
-                    <div><i className="fas fa-wind fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.wind.speed} km/h </span></div>
-                    <div><i className="fas fa-tint fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.main.humidity}% </span></div>
-                    <div><i className="fas fa-sun fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.clouds.all}% </span></div>
+      <MDBRow className={sidebarVisible ? "offset-md-3" : ""}>
+        <MDBCol md="12">
+          {/* <div>
+            <input
+              type="text"
+              placeholder="user id"
+              value={userId}
+            />
+            <input
+              type="text"
+              placeholder="token"
+              value={token}
+            />
+            <button onClick={() => setSocket(socketInit({ user_id: userId, token }))}>
+              Connect
+            </button>
+          </div> */}
+          {isConnected && <Message socket={socket} providerId={providerId} />}
+
+          <div className="image-container">
+            <img
+              src="https://media.istockphoto.com/id/1589417945/photo/hand-of-mechanic-holding-car-service-and-checking.webp?b=1&s=170667a&w=0&k=20&c=ve2SFpPfslb8-QEgtqkHPLG4SR15aLlJiaJrqqfa164="
+              alt="Background"
+              className="dashboard-image"
+            />
+          </div>
+          <MDBRow className="mb-4">
+            <MDBCol md="6">
+              <select
+                className="form-select"
+                value={selectedSpecialist}
+                onChange={handleSpecialistChange}
+              >
+                <option value="">All Posts</option>
+                {uniqueSpecialists.map((specialistName) => (
+                  <option key={specialistName} value={specialistName}>
+                    {specialistName}
+                  </option>
+                ))}
+              </select>
+            </MDBCol>
+          </MDBRow>
+
+          <MDBRow>
+            {filteredProviderInfo?.map((post, i) => (
+              <MDBCol id='Posts' md="6" key={post._id}>
+                <MDBCard className="mb-4">
+                  <MDBCardBody className="post">
+                    <div className="d-flex align-items-center mb-3">
+                      <img
+                        src={getImage(post.author.image, post.author.userName)}
+                        alt={post.author.userName}
+                        onClick={() => {
+                          setIsConnected(true)
+                          setProviderId(post.author._id);
+                          setProviderUserName(post.author.userName)
+                          console.log("provider" + post.author._id);
+                        }}
+                        className="author-image rounded-circle me-3"
+                      />
+                      <div>
+                        <MDBCardTitle className="text-center mb-0">
+                          {post.author.userName}
+                        </MDBCardTitle>
+                        <MDBCardSubTitle className="text-center text-muted">
+                          <b> Specialty : {post?.specialist?.name}</b>
+                        </MDBCardSubTitle>
+                      </div>
+                    </div>
+                    {post.image && (
+                      <div className="post-image-container">
+                        <img
+                          src={post.image}
+                          alt="Provider Post"
+                          className="post-image"
+                        />
+                      </div>
+                    )}
+                    <MDBCardText className="mt-3">
+                      <b>{post.title}</b>
+                    </MDBCardText>
+                    <MDBCardText>{post.description}</MDBCardText>
+                    <ul className="list-group mb-3">
+                      <li className="list-group-item">
+                        <b>Availability: </b>{post.availability}
+                      </li>
+                      <li className="list-group-item">
+                        <b>Experience:</b> {post.experience}
+                      </li>
+                    </ul>
+                    {post.reviews?.length > 0 && (
+                      <div className="reviews-section">
+                        <h4>Reviews:</h4>
+                        {post.reviews.map((review, i) => (
+                          <div key={i} className="review-card">
+                            <MDBCardBody>
+                              <div key={i} className="review-card">
+                                <div className="review-author">
+                                  <img
+                                    src={getImage(review.customer.image, review.customer.userName)}
+                                    alt={review.customer.userName}
+                                    className="author-image rounded-circle me-3"
+                                  />
+                                  <div>
+                                    <span className="review-author-name">{review.customer.userName}</span>
+                                    <p>{formatDistanceToNow(new Date(review.date))} ago</p>
+                                  </div>
+                                </div>
+                                <div className="review-content">
+                                  <p>{review.review}</p>
+                                  <StarRating rating={review.rating} postId={post._id} />
+                                </div>
+                              </div>
+                              {isLoggedIn && userId === review.customer._id && (
+                                <>
+                                  <button
+                                    onClick={() => handleDelete(review._id)}
+                                    className="btn btn-sm btn-danger"
+                                  >
+                                    <FontAwesomeIcon icon={faRemove} /> Delete
+                                  </button>
+                                  <button
+                                    onClick={() => setIsUpdated(review._id)}
+                                    className="btn btn-sm btn-primary mr-2"
+                                  >
+                                    <FontAwesomeIcon icon={faEdit} />
+                                  </button>
+                                  {isUpdated === review._id && (
+                                    <div className="update-review-form">
+                                      <div className="form-group">
+                                        <label>New Review</label>
+                                        <MDBInput
+                                          value={newReview[review._id] || review.review}
+                                          onChange={(e) => setNewReview({ ...newReview, [review._id]: e.target.value })}
+                                        />
+                                      </div>
+                                      <div>
+                                        <StarRating
+                                          rating={rating[review._id] || review.rating}
+                                          setRating={(newRating) => setRating({ ...rating, [review._id]: newRating })}
+                                        />
+                                      </div>
+                                      <button
+                                        onClick={() => handleUpdate(review._id, newReview[review._id] || review.review, rating[review._id] || review.rating)}
+                                        className="btn btn-sm btn-primary"
+                                      >
+                                        Save
+                                      </button>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </MDBCardBody>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <MDBInput
+                      value={newReview[post._id] || ""}
+                      onChange={(e) => setNewReview({ ...newReview, [post._id]: e.target.value })}
+                      placeholder="Write your review..."
+                    />
+                    <StarRating
+                      rating={rating[post._id] || 0}
+                      setRating={(newRating) => setRating({ ...rating, [post._id]: newRating })}
+                    />
+                    <MDBBtn
+                      className="mt-2"
+                      onClick={() => handleReview(post._id)}
+                    >
+                      Add review
+                    </MDBBtn>
+                  </MDBCardBody>
+                </MDBCard>
+              </MDBCol>
+            ))}
+          </MDBRow>
+          {weather && (
+          <div className="row d-flex justify-content-center py-5">
+            <div className="col-md-8 col-lg-6 col-xl-5">
+              <div className="card text-body" style={{ borderRadius: "35px" }}>
+                <div className="card-body p-4">
+                  <MDBRow>
+                    <MDBCol md="6" className="mb-4">
+                      <input
+                        type='text'
+                        className="form-control"
+                        placeholder='Enter a City'
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
+                    </MDBCol>
+                    <MDBCol md="6" className="mb-4">
+                      <MDBBtn onClick={handleSearch}> Search</MDBBtn>
+                    </MDBCol>
+                  </MDBRow>
+                  <div className="d-flex">
+                    <h6 className="flex-grow-1">{weather.name}</h6>
+                    <h6>{new Date().toLocaleTimeString()}</h6>
                   </div>
-                  <div>
-                    <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} width="100px" alt="Weather icon"/>
+                  <div className="d-flex flex-column text-center mt-5 mb-4">
+                    <h6 className="display-4 mb-0 font-weight-bold">{weather.main.temp}°C</h6>
+                    <span className="small" style={{ color: "#868B94" }}>{weather.weather[0].description}</span>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <div className="flex-grow-1" style={{ fontSize: "1rem" }}>
+                      <div><i className="fas fa-wind fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.wind.speed} km/h </span></div>
+                      <div><i className="fas fa-tint fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.main.humidity}% </span></div>
+                      <div><i className="fas fa-sun fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.clouds.all}% </span></div>
+                    </div>
+                    <div>
+                      <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} width="100px" alt="Weather icon" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-      <div className="image-container">
-        <img
-          src="https://media.istockphoto.com/id/1589417945/photo/hand-of-mechanic-holding-car-service-and-checking.webp?b=1&s=170667a&w=0&k=20&c=ve2SFpPfslb8-QEgtqkHPLG4SR15aLlJiaJrqqfa164="
-          alt="Background"
-          className="dashboard-image"
-        />
-      </div>
-      <MDBRow className="mb-4">
-        <MDBCol md="6">
-          <select
-            className="form-select"
-            value={selectedSpecialist}
-            onChange={handleSpecialistChange}
-          >
-            <option value="">All Posts</option>
-            {providerInfo?.map((post) => (
-              <option key={post._id} value={post?.specialist?.name}>
-                {post?.specialist?.name}
-              </option>
-            ))}
-          </select>
+        )}
+          <MDBBtn id='Contact_Us' onClick={toggleContactUsPopup}>Contact Us</MDBBtn>
+
+          {showContactUsPopup && (
+            <div className="contact-us-popup">
+              <div className="popup-content">
+                <ContactUs onClose={toggleContactUsPopup} />
+              </div>
+            </div>
+          )}
+
+          {showLoginPopup && (
+            <div className="login-popup">
+              <div className="popup-content">
+                <p>You need to login first to perform this action.</p>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate('/login')}
+                >
+                  Login
+                </button>
+              </div>
+            </div>
+          )}
         </MDBCol>
       </MDBRow>
-
-      <MDBRow>
-        {filteredProviderInfo?.map((post,i) => {
-          return (
-            <MDBCol md="6" key={post._id}>
-              <MDBCard className="mb-4">
-                <MDBCardBody className="post">
-                  <div className="d-flex align-items-center mb-3">
-                  
-                    <img
-                      src={getImage(post.author.image, post.author.userName)}
-                      alt={post.author.userName}
-                      onClick={()=>{
-                        setIsConnected(true)
-                        setProviderId(post.author._id);
-                        setProviderUserName(post.author.userName)
-
-                        
-                        {console.log("provider"+post.author._id);}
-                      }}
-                      className="author-image rounded-circle me-3"
-                    />
-                    <div>
-                      <MDBCardTitle className="text-center mb-0">
-                        {post.author.userName}
-                      </MDBCardTitle>
-                      <MDBCardSubTitle className="text-center text-muted">
-                        <b> Specialty : {post?.specialist?.name}</b>
-                      </MDBCardSubTitle>
-                    </div>
-                  </div>
-                  {post.image && (
-                    <div className="post-image-container">
-                      <img
-                        src={post.image}
-                        alt="Provider Post"
-                        className="post-image"
-                      />
-                    </div>
-                  )}
-                  <MDBCardText className="mt-3">
-                    <b>{post.title}</b>
-                  </MDBCardText>
-                  <MDBCardText>{post.description}</MDBCardText>
-                  <ul className="list-group mb-3">
-                    <li className="list-group-item">
-                      <b>Availability: </b>{post.availability}
-                    </li>
-                    <li className="list-group-item">
-                      <b>Experience:</b> {post.experience}
-                    </li>
-                  </ul>
-                  {post.reviews.map((review, i) => (
-                    <MDBCard key={review._id} className="card-review mb-3">
-                      <MDBCardBody>
-                        <div className="d-flex align-items-center mb-3">
-                          <img
-                            src={getImage(review.customer.image, review.customer.userName)}
-                            alt={review.customer.userName}
-                            className="author-image rounded-circle me-3"
-                          />
-                          <div>
-                            <MDBCardTitle className="text-center mb-0">
-                              {review.customer.userName}
-                            </MDBCardTitle>
-                          </div>
-                        </div>
-                        <MDBCardText>{review.review}</MDBCardText>
-                         
-                        <StarRating rating={review.rating}   postId={post._id}/>
-                        {isLoggedIn && userId === review.customer._id && (
-  <>
-    <button
-      onClick={() => handleDelete(review._id)}
-      className="btn btn-sm btn-danger"
-    >
-      <FontAwesomeIcon icon={faRemove} /> Delete
-    </button>
-    <button
-      onClick={() => setIsUpdated(review._id)}
-      className="btn btn-sm btn-primary mr-2"
-    >
-      
-      <FontAwesomeIcon icon={faEdit} /> 
-    </button>
-    {isUpdated === review._id && (
-      <div className="update-review-form">
-        <div className="form-group">
-          <label>New Review</label>
-          <MDBInput
-            value={newReview[review._id] || review.review}
-            onChange={(e) => setNewReview({ ...newReview, [review._id]: e.target.value })}
-          />
-        </div>
-        <div>
-          <StarRating
-            rating={rating[review._id] || review.rating}
-            setRating={(newRating) => setRating({ ...rating, [review._id]: newRating })}
-          />
-        </div>
-        <button
-          onClick={() => handleUpdate(review._id, newReview[review._id] || review.review, rating[review._id] || review.rating)}
-          className="btn btn-sm btn-primary"
-        >
-          Save
-        </button>
-      </div>
-    )}
-  </>
-)}
-
-                      </MDBCardBody>
-                    </MDBCard>
-                  ))}
-                    <MDBInput 
-                value={newReview[post._id] || ""}
-                onChange={(e) => setNewReview({ ...newReview, [post._id]: e.target.value })}
-                placeholder="Write your review..."
-                  />
-                 <StarRating
-                rating={rating[post._id] || 0}
-                setRating={(newRating) => setRating({ ...rating, [post._id]: newRating })}
-              />
-                  <MDBBtn
-                    className="mt-2"
-                    onClick={() => handleReview(post._id)}
-                  >
-                    Add review
-                  </MDBBtn>
-                </MDBCardBody>
-              </MDBCard>
-            </MDBCol>
-          );
-        })}
-      </MDBRow>
-
-      <MDBBtn onClick={toggleContactUsPopup}>Contact Us</MDBBtn>
-
-      {showContactUsPopup && (
-        <div className="contact-us-popup">
-          <div className="popup-content">
-            <ContactUs onClose={toggleContactUsPopup} />
-          </div>
-        </div>
-      )}
-
-      {showLoginPopup && (
-        <div className="login-popup">
-          <div className="popup-content">
-            <p>You need to login first to perform this action.</p>
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate('/login')}
-            >
-              Login
-            </button>
-          </div>
-        </div>
-      )}
     </MDBContainer>
   );
 };

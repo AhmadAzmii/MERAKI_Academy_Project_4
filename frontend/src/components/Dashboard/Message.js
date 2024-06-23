@@ -48,7 +48,7 @@ const Message = ({ socket, providerId, userId }) => {
     };
 
     return (
-        <div className='Message'>
+        <div className='Message'id='message'>
             <h2>Chat</h2>
             <input 
                 type='text' 

@@ -19,6 +19,7 @@ import ProviderDashboard from './components/Dashboard/ProviderDashboard';
 
 import { gapi } from 'gapi-script';
 import UserSettings from './components/Dashboard/UserSettings';
+import CreatePost from './components/Dashboard/CreatePost';
 
 
 export const UserContext = createContext();
@@ -82,6 +83,7 @@ const App = () => {
                         <Route path='/provider-dashboard' element={<ProviderDashboard />} />
                         <Route path="/user-settings" element={<UserSettings />} />
                         <Route path='/forgot-password' element={<ForgotPassword />} />
+                        <Route path='/Create-Post' element={<CreatePost/>}/>
                     </Routes>
                 </UserContext.Provider>
             </header>

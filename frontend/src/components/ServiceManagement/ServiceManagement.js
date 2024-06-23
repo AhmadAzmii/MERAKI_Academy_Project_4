@@ -13,11 +13,13 @@ import {
   MDBTextArea,
   MDBBtn,
   MDBCardSubTitle,
-  MDBFile
 } from "mdb-react-ui-kit";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Message from './Message';
+import socketInit from '../../socket.server';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./ProviderDashboard.css";
 import StarRating from "./StarRating";
+import io from 'socket.io-client';
 export const providerInfoContext = createContext();
 
 const ProviderDashboard = () => {
@@ -28,16 +30,46 @@ const ProviderDashboard = () => {
   const [message, setMessage] = useState("");
   const [experience, setExperience] = useState("");
   const [availability, setAvailability] = useState("");
-  const [providerInfo, setProviderInfo] = useState([]);
-  const [isUpdated, setIsUpdated] = useState(false);
   const [image, setImage] = useState(null);
-  // const [rating, setRating] = useState(0);
-  
+  const [providerInfo, setProviderInfo] = useState([]);
+  const [isUpdated, setIsUpdated] = useState({});
+  const [user_id, setUser_id] = useState("");
+  const [editStates, setEditStates] = useState({});
+  const [allMessages, setAllMessages] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [providerId, setProviderId] = useState('');
+  const [providerUserName, setProviderUserName] = useState('');
+  const [userId, setUserId] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
+  const [messageFrom, setMessageFrom] = useState("")
+   const newSocket = io('http://localhost:8080', {
+    extraHeaders: {
+      tokenone: token,
+      user_id: providerId,
+    },
+  });
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setProviderId(decodedToken.userId);
+      setProviderUserName(decodedToken.user);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    newSocket.on('message', (data) => {
+      setAllMessages((prevMessages) => [...prevMessages, data]);
+    });
+
+    return () => {
+      newSocket.off('message');
+    };
+  }, [newSocket]);
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-
+setUserId(userId)
       axios
         .get(`http://localhost:5000/providerInfo/author/${userId}`, {
           headers: {
@@ -50,109 +82,83 @@ const ProviderDashboard = () => {
         .catch((err) => {
           console.error(err);
           setMessage(
-            err.response?.data?.message || "Error fetching provider information"
+            err.response?.data?.message ||
+              "Error fetching provider information"
           );
         });
     }
   }, [token]);
-  
-  
 
-  const handleAddProviderInfo = () => {
+  const handleAddProviderInfo = async () => {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-  
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("upload_preset", "rgtsukxl");
-    formData.append("cloud_name", "dqefjpmuo");
-  
+
+    let imageUrl = null;
+    if (image) {
+      try {
+        imageUrl = await uploadImageToCloudinary(image);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        setMessage("Error uploading image");
+        return;
+      }
+    }
+
     axios
-      .post("https://api.cloudinary.com/v1_1/dqefjpmuo/image/upload", formData)
-      .then((response) => {
-        const imageUrl = response.data.url;
-  
+      .post(
+        "http://localhost:5000/providerInfo/",
+        {
+          title,
+          description,
+          availability,
+          experience,
+          specialist,
+          image: imageUrl,
+        },
+        { headers }
+      )
+      .then((result) => {
+        setMessage(result.data.message);
+        setAvailability("");
+        setExperience("");
+        setDescription("");
+        setTitle("");
+        setImage(null);
+        setTimeout(() => setMessage(""), 3000);
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.userId;
         axios
-          .post(
-            "http://localhost:5000/providerInfo/",
-            {
-              title,
-              description,
-              availability,
-              experience,
-              specialist,
-              image: imageUrl, // Include image URL in the data sent to the server
-            },
-            { headers }
-          )
-          .then((result) => {
-            setMessage(result.data.message);
-            setAvailability("");
-            setExperience("");
-            setDescription("");
-            setTitle("");
-            setTimeout(() => setMessage(""), 3000);
-            const decodedToken = jwtDecode(token);
-            const userId = decodedToken.userId;
-            axios
-              .get(`http://localhost:5000/providerInfo/author/${userId}`, {
-                headers,
-              })
-              .then((res) => {
-                setProviderInfo(res.data.providersInfo);
-              })
-              .catch((err) => {
-                console.error(err);
-                setMessage(
-                  err.response?.data?.message ||
-                    "Error fetching provider information"
-                );
-                setTimeout(() => setMessage(""), 3000);
-              });
+          .get(`http://localhost:5000/providerInfo/author/${userId}`, {
+            headers,
+          })
+          .then((res) => {
+            setProviderInfo(res.data.providersInfo);
           })
           .catch((err) => {
+            console.error(err);
             setMessage(
-              err.response?.data?.message || "Error adding provider information"
+              err.response?.data?.message ||
+                "Error fetching provider information"
             );
             setTimeout(() => setMessage(""), 3000);
           });
       })
-      .catch((error) => {
-        console.error("Error uploading image to Cloudinary:", error);
-        setMessage("Image upload failed");
+      .catch((err) => {
+        setMessage(
+          err.response?.data?.message || "Error adding provider information"
+        );
         setTimeout(() => setMessage(""), 3000);
       });
   };
- 
-  
-  const uploadImageToCloudinary = async (imageFile) => {
-    const data = new FormData();
-    data.append("file", imageFile);
-    data.append("upload_preset", "rgtsukxl");
-    data.append("cloud_name", "dqefjpmuo");
 
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/dqefjpmuo/image/upload",
-      {
-        method: "post",
-        body: data,
-      }
-    );
-    const result = await response.json();
-    return result.url;
-  };
-  const handleUpdate =async  (
-    postId,
-    newTitle,
-    newDescription,
-    newExperience,
-    newAvailability,
-    newImage
-  ) => {
+  const handleUpdate = async (postId) => {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
+
+    const { newTitle, newDescription, newExperience, newAvailability, newImage } = editStates[postId] || {};
+
     let imageUrl = null;
     if (newImage) {
       try {
@@ -162,7 +168,8 @@ const ProviderDashboard = () => {
         setMessage("Error uploading image");
         return;
       }
-    } 
+    }
+
     axios
       .put(
         `http://localhost:5000/providerInfo/${postId}`,
@@ -171,7 +178,7 @@ const ProviderDashboard = () => {
           experience: newExperience,
           description: newDescription,
           title: newTitle,
-          image:newImage
+          image: imageUrl,
         },
         { headers }
       )
@@ -185,11 +192,12 @@ const ProviderDashboard = () => {
                   description: newDescription,
                   availability: newAvailability,
                   experience: newExperience,
-                  image:newImage
+                  image: imageUrl,
                 }
               : post
           )
         );
+        setIsUpdated((prev) => ({ ...prev, [postId]: false }));
       })
       .catch((err) => {
         console.error(err);
@@ -208,18 +216,88 @@ const ProviderDashboard = () => {
         console.log(err);
       });
   };
-  // const getDefaultImage = (userName) => {
-  //   const firstLetter = userName.charAt(0).toUpperCase();
-  
-  //     return require(`../../alphabetImages/${firstLetter}.png`);
-   
-  // };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
+
+  const handleEditImageChange = (postId, e) => {
+    const file = e.target.files[0];
+    setEditStates((prev) => ({
+      ...prev,
+      [postId]: {
+        ...prev[postId],
+        newImage: file,
+      },
+    }));
+  };
+
+  const uploadImageToCloudinary = async (imageFile) => {
+    const data = new FormData();
+    data.append("file", imageFile);
+    data.append("upload_preset", "rgtsukxl");
+    data.append("cloud_name", "dqefjpmuo");
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dqefjpmuo/image/upload",
+      {
+        method: "post",
+        body: data,
+      }
+    );
+    const result = await response.json();
+    return result.url;
+  };
+  useEffect(() => {
+    socket?.on("connect", () => {
+      setIsConnected(true);
+      console.log("Connected to socket");
+    });
+
+    socket?.on("connect_error", (error) => {
+      setIsConnected(false);
+      console.log(error);
+    });
+
+    return () => {
+      setIsConnected(false);
+      socket?.close();
+      socket?.removeAllListeners();
+    };
+  }, [socket]);
+
 
   return (
     <providerInfoContext.Provider value={{ providerInfo }}>
       <MDBContainer className="ProviderDashboard">
         <MDBRow className="add-info">
+   
+
           <MDBCol md="6">
+          <input
+        type="text"
+        placeholder="user id"
+        value={userId}
+      />
+      <input
+        type="text"
+        placeholder="token"
+        value={token}
+      />
+      <button onClick={() => setSocket(socketInit({ user_id, token }))}>
+        Connect
+      </button>
+      {/* {console.log(messageFrom)} */}
+      {isConnected && <Message socket={socket} providerId={providerId} />}
+                 <div className='messages'>
+        {allMessages.map((msg, index) => (
+          <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
+            {setMessageFrom(msg.from)}
+            <small>{msg.from}: {msg.message}</small>
+          </p>
+        ))}
+      </div>
             <h2 className="mb-4">Add Info</h2>
             <div className="form-group mb-3">
               <label>Title</label>
@@ -257,14 +335,16 @@ const ProviderDashboard = () => {
               />
             </div>
             <div className="form-group mb-3">
-      <label>Image</label>
-      <input
-        type="file"
-        onChange={(e) => setImage(e.target.files[0])}
-        className="form-control"
-      />
-    </div>
+              <label>Upload Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="form-control"
+              />
+            </div>
             {message && <div className="alert alert-danger">{message}</div>}
+            
             <MDBBtn onClick={handleAddProviderInfo}>
               Create New Provider Information
             </MDBBtn>
@@ -280,11 +360,24 @@ const ProviderDashboard = () => {
 
             const decodedToken = jwtDecode(token);
             const userId = decodedToken.userId;
+
+            const isCurrentPostUpdated = isUpdated[info._id] || false;
+
+            const handleInputChange = (postId, field, value) => {
+              setEditStates((prev) => ({
+                ...prev,
+                [postId]: {
+                  ...prev[postId],
+                  [field]: value,
+                },
+              }));
+            };
+
             return (
-              <MDBCol md="6" key={info._id} className="mt-3">
-                <MDBCard>
-                  <MDBCardBody className="post">
-                    <div className="d-flex align-items-center mb-3 ">
+              <MDBCol md="6" key={info._id} className="mb-4">
+                <MDBCard className="provider-card">
+                  <MDBCardBody>
+                    <div className="d-flex align-items-center mb-3">
                       <img
                         src={userImage}
                         alt={info.author.userName}
@@ -297,15 +390,6 @@ const ProviderDashboard = () => {
                     <MDBCardSubTitle className="text-center text-muted">
                       <b>{info?.specialist?.name}</b>
                     </MDBCardSubTitle>
-                    {info.image && (
-              <div className="post-image-container">
-                <img
-                  src={info.image}
-                  alt="Provider Post"
-                  className="post-image"
-                />
-              </div>
-            )}
 
                     <MDBCardTitle>
                       <b>Title: </b>
@@ -320,24 +404,29 @@ const ProviderDashboard = () => {
                     <p>
                       <b>Availability: </b>: {info.availability}
                     </p>
-                
+
+                    {info.image && (
+                      <div className="post-image-container">
+                        <img
+                          src={info.image}
+                          alt="Provider Post"
+                          className="post-image"
+                        />
+                      </div>
+                    )}
+
                     {info.reviews?.length > 0 && (
                       <div className="reviews-section">
                         <h4>Reviews:</h4>
-                        {info.reviews.map((review, i) => {
-                          console.log(info);
-                           const getDefaultImage = (userName) => {
-                            const firstLetter = userName.charAt(0).toUpperCase();
-                          
-                              return require(`../../alphabetImages/${firstLetter}.png`);
-                           
-                          };
-                        return(
+                        {info.reviews.map((review, i) => (
                           <MDBCard key={i} className="mb-3">
                             <MDBCardBody>
                               <div className="d-flex align-items-center mb-3">
                                 <img
-                                  src={review.customer.image || getDefaultImage(review.customer.userName)}
+                                  src={
+                                    review.customer.image ||
+                                    require(`../../alphabetImages/${review.customer.userName.charAt(0).toUpperCase()}.png`)
+                                  }
                                   alt={review.customer.userName}
                                   className="author-image rounded-circle me-3"
                                 />
@@ -351,26 +440,41 @@ const ProviderDashboard = () => {
                               <StarRating rating={review.rating} />
                             </MDBCardBody>
                           </MDBCard>
-                        )})}
+                        ))}
                       </div>
                     )}
+
                     {userId === info.author._id && (
                       <div className="update-form">
-                        {isUpdated ? (
+                        {isCurrentPostUpdated ? (
                           <div>
                             <div className="form-group">
                               <label>New Title</label>
                               <MDBInput
                                 type="text"
-                                onChange={(e) => (info.newTitle = e.target.value)}
+                                value={editStates[info._id]?.newTitle || title}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    info._id,
+                                    "newTitle",
+                                    e.target.value
+                                  )
+                                }
                                 className="form-control"
                               />
                             </div>
                             <div className="form-group">
                               <label>New Description</label>
                               <MDBTextArea
+                                value={
+                                  editStates[info._id]?.newDescription ||description
+                                }
                                 onChange={(e) =>
-                                  (info.newDescription = e.target.value)
+                                  handleInputChange(
+                                    info._id,
+                                    "newDescription",
+                                    e.target.value
+                                  )
                                 }
                                 className="form-control"
                               />
@@ -379,8 +483,15 @@ const ProviderDashboard = () => {
                               <label>New Availability</label>
                               <MDBInput
                                 type="text"
+                                value={
+                                  editStates[info._id]?.newAvailability || availability
+                                }
                                 onChange={(e) =>
-                                  (info.newAvailability = e.target.value)
+                                  handleInputChange(
+                                    info._id,
+                                    "newAvailability",
+                                    e.target.value
+                                  )
                                 }
                                 className="form-control"
                               />
@@ -389,21 +500,26 @@ const ProviderDashboard = () => {
                               <label>New Experience</label>
                               <MDBInput
                                 type="text"
+                                value={editStates[info._id]?.newExperience || experience}
                                 onChange={(e) =>
-                                  (info.newExperience = e.target.value)
+                                  handleInputChange(
+                                    info._id,
+                                    "newExperience",
+                                    e.target.value
+                                  )
                                 }
                                 className="form-control"
                               />
                             </div>
-                            <div
-                            className="form-group"
-                            >
-                               <label>New Image</label>
-                              <MDBFile
-                              id="image"
-                              onChange={(e) =>
-                                (info.newImage = e.target.files[0])
-                              }
+                            <div className="form-group mb-3">
+                              <label>New Image</label>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) =>
+                                  handleEditImageChange(info._id, e)
+                                }
+                                className="form-control"
                               />
                             </div>
                           </div>
@@ -411,20 +527,16 @@ const ProviderDashboard = () => {
                         <MDBBtn
                           className="mt-3"
                           onClick={() => {
-                            setIsUpdated(!isUpdated);
-                            if (isUpdated) {
-                              handleUpdate(
-                                info._id,
-                                info.newTitle,
-                                info.newDescription,
-                                info.newExperience,
-                                info.newAvailability,
-                                info.newImage
-                              );
+                            setIsUpdated((prev) => ({
+                              ...prev,
+                              [info._id]: !isCurrentPostUpdated,
+                            }));
+                            if (isCurrentPostUpdated) {
+                              handleUpdate(info._id);
                             }
                           }}
                         >
-                          {isUpdated ? "Save" : "Update"}
+                          {isCurrentPostUpdated ? "Save" : "Update"}
                         </MDBBtn>
                         <MDBBtn
                           className="btn-danger mt-3"

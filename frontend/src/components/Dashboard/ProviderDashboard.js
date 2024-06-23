@@ -14,6 +14,8 @@ import {
   MDBBtn,
   MDBCardSubTitle,
 } from "mdb-react-ui-kit";
+import Message from './Message';
+import socketInit from '../../socket.server';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./ProviderDashboard.css";
 import StarRating from "./StarRating";
@@ -31,13 +33,16 @@ const ProviderDashboard = () => {
   const [image, setImage] = useState(null);
   const [providerInfo, setProviderInfo] = useState([]);
   const [isUpdated, setIsUpdated] = useState({});
-
+  const [user_id, setUser_id] = useState("");
   const [editStates, setEditStates] = useState({});
   const [allMessages, setAllMessages] = useState([]);
-
+  const [socket, setSocket] = useState(null);
   const [providerId, setProviderId] = useState('');
   const [providerUserName, setProviderUserName] = useState('');
-  const socket = io('http://localhost:8080', {
+  const [userId, setUserId] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
+  const [messageFrom, setMessageFrom] = useState("")
+   const newSocket = io('http://localhost:8080', {
     extraHeaders: {
       tokenone: token,
       user_id: providerId,
@@ -52,20 +57,20 @@ const ProviderDashboard = () => {
   }, [token]);
 
   useEffect(() => {
-    socket.on('message', (data) => {
+    newSocket.on('message', (data) => {
       setAllMessages((prevMessages) => [...prevMessages, data]);
+      setMessageFrom(data.from);
     });
-
+console.log(messageFrom);
     return () => {
-      socket.off('message');
+      newSocket.off('message');
     };
-  }, [socket]);
-
+  }, [newSocket]);
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
-
+setUserId(userId)
       axios
         .get(`http://localhost:5000/providerInfo/author/${userId}`, {
           headers: {
@@ -245,6 +250,24 @@ const ProviderDashboard = () => {
     const result = await response.json();
     return result.url;
   };
+  useEffect(() => {
+    socket?.on("connect", () => {
+      setIsConnected(true);
+      console.log("Connected to socket");
+    });
+
+    socket?.on("connect_error", (error) => {
+      setIsConnected(false);
+      console.log(error);
+    });
+
+    return () => {
+      setIsConnected(false);
+      socket?.close();
+      socket?.removeAllListeners();
+    };
+  }, [socket]);
+
 
   return (
     <providerInfoContext.Provider value={{ providerInfo }}>
@@ -253,9 +276,25 @@ const ProviderDashboard = () => {
    
 
           <MDBCol md="6">
+          <input
+        type="text"
+        placeholder="user id"
+        value={userId}
+      />
+      <input
+        type="text"
+        placeholder="token"
+        value={token}
+      />
+      <button onClick={() => setSocket(socketInit({ user_id, token }))}>
+        Connect
+      </button>
+   
+      {isConnected && <Message socket={socket} userId={messageFrom} />}
                  <div className='messages'>
         {allMessages.map((msg, index) => (
           <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
+            {console.log(msg.from)}
             <small>{msg.from}: {msg.message}</small>
           </p>
         ))}

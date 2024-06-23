@@ -3,11 +3,13 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit ,faRemove} from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faEdit, faRemove } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 import "./AdminDashboard.css";
+
+import StarRating from './StarRating';
 import { UserContext } from "../../App";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,Link } from "react-router-dom";
 import {
   MDBContainer,
   MDBCard,
@@ -16,18 +18,24 @@ import {
   MDBCheckbox,
   MDBBtn,
   MDBFile,
+  MDBRow,
+  MDBCol,
+  MDBCardTitle,
+  MDBCardText,
+  MDBCardSubTitle,
+
 } from "mdb-react-ui-kit";
 import socketInit from '../../socket.server';
 import Message from '../Dashboard/Message';
 
 const AdminDashboard = () => {
-  const Admin =require("../../alphabetImages/Admin.png")
-  const { setIsLoggedIn, setToken, token } = useContext(UserContext);
+  const Admin = require("../../alphabetImages/Admin.png")
+  const { setIsLoggedIn, setToken, token, isLoggedIn } = useContext(UserContext);
   const [userNameOne, setUserNameOne] = useState("");
   // const [imageOne, setImageOne] = useState("");
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
-    const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [tokenOne, setTokenOne] = useState("")
   const [user_id, setUser_id] = useState("")
@@ -47,10 +55,11 @@ const AdminDashboard = () => {
   const [isSpecialist, setIsSpecialist] = useState(false);
   const [categories, setCategories] = useState([]);
   const [reviews, setReviews] = useState([]);
-
-
+  const [newReview, setNewReview] = useState({});
+  const [rating, setRating] = useState({});
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [providerInfo, setProviderInfo] = useState([]);
+  const [isUpdated, setIsUpdated] = useState(false);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -80,7 +89,7 @@ const AdminDashboard = () => {
       setUserId(userId);
       const userName = decodedToken.user;
       setUserNameOne(userName);
-     
+
 
       getAllUsers();
     }
@@ -98,11 +107,116 @@ const AdminDashboard = () => {
         console.error("Error fetching reviews:", error);
       }
     };
-  
+
     fetchReviews();
   }, []);
-  
-  
+
+  const getAllProvidersInfo = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/providerInfo/');
+      return response.data.providersInfo;
+    } catch (error) {
+      console.error('Error fetching provider info:', error);
+      throw error;
+    }
+  };
+  useEffect(() => {
+    getAllProvidersInfo().then(setProviderInfo).catch(console.error);
+  }, []);
+  const handleReview = (postId) => {
+
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    axios
+      .post(
+        `http://localhost:5000/providerInfo/${postId}/reviews`,
+        { review: newReview[postId], rating: rating[postId], customer: userId },
+        { headers }
+      )
+      .then((result) => {
+        if (result.status === 201 && result.data.success) {
+          console.log("New review added:", result.data.review);
+          console.log("Customer object:", result.data.review.customer);
+
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) =>
+              postId === post._id
+                ? {
+                  ...post,
+                  reviews: [
+                    ...post.reviews,
+                    {
+                      ...result.data.review,
+                      customer: { ...result.data.review.customer, userName, image, _id: userId },
+                    },
+                  ],
+                }
+                : post
+            )
+          );
+
+          setRating((prev) => ({ ...prev, [postId]: 0 }));
+        }
+        setNewReview((prev) => ({ ...prev, [postId]: "" }));
+      })
+      .catch((err) => {
+        console.error('Error adding review:', err);
+      });
+  };
+
+  const handleDeleteReview = (reviewId) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    axios
+      .delete(`http://localhost:5000/providerInfo/${reviewId}/reviews`, { headers })
+      .then((result) => {
+        if (result.status === 200 && result.data.success) {
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) => ({
+              ...post,
+              reviews: post.reviews.filter((review) => review._id !== reviewId),
+            }))
+          );
+        }
+      })
+      .catch((err) => {
+        console.error('Error deleting review:', err);
+      });
+  };
+
+  const handleUpdateReview = (reviewId, newReview, newRating) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    axios
+      .put(
+        `http://localhost:5000/providerInfo/${reviewId}/reviews`,
+        { review: newReview, rating: newRating },
+        { headers }
+      )
+      .then((result) => {
+        if (result.status === 200 && result.data.success) {
+          setProviderInfo((prevInfo) =>
+            prevInfo.map((post) => ({
+              ...post,
+              reviews: post.reviews.map((rev) =>
+                rev._id === reviewId ? { ...rev, review: newReview, rating: newRating } : rev
+              ),
+            }))
+          );
+          setIsUpdated(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Error updating review:', err);
+      });
+  };
 
   const getAllUsers = () => {
     axios
@@ -119,9 +233,9 @@ const AdminDashboard = () => {
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-  
+
       const response = await axios.delete(`http://localhost:5000/providerInfo/${reviewId}/reviews`, { headers });
-  
+
       if (response.status === 200 && response.data.success) {
         setReviews(reviews.filter((review) => review._id !== reviewId));
       }
@@ -129,7 +243,6 @@ const AdminDashboard = () => {
       console.error("Error deleting review:", error);
     }
   };
-  
 
   const handleDelete = (userId) => {
     const headers = {
@@ -149,7 +262,7 @@ const AdminDashboard = () => {
   };
 
   const handleUpdate = () => {
-    
+
     console.log(`Update user with ID: ${userId}`);
   };
   const handleSubmit = async () => {
@@ -207,7 +320,6 @@ const AdminDashboard = () => {
     }
   };
 
-
   const handleLogout = () => {
     setIsLoggedIn(false);
     setToken("");
@@ -263,8 +375,16 @@ const AdminDashboard = () => {
       },
     ],
   };
+  const getDefaultImage = (name) => {
+    const firstLetter = name?.charAt(0)?.toUpperCase();
+    if (firstLetter) {
+      return require(`../../alphabetImages/${firstLetter}.png`);
+    }
+  };
 
-
+  const getImage = (image, name) => {
+    return image || getDefaultImage(name);
+  };
 
   return (
     <div className="d-flex flex-column">
@@ -272,17 +392,19 @@ const AdminDashboard = () => {
         id="topbar"
         className="bg-dark p-3 d-flex justify-content-between align-items-center"
       >
+       
         <div className="d-flex align-items-center">
-         
-            <img
-              src={Admin}
-              alt="User"
-              className="rounded-circle mr-2"
-              style={{ width: "40px", height: "40px" }}
-            />
-          
+
+          <img
+            src={Admin}
+            alt="User"
+            className="rounded-circle mr-2"
+            style={{ width: "40px", height: "40px" }}
+          />
+
           <span className="text-white">{userNameOne}</span>
         </div>
+        <Link to='/user-settings'>Settings</Link>
         <button onClick={handleLogout} className="btn btn-danger">
           Logout
         </button>
@@ -291,12 +413,12 @@ const AdminDashboard = () => {
         <nav id="sidebar" className="bg-dark">
           <div className="p-4">
             <h1 className="logo">Admin</h1>
-          
+
             <ul className="list-unstyled components mb-5">
               <li>
                 <a href="#adminDashboard"
-                onClick={()=>setSelectedSection("adminDashboard")}
-                className="dropdown-toggle"
+                  onClick={() => setSelectedSection("adminDashboard")}
+                  className="dropdown-toggle"
                 >
                   Admin Dashboard
                 </a>
@@ -329,14 +451,14 @@ const AdminDashboard = () => {
                 </a>
               </li>
               <li>
-  <a
-    href="#reviews"
-    onClick={() => setSelectedSection("reviews")}
-    className="dropdown-toggle"
-  >
-    Reviews
-  </a>
-</li>
+                <a
+                  href="#reviews"
+                  onClick={() => setSelectedSection("reviews")}
+                  className="dropdown-toggle"
+                >
+                  Reviews
+                </a>
+              </li>
 
               <li>
                 <a
@@ -360,87 +482,154 @@ const AdminDashboard = () => {
           </div>
         </nav>
         <div id="content" className="p-4 p-md-5">
-        {selectedSection === "adminDashboard" && (
-  <div>
-    <h1>Admin Dashboard</h1>
- 
-    <div className="container-fluid">
-      <div className="row mb-4">
-        <div className="col-lg-6">
-          <Bar data={barData} />
-        </div>
-        <div className="col-lg-6">
-          <Line data={lineData} />
-        </div>
-      </div>
-      <div className="row mb-4">
-        <div className="col-lg-6">
-          <Pie data={pieData} />
-        </div>
-        <div className="col-lg-6">
-          <Doughnut data={doughnutData} />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-lg-12">
-          <h3>Reviews</h3>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>Profile Picture</th>
-                <th>User Name</th>
-                <th>Review</th>
-                <th>Rating</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reviews.map((review) => (
-                <tr key={review._id}>
-                  <td><img className="avatar-image" src={review.customer.image} alt="Avatar"/></td>
-                  <td>{review.customer.userName}</td>
-                  <td>{review.review}</td>
-                  <td>{review.rating}</td>
-                
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="col-lg-12 mt-4">
-          <h3>Users</h3>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                
-                <th>Profile Picture</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Role</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user._id}>
-                  <td><img className="avatar-image" src={user.image}alt="Avatar"/></td>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                  <td>{user.role.role}</td>
-                  <td>{user.email}</td>
-                  <td>{user.phoneNumber}</td>
-                  
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+          {selectedSection === "adminDashboard" && (
+            <div>
+              <h1>Admin Dashboard</h1>
+
+              <div className="container-fluid">
+                <div className="row mb-4">
+                  <div className="col-lg-6">
+                    <Bar data={barData} />
+                  </div>
+                  <div className="col-lg-6">
+                    <Line data={lineData} />
+                  </div>
+                </div>
+                <div className="row mb-4">
+                  <div className="col-lg-6">
+                    <Pie data={pieData} />
+                  </div>
+                  <div className="col-lg-6">
+                    <Doughnut data={doughnutData} />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <h3>Reviews</h3>
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Profile Picture</th>
+                          <th>User Name</th>
+                          <th>Review</th>
+                          <th>Rating</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {reviews.map((review) => (
+                          <tr key={review._id}>
+                            <td><img className="avatar-image" src={getImage(review.customer.image, review.customer.userName)} alt="Avatar" /></td>
+                            <td>{review.customer.userName}</td>
+                            <td>{review.review}</td>
+                            <td>{review.rating}</td>
+
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="col-lg-12 mt-4">
+                    <h3>Users</h3>
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+
+                          <th>Profile Picture</th>
+                          <th>First Name</th>
+                          <th>Last Name</th>
+                          <th>Role</th>
+                          <th>Email</th>
+                          <th>Phone Number</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {users.map((user) => (
+                          <tr key={user._id}>
+                            <td><img className="avatar-image" src={getImage(user.image, user.firstName)} alt="Avatar" /></td>
+                            <td>{user.firstName}</td>
+                            <td>{user.lastName}</td>
+                            <td>{user.role.role}</td>
+                            <td>{user.email}</td>
+                            <td>{user.phoneNumber}</td>
+
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           {selectedSection === "userDashboard" && (
-            <h2>Hello from User Dashboard</h2>
+            <MDBRow>
+              {providerInfo.map((post) => (
+                <MDBCol md="6" key={post._id}>
+                  <MDBCard className="mb-4">
+                    <MDBCardBody className="post">
+                      <div className="d-flex align-items-center mb-3">
+                        <img
+                          src={getImage(post.author.image, post.author.userName)}
+                          alt={post.author.userName}
+                          className="author-image rounded-circle me-3"
+                        />
+                        <div>
+                          <MDBCardTitle className="text-center mb-0">
+                            {post.author.userName}
+                          </MDBCardTitle>
+                          <MDBCardSubTitle className="text-center text-muted">
+                            <b> Specialty : {post?.specialist?.name}</b>
+                          </MDBCardSubTitle>
+                        </div>
+                      </div>
+                      {post.image && (
+                        <div className="post-image-container">
+                          <img
+                            src={post.image}
+                            alt="Provider Post"
+                            className="post-image"
+                          />
+                        </div>
+                      )}
+                      <MDBCardText className="mt-3">
+                        <b>{post.title}</b>
+                      </MDBCardText>
+                      <MDBCardText>{post.description}</MDBCardText>
+                      <ul className="list-group mb-3">
+                        <li className="list-group-item">
+                          <b>Availability: </b>{post.availability}
+                        </li>
+                        <li className="list-group-item">
+                          <b>Experience:</b> {post.experience}
+                        </li>
+                      </ul>
+                      {post.reviews.map((review) => (
+                        <MDBCard key={review._id} className="card-review mb-3">
+                          <MDBCardBody>
+                            <div className="d-flex align-items-center mb-3">
+                              <img
+                                src={getImage(review.customer.image, review.customer.userName)}
+                                alt={review.customer.userName}
+                                className="author-image rounded-circle me-3"
+                              />
+                              <div>
+                                <MDBCardTitle className="text-center mb-0">
+                                  {review.customer.userName}
+                                </MDBCardTitle>
+                              </div>
+                            </div>
+                            <MDBCardText>{review.review}</MDBCardText>
+                            <StarRating rating={review.rating} postId={post._id} />
+                          
+                          </MDBCardBody>
+                        </MDBCard>
+                      ))}
+                     
+                    </MDBCardBody>
+                  </MDBCard>
+                </MDBCol>
+              ))}
+            </MDBRow>
           )}
           {selectedSection === "providerDashboard" && (
             <h2>Hello from Provider Dashboard</h2>
@@ -463,12 +652,12 @@ const AdminDashboard = () => {
                   <tbody>
                     {users.map((user) => (
                       <tr key={user._id}>
-                        <td><img className="avatar-image" src={user.image} alt="Avatar"/></td>
+                        <td><img className="avatar-image" src={getImage(user.image, user.userName)} alt="Avatar" /></td>
                         <td>{user.userName}</td>
                         <td>{user.email}</td>
                         <td>{user.role.role}</td>
                         <td>{user.phoneNumber}</td>
-                        
+
                         <td>
                           <button
                             onClick={() => handleUpdate(user._id)}
@@ -493,42 +682,42 @@ const AdminDashboard = () => {
             </>
           )}
           {selectedSection === "reviews" && (
-  <>
-    <h2>Reviews</h2>
-    <div className="table-responsive">
-      <table className="table table-bordered table-hover">
-        <thead className="thead-dark">
-          <tr>
-            <th>Customer Name</th>
-            <th>Review</th>
-            <th>Rating</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reviews.map((review) => (
-            <tr key={review._id}>
-              {console.log(review)}
-              <td>{review.customer.userName}</td>
-              <td>{review.review}</td>
-              <td>{review.rating}</td>
-              <td>{new Date(review.date).toLocaleDateString()}</td>
-              <td>
-              <button
-          onClick={() => handleDeleteReviews(review._id)}
-          className="btn btn-sm btn-danger"
-        >
-          <FontAwesomeIcon icon={faRemove} />
-        </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </>
-)}
+            <>
+              <h2>Reviews</h2>
+              <div className="table-responsive">
+                <table className="table table-bordered table-hover">
+                  <thead className="thead-dark">
+                    <tr>
+                      <th>Customer Name</th>
+                      <th>Review</th>
+                      <th>Rating</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reviews.map((review) => (
+                      <tr key={review._id}>
+                        {console.log(review)}
+                        <td>{review.customer.userName}</td>
+                        <td>{review.review}</td>
+                        <td>{review.rating}</td>
+                        <td>{new Date(review.date).toLocaleDateString()}</td>
+                        <td>
+                          <button
+                            onClick={() => handleDeleteReviews(review._id)}
+                            className="btn btn-sm btn-danger"
+                          >
+                            <FontAwesomeIcon icon={faRemove} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
           {selectedSection === "charts" && (
             <>
               <h2>Charts</h2>
@@ -558,7 +747,7 @@ const AdminDashboard = () => {
             <MDBContainer fluid className="p-4 register-container">
               <MDBCard className="text-black">
                 <MDBCardBody className="p-md-5">
-                  <h3 className="text-center">Sign up</h3>
+                  <h3 className="text-center">Create New User</h3>
                   <div className="register-form">
                     <div className="form-left">
                       <MDBInput

@@ -18,6 +18,8 @@ const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleuserc
 
 const Navbar = () => {
   const {
+    isAdmin,
+    setIsAdmin,
     isLoggedInWithGoogle,
     setToken,
     token,
@@ -162,16 +164,19 @@ const Navbar = () => {
           <img className="avatar-image" src={getImage(image, userName)} alt="Avatar" />
         </div>
       )}
-      {isLoggedIn && (
-        <>
-          <Link to='/user-settings'>Settings</Link>
-          {isProvider ? (
-            <Link to='/provider-dashboard'>Dashboard</Link>
-          ) : (
-            <Link to='/dashboard'>Dashboard</Link>
-          )}
-        </>
-      )}
+       {isLoggedIn && (
+  <>
+    <Link to='/user-settings'>Settings</Link>
+    {isProvider ? (
+      <Link to='/provider-dashboard'>Dashboard</Link>
+    ) : (
+      <Link to='/dashboard'>Dashboard</Link>
+    )}
+    {isAdmin && (
+      <Link to='/admin-dashboard'>Admin Dashboard</Link>
+    )}
+  </>
+)}
       <div className="navbar-right">
         {isLoggedIn && (
           <div className="logout-container">

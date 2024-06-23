@@ -249,6 +249,7 @@ const UserDashboard = () => {
 
   return (
     <MDBContainer className="UserDashboard">
+      <div>
       <input
         type="text"
         placeholder="user id"
@@ -259,10 +260,11 @@ const UserDashboard = () => {
         placeholder="token"
         value={token}
       />
-      <button onClick={() => setSocket(socketInit({ user_id, tokenOne }))}>
+      <button onClick={() => setSocket(socketInit({ user_id, token }))}>
         Connect
       </button>
-      {isConnected && <Message socket={socket} providerId={providerId} providerUserName={providerUserName} />}
+      </div>
+      {isConnected && <Message socket={socket} providerId={providerId} />}
       
       {weather && (
         <div className="row d-flex justify-content-center py-5">
@@ -336,7 +338,7 @@ const UserDashboard = () => {
             <MDBCol md="6" key={post._id}>
               <MDBCard className="mb-4">
                 <MDBCardBody className="post">
-                  <div className="d-flex align-items-center mb-3">\
+                  <div className="d-flex align-items-center mb-3">
                   
                     <img
                       src={getImage(post.author.image, post.author.userName)}

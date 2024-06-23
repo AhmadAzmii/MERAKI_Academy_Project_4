@@ -1,23 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import './Message.css'
+import React, { useContext, useEffect, useState } from 'react';
+import './Message.css';
 import {jwtDecode} from 'jwt-decode';
-const Message = ({ socket, providerId ,providerUserName}) => {
+import { UserContext } from '../../App';
+
+const Message = ({ socket, providerId, userId }) => {
+    const { isLoggedIn, isProvider } = useContext(UserContext);
     const [to, setTo] = useState("");
     const [message, setMessage] = useState("");
     const [allMessages, setAllMessages] = useState([]);
-    const token=localStorage.getItem("token")
-    const [user_id, setUser_id] = useState("")
-    const [userName, setUserName] = useState("")
-    useEffect(()=>{
+    const token = localStorage.getItem("token");
+    const [user_id, setUser_id] = useState("");
+    const [userName, setUserName] = useState("");
+
+    useEffect(() => {
         if (token) {
             const decodedToken = jwtDecode(token);
             const userId = decodedToken.userId;
             setUser_id(userId);
-            const userName=decodedToken.user;
+            const userName = decodedToken.user;
             console.log(decodedToken);
-            setUserName(userName)
-          }
-    },[token])
+            setUserName(userName);
+        }
+    }, [token]);
+
     useEffect(() => {
         socket?.on("message", receiveMessage);
         console.log(providerId);
@@ -27,7 +32,14 @@ const Message = ({ socket, providerId ,providerUserName}) => {
     }, [socket]);
 
     const sendMessage = () => {
-        socket?.emit("message", { to: providerId, from:userName, message });
+        if (isLoggedIn) {
+            if (isProvider) {
+                socket?.emit("message", { to: userId, from: user_id, message });
+            } else {
+                socket?.emit("message", { to: providerId, from: user_id, message });
+            }
+            setMessage(""); 
+        }
     };
 
     const receiveMessage = (data) => {
@@ -37,7 +49,6 @@ const Message = ({ socket, providerId ,providerUserName}) => {
 
     return (
         <div className='Message'>
-            
             <h2>Chat</h2>
             <input 
                 type='text' 
@@ -48,8 +59,8 @@ const Message = ({ socket, providerId ,providerUserName}) => {
             <input 
                 type='text' 
                 placeholder='to' 
-                value={providerId}
-                
+                value={providerId || userId}
+                onChange={(e) => setTo(e.target.value)} 
             />
             <button onClick={sendMessage}>
                 Send 

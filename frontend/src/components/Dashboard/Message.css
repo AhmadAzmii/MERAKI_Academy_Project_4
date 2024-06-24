@@ -14,7 +14,9 @@
     margin-bottom: 20px;
     font-family: 'Arial', sans-serif;
 }
-
+.message_input{
+  width: 270px;
+}
 .Message input[type='text'] {
     width: calc(100% - 22px);
     padding: 10px;
@@ -115,7 +117,7 @@
     cursor: pointer;
   }
   
-  /* Add CSS for the notification popup */
+ 
   .notification-popup {
     position: fixed;
     top: 20px;

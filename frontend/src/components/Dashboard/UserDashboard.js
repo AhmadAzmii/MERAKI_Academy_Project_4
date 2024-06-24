@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope ,faBars, faTimes,faClipboard,faComment} from "@fortawesome/free-solid-svg-icons";
+import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope, faBars, faTimes, faClipboard, faComment } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from 'jwt-decode';
 import { UserContext } from '../../App';
 import StarRating from './StarRating';
@@ -30,7 +30,7 @@ const apiKey = '374f6b9a93c2d20666eb4a186bd0df01';
 const UserDashboard = () => {
   const [showChatPopup, setShowChatPopup] = useState(false);
   const [users, setUsers] = useState([]);
-  const { token, isLoggedIn, userName, image,isProvider } = useContext(UserContext);
+  const { token, isLoggedIn, userName, image, isProvider } = useContext(UserContext);
   console.log(image);
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const UserDashboard = () => {
   const [providerId, setProviderId] = useState('');
   const [providerUserName, setProviderUserName] = useState("")
   const [isPopupVisible, setIsPopupVisible] = useState(false);
- 
+
   const handleUserClick = (user) => {
     setIsConnected(true);
     setProviderId(user._id);
@@ -181,12 +181,12 @@ const UserDashboard = () => {
         console.error('Error adding review:', err);
       });
   };
-  
+
   const handleSpecialistChange = (e) => {
     setSelectedSpecialist(e.target.value);
   };
-  
- 
+
+
   const getUniqueSpecialistNames = (providers) => {
     const specialistNames = providers.map((post) => post.specialist.name);
     return [...new Set(specialistNames)];
@@ -236,7 +236,7 @@ const UserDashboard = () => {
         console.error('Error deleting review:', err);
       });
   };
- 
+
 
   const handleUpdate = (reviewId, newReview, newRating) => {
     const headers = {
@@ -284,7 +284,7 @@ const UserDashboard = () => {
       socket?.removeAllListeners();
     };
   }, [socket]);
- 
+
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -300,23 +300,23 @@ const UserDashboard = () => {
     <MDBContainer id='home' className="UserDashboard">
       <FontAwesomeIcon
         icon={sidebarVisible ? faTimes : faBars}
-        className={sidebarVisible ? "white":"toggle-sidebar-icon"}
+        className={sidebarVisible ? "white" : "toggle-sidebar-icon"}
         onClick={toggleSidebar}
       />
       <div className={`sidebar ${sidebarVisible ? 'sidebar-visible' : ''}`}>
         <div>
           <h3>Menu</h3>
           <a href="#home"><FontAwesomeIcon icon={faHome} className="me-2" />Home</a>
-          
+
           <a ><Link to='/user-settings'><FontAwesomeIcon icon={faCog} className="me-2" />Settings</Link></a>
           <a href="#Posts"><FontAwesomeIcon icon={faClipboard} className="me-2" />Posts</a>
           <a href="#Contact_Us"><FontAwesomeIcon icon={faEnvelope} className="me-2" />Contact Us</a>
-          <a href='#message' onClick={()=>{
+          <a href='#message' onClick={() => {
             setIsPopupVisible(!isPopupVisible)
-          }}><FontAwesomeIcon icon={faComment }
-          className='me-2'/> Messages</a>
+          }}><FontAwesomeIcon icon={faComment}
+            className='me-2' /> Messages</a>
         </div>
-        
+
       </div>
       <MDBRow className={sidebarVisible ? "offset-md-3" : ""}>
         <MDBCol md="12">
@@ -335,44 +335,44 @@ const UserDashboard = () => {
               Connect
             </button>
           </div> */}
-         
-         <div>
-      {isPopupVisible && (
-        
-        <div className="contact-us-popup">
-          
-          <div className="popup-content">
-            <div className="chat-container">
-              <div className="user-list">
-                {users?.map((user, i) => (
-                  <div key={i} className="user-item" onClick={() => handleUserClick(user)}>
-                    <div>
-                    <img
-                      src={getImage(user.image, user.userName)}
-                      alt={user.userName}
-                      className="user-image"
-                    />
-                    <span className="user-name">{user.userName}</span>
+
+          <div>
+            {isPopupVisible && (
+
+              <div className="contact-us-popup">
+
+                <div className="popup-content">
+                  <div className="chat-container">
+                    <div className="user-list">
+                      {users?.map((user, i) => (
+                        <div key={i} className="user-item" onClick={() => handleUserClick(user)}>
+                          <div>
+                            <img
+                              src={getImage(user.image, user.userName)}
+                              alt={user.userName}
+                              className="user-image"
+                            />
+                            <span className="user-name">{user.userName}</span>
+                          </div>
+                          <div>
+                            <p>
+                              <b>specialist: </b>{user.specialist.name}</p>
+                          </div>
+                        </div>
+
+                      ))}
                     </div>
-                  <div>
-                  <p>
-                  <b>specialist: </b>{user.specialist.name}</p>
+                    <div className="chat-window">
+                      {isConnected && <Message socket={socket} providerId={providerId} image={image} providerName={providerUserName} />}
+                    </div>
                   </div>
-                  </div>
-                 
-                ))}
+                  <button onClick={closeChatToggle}>
+                    Close
+                  </button>
+                </div>
               </div>
-              <div className="chat-window">
-                {isConnected && <Message socket={socket} providerId={providerId} image={image} />}
-              </div>
-            </div>
-            <button onClick={closeChatToggle}>
-              Close
-            </button>
+            )}
           </div>
-        </div>
-      )}
-    </div>
 
           <div className="image-container">
             <img
@@ -533,46 +533,46 @@ const UserDashboard = () => {
             ))}
           </MDBRow>
           {weather && (
-          <div className="row d-flex justify-content-center py-5">
-            <div className="col-md-8 col-lg-6 col-xl-5">
-              <div className="card text-body" style={{ borderRadius: "35px" }}>
-                <div className="card-body p-4">
-                  <MDBRow>
-                    <MDBCol md="6" className="mb-4">
-                      <input
-                        type='text'
-                        className="form-control"
-                        placeholder='Enter a City'
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </MDBCol>
-                    <MDBCol md="6" className="mb-4">
-                      <MDBBtn onClick={handleSearch}> Search</MDBBtn>
-                    </MDBCol>
-                  </MDBRow>
-                  <div className="d-flex">
-                    <h6 className="flex-grow-1">{weather.name}</h6>
-                    <h6>{new Date().toLocaleTimeString()}</h6>
-                  </div>
-                  <div className="d-flex flex-column text-center mt-5 mb-4">
-                    <h6 className="display-4 mb-0 font-weight-bold">{weather.main.temp}°C</h6>
-                    <span className="small" style={{ color: "#868B94" }}>{weather.weather[0].description}</span>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    <div className="flex-grow-1" style={{ fontSize: "1rem" }}>
-                      <div><i className="fas fa-wind fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.wind.speed} km/h </span></div>
-                      <div><i className="fas fa-tint fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.main.humidity}% </span></div>
-                      <div><i className="fas fa-sun fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.clouds.all}% </span></div>
+            <div className="row d-flex justify-content-center py-5">
+              <div className="col-md-8 col-lg-6 col-xl-5">
+                <div className="card text-body" style={{ borderRadius: "35px" }}>
+                  <div className="card-body p-4">
+                    <MDBRow>
+                      <MDBCol md="6" className="mb-4">
+                        <input
+                          type='text'
+                          className="form-control"
+                          placeholder='Enter a City'
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </MDBCol>
+                      <MDBCol md="6" className="mb-4">
+                        <MDBBtn onClick={handleSearch}> Search</MDBBtn>
+                      </MDBCol>
+                    </MDBRow>
+                    <div className="d-flex">
+                      <h6 className="flex-grow-1">{weather.name}</h6>
+                      <h6>{new Date().toLocaleTimeString()}</h6>
                     </div>
-                    <div>
-                      <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} width="100px" alt="Weather icon" />
+                    <div className="d-flex flex-column text-center mt-5 mb-4">
+                      <h6 className="display-4 mb-0 font-weight-bold">{weather.main.temp}°C</h6>
+                      <span className="small" style={{ color: "#868B94" }}>{weather.weather[0].description}</span>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <div className="flex-grow-1" style={{ fontSize: "1rem" }}>
+                        <div><i className="fas fa-wind fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.wind.speed} km/h </span></div>
+                        <div><i className="fas fa-tint fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.main.humidity}% </span></div>
+                        <div><i className="fas fa-sun fa-fw" style={{ color: "#868B94" }}></i> <span className="ms-1"> {weather.clouds.all}% </span></div>
+                      </div>
+                      <div>
+                        <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} width="100px" alt="Weather icon" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
           <MDBBtn id='Contact_Us' onClick={toggleContactUsPopup}>Contact Us</MDBBtn>
 
           {showContactUsPopup && (

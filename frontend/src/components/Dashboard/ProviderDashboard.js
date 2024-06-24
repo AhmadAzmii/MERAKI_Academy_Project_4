@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import {
@@ -21,9 +21,11 @@ import "./ProviderDashboard.css";
 import StarRating from "./StarRating";
 import io from 'socket.io-client';
 import { formatDistanceToNow } from "date-fns";
+import { UserContext } from "../../App";
 export const providerInfoContext = createContext();
 
 const ProviderDashboard = () => {
+  const {image}=useContext(UserContext)
   const token = localStorage.getItem("token");
   const specialist = localStorage.getItem("specialist");
   const [title, setTitle] = useState("");
@@ -31,7 +33,7 @@ const ProviderDashboard = () => {
   const [message, setMessage] = useState("");
   const [experience, setExperience] = useState("");
   const [availability, setAvailability] = useState("");
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
   const [providerInfo, setProviderInfo] = useState([]);
   const [isUpdated, setIsUpdated] = useState({});
   const [user_id, setUser_id] = useState("");
@@ -126,7 +128,7 @@ const ProviderDashboard = () => {
         setExperience("");
         setDescription("");
         setTitle("");
-        setImage(null);
+        // setImage(null);
         setTimeout(() => setMessage(""), 3000);
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userId;
@@ -219,10 +221,10 @@ const ProviderDashboard = () => {
       });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-  };
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   setImage(file);
+  // };
 
   const handleEditImageChange = (postId, e) => {
     const file = e.target.files[0];
@@ -275,6 +277,7 @@ const ProviderDashboard = () => {
       setIsConnected(true)
     }
   }, [userId, token]);
+  console.log({image});
   return (
     <providerInfoContext.Provider value={{ providerInfo }}>
       <MDBContainer className="ProviderDashboard">
@@ -291,8 +294,8 @@ const ProviderDashboard = () => {
         <button onClick={() => setSocket(socketInit({ user_id, token }))}>
           Connect
         </button> */}
-{/* {console.log();} */}
-        {isConnected && <Message socket={socket} userId={messageFrom} providerImages={image}/>}
+        {/* {console.log();} */}
+        {isConnected && <Message socket={socket} userId={messageFrom} image={image} />}
         {/* <div className='messages'>
           {allMessages.map((msg, index) => (
             <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
@@ -302,7 +305,7 @@ const ProviderDashboard = () => {
             </p>
           ))}
         </div> */}
-        
+
 
         <h2 className="mt-5">Provider Information</h2>
         <MDBRow>

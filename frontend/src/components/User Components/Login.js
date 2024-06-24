@@ -8,7 +8,7 @@ import axios from 'axios';
 const clientId = "562371595229-m3ggl0fnth8ngobannl8lpc1461bnmoc.apps.googleusercontent.com";
 
 function Login() {
-    const { setToken, setIsLoggedIn, setIsAdmin, setIsProvider, setIsLoggedInWithGoogle, setUserName, setImage } = useContext(UserContext);
+    const { setToken, setIsLoggedIn, setIsAdmin, setIsProvider, setIsLoggedInWithGoogle, setUserName, setImage ,isProvider} = useContext(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -37,6 +37,7 @@ function Login() {
                 setIsProvider(true);
                 navigate('/Provider-Dashboard');
             } else if (role === 'Admin') {
+                
                 setIsAdmin(true);
                 setIsProvider(false);
                 navigate('/admin-dashboard');
@@ -51,6 +52,7 @@ function Login() {
             setTimeout(() => setMessage(""), 3000);
         }
     };
+    console.log(isProvider);
     
 
     const handleGoogleLoginSuccess = async (res) => {

@@ -50,7 +50,7 @@ const Navbar = () => {
 
           setUserName(userName);
           setImage(userImage);
-          setIsProvider(userSpecialist !== null);
+          // setIsProvider(userSpecialist !== null);
         })
         .catch(error => {
           console.error('Error fetching user info:', error);
@@ -113,54 +113,12 @@ const Navbar = () => {
     localStorage.clear();
     navigate('/login');
   };
-
+  console.log("isProvider : "+isProvider);
+  console.log("isAdmin : "+isAdmin);
   return (
     <div className='navbar'>
       {isLoggedIn && (
         <div className="avatar-container">
-          {/* {weather && (
-            <div className="weather-card">
-              <div className="weather-card-header">
-                <MDBRow>
-                  <MDBCol md="6">
-                    <input
-                      type='text'
-                      className="form-control"
-                      placeholder='Enter a City'
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                  </MDBCol>
-                  <MDBCol md="6">
-                    <MDBBtn onClick={handleSearch}>Search</MDBBtn>
-                  </MDBCol>
-                </MDBRow>
-              </div>
-              <div className="weather-card-body">
-                <div className="weather-location">
-                  <h6>{weather.name}</h6>
-                  <p>{new Date().toLocaleTimeString()}</p>
-                </div>
-                <div className="weather-temperature">
-                  <h1>{weather.main.temp}°C</h1>
-                  <p className="weather-description">{weather.weather[0].description}</p>
-                </div>
-                <div className="weather-details">
-                  <div className="weather-detail">
-                    <i className="fas fa-wind fa-fw" style={{ color: "#868B94" }}></i> {weather.wind.speed} km/h
-                  </div>
-                  <div className="weather-detail">
-                    <i className="fas fa-tint fa-fw" style={{ color: "#868B94" }}></i> {weather.main.humidity}%
-                  </div>
-                  <div className="weather-detail">
-                    <i className="fas fa-sun fa-fw" style={{ color: "#868B94" }}></i> {weather.clouds.all}%
-                  </div>
-                </div>
-                <div className="weather-icon">
-                  <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} alt="Weather icon" />
-                </div>
-              </div>
-            </div>
-          )} */}
           <img className="avatar-image" src={getImage(image, userName)} alt="Avatar" />
         </div>
       )}
@@ -173,12 +131,7 @@ const Navbar = () => {
       <Link to='/Create-Post'> Create new post</Link>
       <Link to='/provider-dashboard'>Dashboard</Link>
       </div>
-    ) : (
-      <Link to='/dashboard'>Dashboard</Link>
-    )}
-    {isAdmin && (
-      <Link to='/admin-dashboard'>Admin Dashboard</Link>
-    )}
+    ) : (isAdmin && !isProvider ?(<Link to='/admin-dashboard'>Admin Dashboard</Link>) :( <Link to='/dashboard'>Dashboard</Link>))}
   </>
 )}
       <div className="navbar-right">

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope ,faBars, faTimes,faClipboard} from "@fortawesome/free-solid-svg-icons";
+import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope ,faBars, faTimes,faClipboard,faComment} from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from 'jwt-decode';
 import { UserContext } from '../../App';
 import StarRating from './StarRating';
@@ -28,7 +28,10 @@ import socketInit from '../../socket.server';
 const apiKey = '374f6b9a93c2d20666eb4a186bd0df01';
 
 const UserDashboard = () => {
-  const { token, isLoggedIn, userName, image } = useContext(UserContext);
+  const [showChatPopup, setShowChatPopup] = useState(false);
+  const [users, setUsers] = useState([]);
+  const { token, isLoggedIn, userName, image,isProvider } = useContext(UserContext);
+  console.log(image);
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const navigate = useNavigate();
   const [providerInfo, setProviderInfo] = useState([]);
@@ -47,7 +50,19 @@ const UserDashboard = () => {
   const [search, setSearch] = useState("");
   const [providerId, setProviderId] = useState('');
   const [providerUserName, setProviderUserName] = useState("")
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+ 
+  const handleUserClick = (user) => {
+    setIsConnected(true);
+    setProviderId(user._id);
+    setIsPopupVisible(true);
+  };
 
+  const closeChatToggle = () => {
+    setIsPopupVisible(false);
+    setIsConnected(false);
+    setProviderId(null);
+  };
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -55,6 +70,7 @@ const UserDashboard = () => {
       setUserId(userId);
     }
     getAllProvidersInfo();
+    getAllUsers();
   }, [token]);
 
   useEffect(() => {
@@ -71,6 +87,19 @@ const UserDashboard = () => {
     }
   }, []);
 
+  const getAllUsers = () => {
+    axios
+      .get("http://localhost:5000/users")
+      .then((result) => {
+        // console.log(result.data.Users);
+        const serviceProviderUsers = result.data.Users.filter(user => user.role.role === 'serviceProvider');
+        setUsers(serviceProviderUsers);
+        console.log(users);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const fetchWeather = async (latitude, longitude) => {
     try {
       const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`);
@@ -207,6 +236,7 @@ const UserDashboard = () => {
         console.error('Error deleting review:', err);
       });
   };
+ 
 
   const handleUpdate = (reviewId, newReview, newRating) => {
     const headers = {
@@ -270,7 +300,7 @@ const UserDashboard = () => {
     <MDBContainer id='home' className="UserDashboard">
       <FontAwesomeIcon
         icon={sidebarVisible ? faTimes : faBars}
-        className="toggle-sidebar-icon"
+        className={sidebarVisible ? "white":"toggle-sidebar-icon"}
         onClick={toggleSidebar}
       />
       <div className={`sidebar ${sidebarVisible ? 'sidebar-visible' : ''}`}>
@@ -280,7 +310,11 @@ const UserDashboard = () => {
           
           <a ><Link to='/user-settings'><FontAwesomeIcon icon={faCog} className="me-2" />Settings</Link></a>
           <a href="#Posts"><FontAwesomeIcon icon={faClipboard} className="me-2" />Posts</a>
-          <a href="#message"><FontAwesomeIcon icon={faEnvelope} className="me-2" />Contact Us</a>
+          <a href="#Contact_Us"><FontAwesomeIcon icon={faEnvelope} className="me-2" />Contact Us</a>
+          <a href='#message' onClick={()=>{
+            setIsPopupVisible(!isPopupVisible)
+          }}><FontAwesomeIcon icon={faComment }
+          className='me-2'/> Messages</a>
         </div>
         
       </div>
@@ -301,7 +335,44 @@ const UserDashboard = () => {
               Connect
             </button>
           </div> */}
-          {isConnected && <Message socket={socket} providerId={providerId} />}
+         
+         <div>
+      {isPopupVisible && (
+        
+        <div className="contact-us-popup">
+          
+          <div className="popup-content">
+            <div className="chat-container">
+              <div className="user-list">
+                {users?.map((user, i) => (
+                  <div key={i} className="user-item" onClick={() => handleUserClick(user)}>
+                    <div>
+                    <img
+                      src={getImage(user.image, user.userName)}
+                      alt={user.userName}
+                      className="user-image"
+                    />
+                    <span className="user-name">{user.userName}</span>
+                    </div>
+                  <div>
+                  <p>
+                  <b>specialist: </b>{user.specialist.name}</p>
+                  </div>
+                  </div>
+                 
+                ))}
+              </div>
+              <div className="chat-window">
+                {isConnected && <Message socket={socket} providerId={providerId} image={image} />}
+              </div>
+            </div>
+            <button onClick={closeChatToggle}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
 
           <div className="image-container">
             <img

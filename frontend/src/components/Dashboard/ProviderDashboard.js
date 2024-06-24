@@ -291,16 +291,18 @@ const ProviderDashboard = () => {
         <button onClick={() => setSocket(socketInit({ user_id, token }))}>
           Connect
         </button> */}
-
-        {isConnected && <Message socket={socket} userId={messageFrom} />}
-        <div className='messages'>
+{/* {console.log();} */}
+        {isConnected && <Message socket={socket} userId={messageFrom} providerImages={image}/>}
+        {/* <div className='messages'>
           {allMessages.map((msg, index) => (
             <p key={index} className={msg.from === providerUserName ? 'from-me' : 'from-other'}>
-              {console.log(msg.from)}
-              <small>{msg.from}: {msg.message}</small>
+              {console.log(msg.from + ' ' + providerUserName)}
+              <strong>{msg.from}: </strong>
+              {msg.message}
             </p>
           ))}
-        </div>
+        </div> */}
+        
 
         <h2 className="mt-5">Provider Information</h2>
         <MDBRow>

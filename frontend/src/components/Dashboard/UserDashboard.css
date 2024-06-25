@@ -2,6 +2,50 @@
   text-align: center;
   margin-bottom: 20px;
 }
+.mb-4{
+  margin-top: 1.5rem;
+}
+.carousel-container {
+  margin-top: 20px;
+}
+
+.carousel-item-custom {
+  height: 400px;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-caption-custom {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.representation h3::after {
+  content: '';
+  display: block;
+  width: 25%;
+  height: 2px;
+  background-color: orange; 
+  margin-top: 10px; 
+}
+.d-block .w-100{
+border-radius: 20px;
+}
+/* .representation {
+  background-color: rgba(255, 255, 255, 0.5); 
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  color: white;
+  border: 2px solid black;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+} */
 
 .post {
   border-radius: 20px;
@@ -88,6 +132,18 @@
   transition: transform 0.3s ease;
   z-index: 1000;
 }
+.author-info{
+  display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+}
+.post-info{
+  display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
 
 .sidebar-visible {
   transform: translateX(0);
@@ -100,13 +156,14 @@
 .sidebar a {
   display: block;
   color: white;
-  padding: 10px;
+  
   text-decoration: none;
   transition: background 0.3s ease;
 }
 
 
 .sidebar a:hover {
+  text-decoration: none;
   background: #575757;
 }
 
@@ -185,7 +242,18 @@ button {
   cursor: pointer;
   font-size: 16px;
 }
+.carousel-item img {
+  max-height: 400px; 
+  object-fit: cover; 
+  border-radius: 10px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
 
+.carousel-caption {
+  background-color: rgba(0, 0, 0, 0.5); 
+  border-radius: 10px; 
+  padding: 20px;
+}
 button:hover {
   background-color: #0056b3;
 }
@@ -195,7 +263,7 @@ button:hover {
     top: 15px;
     cursor: pointer;
     z-index: 1001;
-    color: white;
+    color: black;
 }
 .chat-container {
   display: flex;
@@ -207,6 +275,10 @@ button:hover {
 
 
 .user-list {
+  display: flex;
+  flex-direction: column;
+ 
+  align-items: flex-start;
   width: 30%;
   background: #f1f1f1;
   border-right: 1px solid #ccc;
@@ -215,8 +287,9 @@ button:hover {
 }
 
 .user-item {
+  align-items: flex-start;
   display: flex;
-  align-items: center;
+
   padding: 10px;
   cursor: pointer;
   transition: background 0.3s;
@@ -233,7 +306,29 @@ button:hover {
   border-radius: 50%;
   margin-right: 10px;
 }
-
+.review-buttons{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+.btn-danger::after{
+  content: "Delete this review";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
 .user-name {
   font-size: 16px;
 }
@@ -278,4 +373,53 @@ button:hover {
 
 .message-input button:hover {
   background: #0056b3;
+}
+.menu-sidebar{
+  display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 40px;
+    gap: 20px;
+}
+.btn-primary{
+  max-height: 35px;
+    max-width: 105px;
+}
+.features-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  text-align: center;
+  margin: 20px;
+}
+
+.feature-item {
+  flex: 1 1 200px; /* Adjust the basis as needed */
+  margin: 10px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  color: #ff4d4d; /* Adjust the color to match the icon color in the image */
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.feature-item p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+a{
+  text-decoration: none;
 }

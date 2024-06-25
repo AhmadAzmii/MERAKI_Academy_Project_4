@@ -1,145 +1,244 @@
 .Message {
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    max-width: 600px;
-    margin: 0 auto;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 
 .Message h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-    font-family: 'Arial', sans-serif;
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-family: 'Arial', sans-serif;
 }
-.message_input{
+
+.message_input {
   width: 270px;
 }
+
 .Message input[type='text'] {
-    width: calc(100% - 22px);
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
+  width: calc(100% - 22px);
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
 .Message button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .Message button:hover {
-    background-color: #45a049;
+  background-color: #45a049;
+}
+
+.Send-message:hover {
+  background: #0056b3;
 }
 
 .messages {
-    margin-top: 20px;
-    max-height: 400px;
-    overflow-y: scroll;
-    border-top: 1px solid #ddd;
-    padding-top: 20px;
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: scroll;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
 }
 
 .message-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .message-item.from-me {
-    justify-content: flex-end;
-    background-color: #dcf8c6;
+  justify-content: flex-end;
+  background-color: #dcf8c6;
 }
 
 .message-item.from-other {
-    justify-content: flex-start;
-    background-color: #f1f0f0;
+  justify-content: flex-start;
+  background-color: #f1f0f0;
 }
 
 .message-content {
-    display: flex;
-    align-items: center;
-    max-width: 80%;
+  display: flex;
+  align-items: center;
+  background: #e9ecef;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 70%;
 }
 
 .message-content img {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
 }
 
 .message-content p {
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-    font-size: 14px;
-    line-height: 1.4;
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  margin: 0;
+  padding: 0;
 }
 
 .popup {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-  }
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.popup.show {
+  transform: translateY(0);
+  display: block;
+}
+
+.popup-header {
+  padding: 10px;
+  background: #007bff;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-content {
+  padding: 10px;
+}
+
+.popup .close {
+  cursor: pointer;
+}
+
+.notification-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #007bff;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.notification-popup p {
+  margin: 0;
+}
+
+.notification-popup button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  margin-left: 10px;
+  text-decoration: underline;
+}
+
+.popup-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.popup-header .close {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.message-input {
   
-  .popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-bottom: 1px solid #ccc;
-  }
+  width: calc(100% - 60px);
+  padding: 10px;
+  margin: 19px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.Send-message {
+margin: 19px 0;
   
-  .popup-content {
-    padding: 10px;
-  }
-  
-  .popup .close {
-    cursor: pointer;
-  }
-  
- 
-  .notification-popup {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 250px;
-    padding: 10px;
-    background-color: #f44336;
-    color: white;
-    text-align: center;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-  }
-  
-  .notification-popup p {
-    margin: 0;
-  }
-  
-  .notification-popup button {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
+  background: #007bff;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.me-2 {
+  cursor: pointer;
+  margin-right: 8px;
+  position: relative; /* Added this line */
+}
+
+.me-2:hover {
+  color: red;
+}
+
+
+.me-2::after {
+  content: "Clear all messages";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+.me-2:hover::after {
+  opacity: 1;
+}
+
+.Provider-name {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.message-info{
+  gap: 10px;
+  display: flex;  
+}

@@ -2,8 +2,11 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import "./Message.css";
 import { jwtDecode } from "jwt-decode";
 import { UserContext } from "../../App";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import notificationSound from "../../alphabetImages/Message.mp3";
-const Message = ({ socket, providerId, userId, image }) => {
+
+const Message = ({ socket, providerId, userId, image,providerName }) => {
   const { isLoggedIn, isProvider } = useContext(UserContext);
   const [to, setTo] = useState("");
   const [message, setMessage] = useState("");
@@ -35,47 +38,35 @@ const Message = ({ socket, providerId, userId, image }) => {
       socket?.off("message", receiveMessage);
     };
   }, [socket]);
+
   const getDefaultImage = (name) => {
     const firstLetter = name?.charAt(0)?.toUpperCase();
     if (firstLetter) {
       return require(`../../alphabetImages/${firstLetter}.png`);
     }
   };
+
   const getImage = (image, name) => {
     return image || getDefaultImage(name);
   };
+
   const sendMessage = () => {
     if (isLoggedIn) {
-        console.log(userImage);
       const messageData = isProvider
-        ? { to: userId, 
-            from: user_id, 
-            fromName: userName, message, 
-            userImage }
-        : {
-            to: providerId,
-            from: user_id,
-            fromName: userName,
-            message,
-            userImage,
-          };
-      console.log(messageData);
-
+        ? { to: userId, from: user_id, fromName: userName, message, userImage }
+        : { to: providerId, from: user_id, fromName: userName, message, userImage };
       socket?.emit("message", messageData);
       setMessage("");
     }
   };
 
   const receiveMessage = (data) => {
-    console.log(data);
     setAllMessages((prevMessages) => [...prevMessages, data]);
     setShowPopup(true);
-    setNotification(`New message from ${data.from}`);
-
-    // if (audioRef.current) {
-    //   audioRef.current.play();
-    // }
-
+    setNotification(`New message from ${data.fromName}`);
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
     setTimeout(() => {
       setShowPopup(false);
     }, 3000);
@@ -97,19 +88,35 @@ const Message = ({ socket, providerId, userId, image }) => {
       )}
       <div className={`popup ${showPopup ? "show" : ""}`} id="message">
         <div className="popup-header">
-          <h2>Chat </h2>
-          <span className="close" onClick={() => setShowPopup(false)}>
-            &times;
-          </span>
+          <h2>Chat</h2>
+          <div className="me-2" onClick={clearMessages}>
+          <FontAwesomeIcon
+           
+              icon={faTrash}
+        
+            />
+            
+            </div>
+         
+            
         </div>
+       
         <div className="popup-content">
-          <input
-            className="message-input"
-            type="text"
-            placeholder="Type a message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
+          {!isProvider  ?(<div className="Provider-name">
+          <p>Chatting with : <b>{providerName}</b> </p>
+          </div>):(<></>)}
+          <div className="message-info">
+            <input
+              className="message-input"
+              type="text"
+              placeholder="Type a message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <button className="Send-message" onClick={sendMessage}>
+              Send
+            </button>
+          </div>
           <input
             className="message-input"
             type="hidden"
@@ -117,8 +124,6 @@ const Message = ({ socket, providerId, userId, image }) => {
             value={providerId || userId}
             onChange={(e) => setTo(e.target.value)}
           />
-          <button onClick={sendMessage}>Send</button>
-          <button onClick={clearMessages}>Clear Messages</button>
           <div className="messages">
             {allMessages.length > 0 &&
               allMessages.map((msg, index) => (
@@ -130,7 +135,7 @@ const Message = ({ socket, providerId, userId, image }) => {
                 >
                   <div className="message-content">
                     <img
-                      src={getImage(msg.userImage,msg.fromName) || "default-avatar.png"}
+                      src={getImage(msg.userImage, msg.fromName) || "default-avatar.png"}
                       alt={`${msg.from}'s avatar`}
                     />
                     <p>

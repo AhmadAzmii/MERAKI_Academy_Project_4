@@ -2,13 +2,15 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope, faBars, faTimes, faClipboard, faComment } from "@fortawesome/free-solid-svg-icons";
+import { faRemove, faEdit, faHome, faUser, faCog, faEnvelope, faBars, faTimes, faClipboard, faComment,faDollarSign ,faClock,faCreditCard,faTools,faQuestionCircle   } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from 'jwt-decode';
 import { UserContext } from '../../App';
 import StarRating from './StarRating';
 import './UserDashboard.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from "date-fns";
+import tierService from '../../images/tire sevices.png'
+import contactUs from '../../images/ContactUs.webp'
 import {
   MDBContainer,
   MDBRow,
@@ -24,8 +26,9 @@ import {
 import ContactUs from './ContactUs';
 import Message from './Message';
 import socketInit from '../../socket.server';
-
+import { Carousel } from 'react-bootstrap';
 const apiKey = '374f6b9a93c2d20666eb4a186bd0df01';
+
 
 const UserDashboard = () => {
   const [showChatPopup, setShowChatPopup] = useState(false);
@@ -55,12 +58,14 @@ const UserDashboard = () => {
   const handleUserClick = (user) => {
     setIsConnected(true);
     setProviderId(user._id);
+    setProviderUserName(user.userName);
     setIsPopupVisible(true);
   };
 
   const closeChatToggle = () => {
     setIsPopupVisible(false);
     setIsConnected(false);
+    setProviderUserName("");
     setProviderId(null);
   };
   useEffect(() => {
@@ -304,10 +309,10 @@ const UserDashboard = () => {
         onClick={toggleSidebar}
       />
       <div className={`sidebar ${sidebarVisible ? 'sidebar-visible' : ''}`}>
-        <div>
+        <div className='menu-sidebar'>
           <h3>Menu</h3>
           <a href="#home"><FontAwesomeIcon icon={faHome} className="me-2" />Home</a>
-
+          
           <a ><Link to='/user-settings'><FontAwesomeIcon icon={faCog} className="me-2" />Settings</Link></a>
           <a href="#Posts"><FontAwesomeIcon icon={faClipboard} className="me-2" />Posts</a>
           <a href="#Contact_Us"><FontAwesomeIcon icon={faEnvelope} className="me-2" />Contact Us</a>
@@ -315,6 +320,7 @@ const UserDashboard = () => {
             setIsPopupVisible(!isPopupVisible)
           }}><FontAwesomeIcon icon={faComment}
             className='me-2' /> Messages</a>
+            <a href='#more'><FontAwesomeIcon icon={faQuestionCircle} className='me-2'/> What you need to know </a>
         </div>
 
       </div>
@@ -374,13 +380,43 @@ const UserDashboard = () => {
             )}
           </div>
 
-          <div className="image-container">
-            <img
-              src="https://media.istockphoto.com/id/1589417945/photo/hand-of-mechanic-holding-car-service-and-checking.webp?b=1&s=170667a&w=0&k=20&c=ve2SFpPfslb8-QEgtqkHPLG4SR15aLlJiaJrqqfa164="
-              alt="Background"
-              className="dashboard-image"
-            />
-          </div>
+          <Carousel>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={tierService}
+            alt="First slide"
+          />
+          <Carousel.Caption className='representation'>
+            <h3>YOU HAVE QUESTIONS, WE HAVE SOLUTIONS</h3>
+            <p>An accident can dent more than just your vehicle. It can wreck your day, whole week, or more. If everyone’s safe, you want immediate answers: “What shop can I bring it to right now?” “Who can I rely on to fix it well, fast, reliably, honestly?” And, big time—“Who will fix it so it doesn’t put a huge dent in my wallet?” You want a <a href='#home'>Bansharji</a> you can trust that won’t take advantage of your lack of expertise. Few people know how much it costs to repair a car bumper on average. How about a cracked windshield? Or a deep paint scratch? </p>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={contactUs}
+            alt="Second slide"
+          />
+          <Carousel.Caption>
+          <h3>Get in Touch</h3>
+    <p>We're here to help! Reach out to us for any inquiries or support.</p>
+    <MDBBtn id='Contact_Us' onClick={toggleContactUsPopup}>Contact Us</MDBBtn>
+
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src="https://via.placeholder.com/800x400?text=Third+Slide"
+            alt="Third slide"
+          />
+          <Carousel.Caption>
+            <h3>Third Slide Label</h3>
+            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+          </Carousel.Caption>
+        </Carousel.Item>
+      </Carousel>
           <MDBRow className="mb-4">
             <MDBCol md="6">
               <select
@@ -415,7 +451,7 @@ const UserDashboard = () => {
                         }}
                         className="author-image rounded-circle me-3"
                       />
-                      <div>
+                      <div className='author-info'>
                         <MDBCardTitle className="text-center mb-0">
                           {post.author.userName}
                         </MDBCardTitle>
@@ -433,10 +469,12 @@ const UserDashboard = () => {
                         />
                       </div>
                     )}
+                    <div className='post-info'>
                     <MDBCardText className="mt-3">
                       <b>{post.title}</b>
                     </MDBCardText>
                     <MDBCardText>{post.description}</MDBCardText>
+                    
                     <ul className="list-group mb-3">
                       <li className="list-group-item">
                         <b>Availability: </b>{post.availability}
@@ -445,43 +483,30 @@ const UserDashboard = () => {
                         <b>Experience:</b> {post.experience}
                       </li>
                     </ul>
+                    </div>
                     {post.reviews?.length > 0 && (
                       <div className="reviews-section">
                         <h4>Reviews:</h4>
                         {post.reviews.map((review, i) => (
                           <div key={i} className="review-card">
-                            <MDBCardBody>
-                              <div key={i} className="review-card">
-                                <div className="review-author">
-                                  <img
-                                    src={getImage(review.customer.image, review.customer.userName)}
-                                    alt={review.customer.userName}
-                                    className="author-image rounded-circle me-3"
-                                  />
-                                  <div>
-                                    <span className="review-author-name">{review.customer.userName}</span>
-                                    <p>{formatDistanceToNow(new Date(review.date))} ago</p>
-                                  </div>
-                                </div>
-                                <div className="review-content">
-                                  <p>{review.review}</p>
-                                  <StarRating rating={review.rating} postId={post._id} />
-                                </div>
-                              </div>
-                              {isLoggedIn && userId === review.customer._id && (
+                             {isLoggedIn && userId === review.customer._id && (
                                 <>
-                                  <button
-                                    onClick={() => handleDelete(review._id)}
-                                    className="btn btn-sm btn-danger"
-                                  >
-                                    <FontAwesomeIcon icon={faRemove} /> Delete
-                                  </button>
-                                  <button
-                                    onClick={() => setIsUpdated(review._id)}
-                                    className="btn btn-sm btn-primary mr-2"
-                                  >
-                                    <FontAwesomeIcon icon={faEdit} />
-                                  </button>
+                               <div className='review-buttons'>
+  <button 
+    onClick={() => handleDelete(review._id)}
+    className="btn btn-sm btn-danger"
+    title="Delete this review"
+  >
+    <FontAwesomeIcon icon={faRemove} />
+  </button>
+  <button
+    onClick={() => setIsUpdated(review._id)}
+    className="btn btn-sm btn-primary mr-2"
+    title="Update this review"
+  >
+    <FontAwesomeIcon icon={faEdit} />
+  </button>
+</div>
                                   {isUpdated === review._id && (
                                     <div className="update-review-form">
                                       <div className="form-group">
@@ -507,12 +532,32 @@ const UserDashboard = () => {
                                   )}
                                 </>
                               )}
+                            <MDBCardBody>
+                              <div key={i} className="review-card">
+                                <div className="review-author">
+                                  <img
+                                    src={getImage(review.customer.image, review.customer.userName)}
+                                    alt={review.customer.userName}
+                                    className="author-image rounded-circle me-3"
+                                  />
+                                  
+                                  <div>
+                                    <span className="review-author-name">{review.customer.userName}</span>
+                                    <p>{formatDistanceToNow(new Date(review.date))} ago</p>
+                                  </div>
+                                </div>
+                                <div className="review-content">
+                                  <p>{review.review}</p>
+                                  <StarRating rating={review.rating} postId={post._id} />
+                                </div>
+                              </div>
+                             
                             </MDBCardBody>
                           </div>
                         ))}
                       </div>
                     )}
-                    <MDBInput
+                      <MDBInput
                       value={newReview[post._id] || ""}
                       onChange={(e) => setNewReview({ ...newReview, [post._id]: e.target.value })}
                       placeholder="Write your review..."
@@ -573,8 +618,25 @@ const UserDashboard = () => {
               </div>
             </div>
           )}
-          <MDBBtn id='Contact_Us' onClick={toggleContactUsPopup}>Contact Us</MDBBtn>
-
+          
+          <div id='more' className="features-container">
+      <div className="feature-item">
+        <FontAwesomeIcon icon={faDollarSign} className="feature-icon" />
+        <p>Reasonable/affordable pricing</p>
+      </div>
+      <div className="feature-item">
+        <FontAwesomeIcon icon={faTools} className="feature-icon" />
+        <p>Certified technicians</p>
+      </div>
+      <div className="feature-item">
+        <FontAwesomeIcon icon={faClock} className="feature-icon" />
+        <p>Call and we’re on the way to pick up your car and pick you up too</p>
+      </div>
+      <div className="feature-item">
+        <FontAwesomeIcon icon={faCreditCard} className="feature-icon" />
+        <p>All credit cards accepted</p>
+      </div>
+    </div>
           {showContactUsPopup && (
             <div className="contact-us-popup">
               <div className="popup-content">

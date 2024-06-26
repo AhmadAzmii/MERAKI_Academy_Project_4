@@ -208,7 +208,7 @@
                         role: result.role,
                     };
                     const options = {
-                        expiresIn: "60m",
+                        expiresIn: "2d",
                     };
                     const token = jwt.sign(payload, process.env.SECRET, options);
     

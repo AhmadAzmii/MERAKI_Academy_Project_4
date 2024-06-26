@@ -82,6 +82,7 @@ const Register = () => {
           <MDBCardBody className="p-md-5">
             <h3 className="text-center">Sign up</h3>
             <div className="register-form">
+              <div>
               <div className="form-left">
                 <MDBInput label="First Name" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                 <MDBInput label="Last Name" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
@@ -117,12 +118,19 @@ const Register = () => {
                   </div>
                 )}
 
+            
+              </div>
+              <div>
+            <div>
                 <MDBBtn className="w-100 mt-3" onClick={handleSubmit}>Register</MDBBtn>
+                </div>
                 <div className="text-center mt-3">
                   <p>
                     Already have an account? <a href="#!" className="text-decoration-none" onClick={() => navigate('/login')}>Login</a>
                   </p>
                 </div>
+                
+               </div>
               </div>
               <div className="form-right">
                 <img
@@ -131,7 +139,10 @@ const Register = () => {
                   alt="Sample"
                 />
               </div>
+                
+            
             </div>
+         
             {message && <p className="text-danger mt-2">{message}</p>}
           </MDBCardBody>
         </MDBCard>

@@ -354,10 +354,10 @@ const ProviderDashboard = () => {
                     <MDBCardText>
                       <b>Description: </b> {info.description}
                     </MDBCardText>
-                    <p>
+                    <p className="Experience">
                       <b>Experience: </b> {info.experience}
                     </p>
-                    <p>
+                    <p className="Experience">
                       <b>Availability: </b>: {info.availability}
                     </p>
 
@@ -388,7 +388,7 @@ const ProviderDashboard = () => {
                                   className="author-image rounded-circle"
                                 />
                                 <span className="review-author-name">{review.customer.userName}</span>
-                                <p>{formatDistanceToNow(new Date(review.date))} ago</p>
+                                <p className="date">{formatDistanceToNow(new Date(review.date))} ago</p>
 
                               </div>
                             </div>

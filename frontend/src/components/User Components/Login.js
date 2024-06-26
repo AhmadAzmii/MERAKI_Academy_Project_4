@@ -97,10 +97,11 @@ function Login() {
 
     return (
         <div className="container d-flex align-items-center justify-content-center min-vh-100">
-            <div className="card p-4" style={{ maxWidth: '400px', width: '100%' }}>
+            <div className="card p-4 login" style={{width: '100%' }}>
                 <div className="text-center mb-4">
                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" className="img-fluid" />
                 </div>
+                <div className='login-from'>
                 <h2 className="text-center mb-3">Sign in with</h2>
                 <div className="d-flex justify-content-center mb-3">
                     <GoogleLogin
@@ -151,6 +152,7 @@ function Login() {
                         Don't have an account? <a href="#!" className="text-decoration-none" onClick={() => navigate('/register')}>Register</a>
                     </p>
                 </form>
+                </div>
             </div>
         </div>
     );

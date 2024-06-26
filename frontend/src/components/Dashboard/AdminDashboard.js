@@ -40,7 +40,7 @@ const AdminDashboard = () => {
   const [tokenOne, setTokenOne] = useState("")
   const [user_id, setUser_id] = useState("")
 
-  const [selectedSection, setSelectedSection] = useState("dashboard");
+  const [selectedSection, setSelectedSection] = useState("adminDashboard");
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -432,15 +432,7 @@ const AdminDashboard = () => {
                   User Dashboard
                 </a>
               </li>
-              <li>
-                <a
-                  href="#providerDashboard"
-                  onClick={() => setSelectedSection("providerDashboard")}
-                  className="dropdown-toggle"
-                >
-                  Provider Dashboard
-                </a>
-              </li>
+              
               <li>
                 <a
                   href="#users"
@@ -631,9 +623,7 @@ const AdminDashboard = () => {
               ))}
             </MDBRow>
           )}
-          {selectedSection === "providerDashboard" && (
-            <h2>Hello from Provider Dashboard</h2>
-          )}
+        
           {selectedSection === "userManagement" && (
             <>
               <h2>User Management</h2>

@@ -15,6 +15,7 @@ import {
     MDBBtn,
     MDBCardSubTitle,
 } from "mdb-react-ui-kit";
+import "./CreatePost.css"
 const CreatePost = () => {
     const [image, setImage] = useState(null);
     const token = localStorage.getItem("token");

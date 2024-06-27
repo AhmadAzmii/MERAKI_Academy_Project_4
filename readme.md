@@ -1,6 +1,7 @@
 <p align="center">
 
- <img width="400px" height="100px" src="frontend\public\logo.png" alt="Project logo">
+<img style="border-radius: 20px;" width="400px" height="100px" src="frontend/public/logo.png" alt="Project logo">
+
 
 </p>
 

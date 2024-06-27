@@ -1,7 +1,6 @@
 <p align="center">
 
-<img style="border-radius: 20px;" width="400px" height="100px" src="frontend/public/logo.png" alt="Project logo">
-
+ <img width="400px" height="100px" src="frontend\public\logo.png" alt="Project logo">
 
 </p>
 
@@ -29,7 +28,7 @@ A car service app streamlines vehicle maintenance by allowing users to  book app
 
 ## 🧐 About <a name = "about"></a>
 
-How many of us have had our car break down on the side of the road or highway, with the nearest body shop or garage an hour or two away, and needed a tow truck even though the issue was as simple as a tire puncture? Well, Bansharji solves all these problems. Now, you can connect with a top-notch mechanic who, once you call or text, will be on their way to fix your problem. Bansharji has the best experts in every field to ensure you get the highest quality service, saving you both time and money.
+How many of us have had our car break down on the side of the road or highway, with the nearest body shop or garage an hour or two away, and needed a tow truck even though the issue was as simple as a tire puncture? Well,<b> Bansharji</b> solves all these problems. Now, you can connect with a top-notch mechanic who, once you call or text, will be on their way to fix your problem.<b> Bansharji</b>has the best experts in every field to ensure you get the highest quality service, saving you both time and money.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -68,14 +67,15 @@ npm run dev
 npm run start
 ```
 
-Now app ready to use
+Now app ready to use 
 
-## ![alt text](images/image.png) <a name="usage"></a>
+![alt text](images/image.png)
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+## 🎈 Usage <a name="usage"></a>
 
-Ex.
-
+- First if you want to add a review or contact any of the provider you need to click on any button so you can login/register 
+![alt text](images/images(1).png)
+- You don't have to register to navigate our web app
 - You don't have to register to navigate our web app
 - You can click on the **Home** tab provided in the navigation bar to view the home section
 - You can click on the **Add to cart** button to add this product to your cart but you have to be one of our users, so you should create an account

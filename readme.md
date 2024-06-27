@@ -75,18 +75,19 @@ Now app ready to use
 
 - First if you want to add a review or contact any of the provider you need to click on any button so you can login/register .
 ![alt text](images/images(1).png) 
-![alt text](images/image(2).png)
+
+![alt text](images/images(2).png)
 - Here you can login or go to the register page if you don't have an account.
-![alt text](images/image(3).png)
+![alt text](images/images(3).png)
 - In the registration page you can choice between if you want to be a user or a provider by clicking on this check box.
-![alt text](images/image(4).png)
+![alt text](images/images(4).png)
 - Here is the Dashboard for either if you are a user or a provider.Enjoy exploring the page 🧐 .
 - User :
-![alt text](images/image(5).png)
+![alt text](images/images(5).png)
 - Provider :
-![alt text](images/image(7).png)
+![alt text](images/images(7).png)
 - Now if you want to change any of your information you can easily click on the setting so you can pick your image or any other information 
-![alt text](images/image(6).png)
+![alt text](images/images(6).png)
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 

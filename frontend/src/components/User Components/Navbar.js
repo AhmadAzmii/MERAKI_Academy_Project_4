@@ -4,12 +4,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { GoogleLogout } from 'react-google-login';
 import axios from 'axios';
 import "./Navbar.css";
-import { jwtDecode } from 'jwt-decode';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {jwtDecode} from 'jwt-decode';
+import logo from '../../images/logo.png';
 import {
-
   MDBRow,
   MDBCol,
-
   MDBBtn,
 } from 'mdb-react-ui-kit';
 
@@ -113,27 +113,31 @@ const Navbar = () => {
     localStorage.clear();
     navigate('/login');
   };
-  console.log("isProvider : "+isProvider);
-  console.log("isAdmin : "+isAdmin);
+
+  console.log("isProvider : " + isProvider);
+  console.log("isAdmin : " + isAdmin);
+
   return (
     <div className='navbar'>
+      <div className="logo-container">
+        <img src={logo} alt="Logo" class="rounded-circle logo-image" />
+      </div>
       {isLoggedIn && (
         <div className="avatar-container">
           <img className="avatar-image" src={getImage(image, userName)} alt="Avatar" />
         </div>
       )}
-       {isLoggedIn && (
-  <>
-    <Link to='/user-settings'>Settings</Link>
-    {isProvider ? (
-      <div>
-      
-      <Link to='/Create-Post'> Create new post</Link>
-      <Link to='/provider-dashboard'>Dashboard</Link>
-      </div>
-    ) : (isAdmin && !isProvider ?(<Link to='/admin-dashboard'>Admin Dashboard</Link>) :( <Link to='/dashboard'>Dashboard</Link>))}
-  </>
-)}
+      {isLoggedIn && (
+        <>
+          <Link to='/user-settings'>Settings</Link>
+          {isProvider ? (
+            <div>
+              <Link to='/Create-Post'>Create new post</Link>
+              <Link to='/provider-dashboard'>Dashboard</Link>
+            </div>
+          ) : (isAdmin && !isProvider ? (<Link to='/admin-dashboard'>Admin Dashboard</Link>) : (<Link to='/dashboard'>Dashboard</Link>))}
+        </>
+      )}
       <div className="navbar-right">
         {isLoggedIn && (
           <div className="logout-container">

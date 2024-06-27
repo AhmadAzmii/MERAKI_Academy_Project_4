@@ -50,6 +50,7 @@ import ContactUs from "./ContactUs";
 import Message from "./Message";
 import socketInit from "../../socket.server";
 import { Carousel } from "react-bootstrap";
+import weatherImg from '../../images/weatherImag.png'
 const apiKey = "374f6b9a93c2d20666eb4a186bd0df01";
 
 const UserDashboard = () => {
@@ -491,70 +492,54 @@ const UserDashboard = () => {
             <Carousel.Item>
             <img
   className="d-block w-100"
-  src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6"
+  src={weatherImg}
   alt="Third slide"
 />
 
   <Carousel.Caption>
-    <h3>See the weather in your city</h3>
-    {weather && (
-      <div className="weather-card-container">
-        <div className="weather-card">
-          <div className="weather-card-body">
-            <div className="row">
-              <div className="col-md-6 mb-4">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter a City"
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
-              <div className="col-md-6 mb-4">
-                <button className="btn btn-primary" onClick={handleSearch}>
-                  Search
-                </button>
-              </div>
+  
+            <div className="carousel-content">
+              <h3>Weather Information</h3>
+              <div className="weather-container">
+                {weather ? (
+                  <div>
+                    <h4>{weather.name}</h4>
+                    <p>Temperature: {weather.main.temp} °C</p>
+                    <p>Condition: {weather.weather[0].description}</p>
+                    <div className="weather-details">
+            <div>
+              <i className="fas fa-wind text-muted"></i>
+              <span className="ms-1">{weather.wind.speed} km/h</span>
             </div>
-            <div className="d-flex justify-content-between">
-              <h6>{weather.name}</h6>
-              <h6>{new Date().toLocaleTimeString()}</h6>
+            <div>
+              <i className="fas fa-tint text-muted"></i>
+              <span className="ms-1">{weather.main.humidity}%</span>
             </div>
-            <div className="text-center mt-5 mb-4">
-              <h6 className="display-4 mb-0 font-weight-bold">
-                {weather.main.temp}°C
-              </h6>
-              <span className="small text-muted">
-                {weather.weather[0].description}
-              </span>
-            </div>
-            <div className="d-flex align-items-center justify-content-between">
-              <div className="weather-details">
-                <div>
-                  <i className="fas fa-wind text-muted"></i>
-                  <span className="ms-1">{weather.wind.speed} km/h</span>
-                </div>
-                <div>
-                  <i className="fas fa-tint text-muted"></i>
-                  <span className="ms-1">{weather.main.humidity}%</span>
-                </div>
-                <div>
-                  <i className="fas fa-sun text-muted"></i>
-                  <span className="ms-1">{weather.clouds.all}%</span>
-                </div>
-              </div>
-              <div>
-                <img
-                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
-                  width="100px"
-                  alt="Weather icon"
-                />
-              </div>
+            <div>
+              <i className="fas fa-sun text-muted"></i>
+              <span className="ms-1">{weather.clouds.all}%</span>
             </div>
           </div>
-        </div>
-      </div>
-    )}
+                    <img
+                      src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
+                      alt="weather icon"
+                    />
+                  </div>
+                ) : (
+                  <p>Loading weather data...</p>
+                )}
+                <div className="weather-search">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search city..."
+                  />
+                  <button onClick={handleSearch}>Search</button>
+                </div>
+              </div>
+            </div>
+       
   </Carousel.Caption>
 </Carousel.Item>
 

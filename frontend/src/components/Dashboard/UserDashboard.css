@@ -126,7 +126,44 @@ li {
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.carousel-content {
+  text-align: center;
+}
 
+.weather-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.weather-container h4 {
+  margin: 10px 0;
+}
+
+.weather-container p {
+  margin: 5px 0;
+}
+
+.weather-container img {
+  width: 50px;
+  height: 50px;
+}
+
+.weather-search {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.weather-search input {
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.weather-search button {
+  padding: 5px 10px;
+} 
 .login-popup {
   position: fixed;
   top: 0;
@@ -294,11 +331,6 @@ li {
   margin-top: 10px;
 }
 
-.review-buttons {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
-}
 
 .update-review-form {
   margin-top: 10px;
@@ -410,9 +442,9 @@ button:hover {
 }
 .review-buttons{
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: flex-end;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 .btn-danger::after{
   content: "Delete this review";

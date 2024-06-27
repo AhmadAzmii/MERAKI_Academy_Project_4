@@ -73,12 +73,20 @@ Now app ready to use
 
 ## 🎈 Usage <a name="usage"></a>
 
-- First if you want to add a review or contact any of the provider you need to click on any button so you can login/register 
-![alt text](images/images(1).png)
-- You don't have to register to navigate our web app
-- You don't have to register to navigate our web app
-- You can click on the **Home** tab provided in the navigation bar to view the home section
-- You can click on the **Add to cart** button to add this product to your cart but you have to be one of our users, so you should create an account
+- First if you want to add a review or contact any of the provider you need to click on any button so you can login/register .
+![alt text](images/images(1).png) 
+![alt text](images/image(2).png)
+- Here you can login or go to the register page if you don't have an account.
+![alt text](images/image(3).png)
+- In the registration page you can choice between if you want to be a user or a provider by clicking on this check box.
+![alt text](images/image(4).png)
+- Here is the Dashboard for either if you are a user or a provider.Enjoy exploring the page 🧐 .
+- User :
+![alt text](images/image(5).png)
+- Provider :
+![alt text](images/image(7).png)
+- Now if you want to change any of your information you can easily click on the setting so you can pick your image or any other information 
+![alt text](images/image(6).png)
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 

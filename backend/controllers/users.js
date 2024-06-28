@@ -12,7 +12,7 @@
     
     //! Otp but need sub
     const forgotPassword = async (req, res) => {
-        const { email } = req.body;
+   const email = req.body.email.toLowerCase();
         const user = await usersModel.findOne({ email });
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
@@ -21,7 +21,7 @@
         const otp = generateOtp();
         otpStore[email] = otp;
     
-        await sendSms("+962772341720", `Your OTP for password reset is ${otp}`);
+        await sendSms("+962779902611", `Your OTP for password reset is ${otp}`);
         res.status(200).json({ success: true, message: "OTP sent to your phone number" });
     };
     
@@ -214,7 +214,7 @@
     
                     console.log("Login successful for email:", email);
     
-                    // await sendSms('+962772341720', 'Login successful! Welcome to our service.');
+                    // await sendSms('+962779902611', 'Login successful! Welcome to our service.');
     
                     res.status(200).json({
                         success: true,

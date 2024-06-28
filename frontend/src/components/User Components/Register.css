@@ -41,3 +41,8 @@
 .text-danger {
   text-align: center;
 }
+@media (min-width: 481px) and (max-width: 768px) {
+  .form-right {
+    display: none;
+  }
+}

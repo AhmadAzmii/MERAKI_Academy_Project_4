@@ -98,7 +98,7 @@ function Login() {
     return (
         <div className="container d-flex align-items-center justify-content-center min-vh-100">
             <div className="card p-4 login" style={{width: '100%' }}>
-                <div className="text-center mb-4">
+                <div className="text-center mb-4 login-right">
                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" className="img-fluid" />
                 </div>
                 <div className='login-from'>

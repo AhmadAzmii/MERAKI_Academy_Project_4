@@ -1,3 +1,8 @@
 .CreatePost{
     overflow: hidden;
 }
+@media (min-width: 481px) and (max-width: 768px) {
+    .buttons {
+      gap: 10px;
+    }
+  }

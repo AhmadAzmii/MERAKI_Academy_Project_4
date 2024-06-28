@@ -172,7 +172,7 @@ const getProviderInfoByAuthorId = (req, res) => {
             } else {
                 res.status(404).json({
                     success: false,
-                    message: `No service provider information found for  `,
+                    message: `You need to add posts about yourself. `,
                 });
                 
             }

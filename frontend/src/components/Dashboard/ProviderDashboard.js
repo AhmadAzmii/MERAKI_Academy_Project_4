@@ -45,12 +45,29 @@ const ProviderDashboard = () => {
   const [userId, setUserId] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [messageFrom, setMessageFrom] = useState("")
+
+
+
+
   const newSocket = io('http://localhost:8080', {
     extraHeaders: {
       tokenone: token,
       user_id: providerId,
     },
   });
+
+
+
+  useEffect(() => {
+    if (message) {
+        const timer = setTimeout(() => {
+            setMessage('');
+        }, 10000);
+        return () => clearTimeout(timer);
+    }
+}, [message]);
+
+
   useEffect(() => {
     if (token) {
       const decodedToken = jwtDecode(token);
@@ -82,6 +99,7 @@ const ProviderDashboard = () => {
         })
         .then((result) => {
           setProviderInfo(result.data.providersInfo);
+        
         })
         .catch((err) => {
           console.error(err);
@@ -89,6 +107,7 @@ const ProviderDashboard = () => {
             err.response?.data?.message ||
             "Error fetching provider information"
           );
+          console.log(err.response.data.message);
         });
     }
   }, [token]);
@@ -333,13 +352,13 @@ const ProviderDashboard = () => {
               <MDBCol md="6" key={info._id} className="mb-4">
                 <MDBCard className="provider-card">
                   <MDBCardBody>
-                    <div className="d-flex align-items-center mb-3">
+                    <div className="Proiver-info">
                       <img
                         src={userImage}
                         alt={info.author.userName}
                         className="author-image rounded-circle me-3"
                       />
-                      <MDBCardTitle className="text-center mb-0">
+                      <MDBCardTitle className="text-center mb-0 provider-userName">
                         {info.author.userName}
                       </MDBCardTitle>
                     </div>
@@ -438,6 +457,21 @@ const ProviderDashboard = () => {
                               />
                             </div>
                             <div className="form-group">
+                              <label>New Experience</label>
+                              <MDBInput
+                                type="text"
+                                value={editStates[info._id]?.newExperience || experience}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    info._id,
+                                    "newExperience",
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                              />
+                            </div>
+                            <div className="form-group">
                               <label>New Availability</label>
                               <MDBInput
                                 type="text"
@@ -454,21 +488,7 @@ const ProviderDashboard = () => {
                                 className="form-control"
                               />
                             </div>
-                            <div className="form-group">
-                              <label>New Experience</label>
-                              <MDBInput
-                                type="text"
-                                value={editStates[info._id]?.newExperience || experience}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    info._id,
-                                    "newExperience",
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                            </div>
+                           
                             <div className="form-group mb-3">
                               <label>New Image</label>
                               <input
@@ -509,6 +529,7 @@ const ProviderDashboard = () => {
               </MDBCol>
             );
           })}
+          {message && <p className="text-danger mt-2">{message}</p>}
         </MDBRow>
       </MDBContainer>
     </providerInfoContext.Provider>

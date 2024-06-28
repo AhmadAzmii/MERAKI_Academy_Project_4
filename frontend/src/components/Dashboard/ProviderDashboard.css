@@ -1,6 +1,12 @@
 .ProviderDashboard {
   padding: 20px;
 }
+.provider-card{
+  text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
 
 .update-form {
   flex-direction: column;

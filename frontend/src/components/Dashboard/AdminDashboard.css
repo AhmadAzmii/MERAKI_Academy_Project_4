@@ -13,7 +13,11 @@
   margin-bottom: 20px;
   color: #007bff; /* Blue */
 }
-
+#content {
+  margin-left: 250px; /* Ensure the main content is not hidden behind the sidebar */
+  flex-grow: 1;
+  padding: 20px;
+}
 /* Table style */
 .AdminDashboard table {
   width: 100%;
@@ -54,12 +58,15 @@
 }
 
 #sidebar {
-  /* height: 100vh; */
+  height: 100vh; /* Full viewport height */
   background-color: #343a40; 
   padding: 15px;
   color: #fff;
+  position: fixed; /* Keep it fixed on the screen */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  width: 250px; /* Set the width to your preference */
 }
-
 #sidebar .logo {
   font-size: 1.5rem;
   font-weight: bold;

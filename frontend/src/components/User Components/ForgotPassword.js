@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './ForgotPassword.css'
+import './ForgotPassword.css';
+
 function ForgotPassword() {
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
@@ -51,32 +52,30 @@ function ForgotPassword() {
             setMessage(err.response?.data?.message || 'Failed to reset password');
         }
     };
-    const cancel=()=>{
+
+    const cancel = () => {
         navigate('/login');
     }
 
     return (
-        <div>
+        <div className="Forgot-container">
             {step === 1 && (
                 <div>
-                    <div>
-                        <h2>Forgot Password</h2>
-                        <input 
-                            type="email" 
-                            placeholder="Email" 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
-                        />
-                    </div>
+                    <h2>Forgot Password</h2>
+                    <input 
+                        type="email" 
+                        placeholder="Email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                    />
                     <div className='Forgot-buttons'>
-                    <button onClick={handleForgotPassword}>Send OTP</button>
-                    <button onClick={cancel} >Cancel</button>
+                        <button onClick={handleForgotPassword}>Send OTP</button>
+                        <button onClick={cancel}>Cancel</button>
                     </div>
                 </div>
             )}
             {step === 2 && (
                 <div>
-                    <div>
                     <h2>Verify OTP</h2>
                     <input 
                         type="text" 
@@ -84,16 +83,14 @@ function ForgotPassword() {
                         value={otp} 
                         onChange={(e) => setOtp(e.target.value)} 
                     />
-                    </div>
                     <div className='Forgot-buttons'>
-                    <button onClick={cancel} >Cancel</button>
-                    <button onClick={handleVerifyOtp}>Verify</button>
+                        <button onClick={cancel}>Cancel</button>
+                        <button onClick={handleVerifyOtp}>Verify</button>
                     </div>
                 </div>
             )}
             {step === 3 && (
                 <div>
-                    <div>
                     <h2>Reset Password</h2>
                     <input 
                         type="password" 
@@ -101,10 +98,9 @@ function ForgotPassword() {
                         value={newPassword} 
                         onChange={(e) => setNewPassword(e.target.value)} 
                     />
-                    </div>
                     <div className='Forgot-buttons'>
-                    <button onClick={cancel} >Cancel</button>
-                    <button onClick={handleResetPassword}>Reset</button>
+                        <button onClick={cancel}>Cancel</button>
+                        <button onClick={handleResetPassword}>Reset</button>
                     </div>
                 </div>
             )}

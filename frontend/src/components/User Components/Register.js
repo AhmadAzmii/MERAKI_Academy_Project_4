@@ -69,6 +69,7 @@ const Register = () => {
       setTimeout(() => {
         setMessage("");
       }, 3000);
+      navigate('/login');
     } catch (error) {
       setMessage(error.response?.data?.message || "Registration failed");
       setTimeout(() => setMessage(""), 3000);

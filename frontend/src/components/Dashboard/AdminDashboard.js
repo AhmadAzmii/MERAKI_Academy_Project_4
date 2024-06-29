@@ -649,13 +649,7 @@ const AdminDashboard = () => {
                         <td>{user.phoneNumber}</td>
 
                         <td>
-                          <button
-                            onClick={() => handleUpdate(user._id)}
-                            className="btn btn-sm btn-primary mr-2"
-                            disabled={user.role.role === "Admin"}
-                          >
-                            <FontAwesomeIcon icon={faEdit} />
-                          </button>
+                        
                           <button
                             onClick={() => handleDelete(user._id)}
                             className="btn btn-sm btn-danger"
